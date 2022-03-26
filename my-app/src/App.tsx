@@ -11,6 +11,7 @@ function App() {
         <div>
           {34*10}
         </div>
+
   );
 }
 
