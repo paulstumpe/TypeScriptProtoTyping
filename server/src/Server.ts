@@ -55,6 +55,9 @@ const viewsDir = path.join(__dirname, '../../my-app/build');
 app.set('views', viewsDir);
 const staticDir = path.join(__dirname, '../../my-app/build/static');
 app.use(express.static(staticDir));
+app.get('/hello', (req, res) => {
+    res.status(200).json('haha');
+})
 app.get('*', (req: Request, res: Response) => {
     res.sendFile(req.path, {root: viewsDir});
 });
