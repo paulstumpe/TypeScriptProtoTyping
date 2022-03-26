@@ -1,5 +1,7 @@
 import React, {useEffect} from 'react';
 import axios from "axios";
+import EndTurnButton from "./Views/EndTurnButton";
+import endTurn from "./Game Entities/endTurn";
 
 function App() {
     useEffect(()=>{
@@ -9,7 +11,7 @@ function App() {
     },[])
   return (
         <div>
-          {34*10}
+            <EndTurnButton endTurn={endTurn} />
         </div>
 
   );
