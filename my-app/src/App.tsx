@@ -1,8 +1,8 @@
 import React, {useEffect} from 'react';
 import axios from "axios";
-import EndTurnButton from "./Views/EndTurnButton";
-import endTurn from "./Game Entities/endTurn";
-
+import BottomBar from "./Views/BottomBar";
+import TopBar from "./Views/TopBar";
+import Board from "./Views/Board";
 function App() {
     useEffect(()=>{
         axios.get('hello')
@@ -11,10 +11,14 @@ function App() {
     },[])
   return (
         <div>
-            <EndTurnButton endTurn={endTurn} />
+            <TopBar/>
+            <Board/>
+            <BottomBar/>
         </div>
 
   );
 }
 
 export default App;
+
+
