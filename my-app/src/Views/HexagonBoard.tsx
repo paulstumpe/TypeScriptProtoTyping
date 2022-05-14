@@ -24,11 +24,14 @@ type props = {
 
 }
 
+let hex = {
+    data:'data'
+}
 function HexagonBoard({}:props) {
 
     return (
         <div>
-            <Rows/>
+            <Hex hex={hex} column={1} row={1} />
         </div>
 
     );
@@ -70,7 +73,7 @@ type columnsProps ={
 function Columns ({column, row}:columnsProps){
     return (
 
-        <div style={{display: 'flex'}}>
+        <div>
         {column.map((hex,column)=>(
                 <Hex hex={hex} column={column} row={row} />
             )
@@ -89,6 +92,52 @@ type hexProps ={
 }
 
 function Hex ({hex, column, row}:hexProps){
+    // let evenColumn = !!oddOrEven(column)
+    // let third =  !! (row % 3)
+    // let left = (column* (chosenSize*asPercents.leftAdjustor))
+    // let top = (row*(chosenSize*asPercents.height));
+    // if(evenColumn){
+    //     top += chosenSize*asPercents.halfHeight
+    // }
+    // top-= (row * chosenSize * .04)
+    //
+    //
+    let hexColor = `#6C6`
+    const transparent = 'transparent'
+    const topAndBottomPixels = `${30}px`
+    const leftAndRightPixels = `${52}px`
+    let borderLeftandRight = `${leftAndRightPixels} solid ${transparent}`;
+    let borderTopOrBottom = `${topAndBottomPixels} solid ${hexColor}`;
+
+    let style :CSSProperties = {
+        width: '0',
+        borderLeft: borderLeftandRight,
+        borderRight: borderLeftandRight,
+    }
+    let topOfHexCss = {
+        borderBottom: borderTopOrBottom,
+        ...style
+    };
+    let middleofHex = {
+        width : `104px`,
+        height: `60px`,
+        backgroundColor: hexColor
+    }
+    let bottomOfHex = {
+        borderTop: borderTopOrBottom,
+        ...style
+    };
+
+    return (
+      <>
+        <div style={topOfHexCss}/>
+        <div style={middleofHex}/>
+        <div style={bottomOfHex}/>
+      </>
+    );
+}
+
+function oldHex ({hex, column, row}:hexProps){
     let evenColumn = !!oddOrEven(column)
     let third =  !! (row % 3)
     let left = (column* (chosenSize*asPercents.leftAdjustor))
