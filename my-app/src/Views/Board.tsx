@@ -1,4 +1,4 @@
-import HexagonBoard from "./HexagonBoard";
+import HexagonBoard from "./hexagonBoard/HexagonBoard";
 type props = {
 
 }

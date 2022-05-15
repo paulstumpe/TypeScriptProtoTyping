@@ -1,47 +1,19 @@
 import {CSSProperties, useState} from "react";
-let hexpic2 ={
-    width:600,
-    height:600,
-    leftAdjustor: 180,
-    halfHeight: 300
+import {hexProps, rowProps, rowsProps, hex, boardSettings} from "./hexagonBoardTypes"
+
+
+
+let defaultBoardSettings = {
+    hexColor : `#6C6`,
+    pxUnit : 60,
+    vertical : false,
+    rowCount : 4,
+    columnCount : 4,
 }
-let ratio: 20
-let asPercents = {
-    width:1.00,
-    height:1.00,
-    leftAdjustor: .27,
-    halfHeight: .48,
-    otherHeights : .08
-}
-let chosenSize = 30
-
-type hex={
-    data:string
-}
-
-
-type props = {
-
-}
-
-let hex = {
-    data:'data'
-}
-let hexColor = `#6C6`
-let pxUnit = 60;
-const vertical = false
-;
-
 
 class HexMath {
 
     static sideToApothem (side:number):number{
-        // (side/2) squared + (a) squared = side squared;
-        // apothem = square root(side squared + (side/2)squared)
-        // apothem = side / (2 * tan(180/6)
-        // apothem = side / (2 * tan(30))
-
-        // √3/2 * side
         // https://www.wikihow.com/Calculate-the-Apothem-of-a-Hexagon
         return  (side * (Math.sqrt(3)/2))
     }
@@ -156,11 +128,11 @@ function hexCss (hexColor:string, sidePixels:number, vertical:boolean = true) :h
 }
 
 
-function HexagonBoard({}:props) {
-
+function HexagonBoard() {
+    let [boardSettings, setBoardSettings] = useState(defaultBoardSettings)
     return (
         <div>
-            <Rows />
+            <Rows boardSettings={boardSettings} />
         </div>
 
     );
@@ -182,30 +154,27 @@ function rowGenerator (rowCount:number, columnCount:number):hex[][]{
 
 }
 
-function Rows (){
-
-    let rows = rowGenerator(4,4);
+function Rows ({boardSettings}:rowsProps){
+    const { rowCount, columnCount } = boardSettings;
+    let rows = rowGenerator(rowCount,columnCount);
     return (
         <>
             {rows.map((column, row)=>(
-                <Row column={column} row={row}/>
+                <Row column={column} row={row} boardSettings={boardSettings}/>
                 ))}
         </>
 
     );
 }
 
-type columnsProps ={
-    column: hex[],
-    row: number
-}
-function Row ({column, row}:columnsProps){
+function Row ({column, row, boardSettings}:rowProps){
+    const {hexColor, pxUnit, vertical} = boardSettings;
     let hexStyles = hexCss(hexColor, pxUnit, vertical)
     return (
 
         <div className={'row'} style={oddOrEven(row)? hexStyles.hexRowEven: hexStyles.hexRowOdd}>
         {column.map((hex,column)=>(
-                <Hex hex={hex} column={column} row={row} />
+                <Hex hex={hex} column={column} row={row} boardSettings={boardSettings} />
             )
             )}
         </div>
@@ -215,23 +184,9 @@ function oddOrEven(number:number):boolean{
     return !!(number % 2)
 }
 
-type hexProps ={
-    hex:hex,
-    column:number,
-    row: number,
-}
 
-function Hex ({hex, column, row}:hexProps){
-    // let evenColumn = !!oddOrEven(column)
-    // let third =  !! (row % 3)
-    // let left = (column* (chosenSize*asPercents.leftAdjustor))
-    // let top = (row*(chosenSize*asPercents.height));
-    // if(evenColumn){
-    //     top += chosenSize*asPercents.halfHeight
-    // }
-    // top-= (row * chosenSize * .04)
-    //
-    //
+function Hex ({hex, column, row, boardSettings}:hexProps){
+    const {hexColor, pxUnit, vertical} = boardSettings;
     let hexStyles = hexCss(hexColor, pxUnit, vertical)
 
     const [clicked, setClicked] = useState(false);
@@ -262,27 +217,5 @@ interface hexCSS  {
 
 }
 
-function oldHex ({hex, column, row}:hexProps){
-    let evenColumn = !!oddOrEven(column)
-    let third =  !! (row % 3)
-    let left = (column* (chosenSize*asPercents.leftAdjustor))
-    let top = (row*(chosenSize*asPercents.height));
-    if(evenColumn){
-        top += chosenSize*asPercents.halfHeight
-    }
-    top-= (row * chosenSize * .04)
-
-
-
-    let style :CSSProperties = {
-        maxWidth: (chosenSize)+'px',
-        position: 'absolute',
-        left: left,
-        top: top,
-    }
-    return (
-                <img style={style} src={"assets/hexpic2.png"} alt={'woops'}/>
-    );
-}
 
 export default HexagonBoard;
