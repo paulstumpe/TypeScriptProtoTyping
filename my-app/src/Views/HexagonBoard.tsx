@@ -1,4 +1,4 @@
-import {CSSProperties} from "react";
+import {CSSProperties, useState} from "react";
 let hexpic2 ={
     width:600,
     height:600,
@@ -27,11 +27,140 @@ type props = {
 let hex = {
     data:'data'
 }
+let hexColor = `#6C6`
+let pxUnit = 60;
+const vertical = false
+;
+
+
+class HexMath {
+
+    static sideToApothem (side:number):number{
+        // (side/2) squared + (a) squared = side squared;
+        // apothem = square root(side squared + (side/2)squared)
+        // apothem = side / (2 * tan(180/6)
+        // apothem = side / (2 * tan(30))
+
+        // √3/2 * side
+        // https://www.wikihow.com/Calculate-the-Apothem-of-a-Hexagon
+        return  (side * (Math.sqrt(3)/2))
+    }
+    static sideToShortDiagonal(side:number):number{
+        return (side * Math.sqrt(3));
+    }
+    static sideToLongDiagonal(side:number):number{
+        return (side * 2);
+    }
+
+}
+
+function hexCss (hexColor:string, sidePixels:number, vertical:boolean = true) :hexCSS {
+    const transparentColor = 'transparent'
+    const halfSide = Math.round((sidePixels/2));
+    // The 30:52 ratio in the border widths is approximately 1x:√3x which is ratio required for a hexagon.
+    //transformations and calculations
+    let apothem = Math.round(HexMath.sideToApothem(sidePixels));
+    let shortDiagonal = Math.round(HexMath.sideToShortDiagonal(sidePixels));
+
+    //formatting
+    let transparentApothem = `${apothem}px solid ${transparentColor}`;
+    let halfSideSolid = `${halfSide}px solid ${hexColor}`;
+
+    if(!vertical){
+
+        let hexOddCss :CSSProperties = {
+            float: 'left',
+            marginRight: `-${Math.round((apothem/2))}px`,
+            marginBottom: `-${(apothem-2)}px`,
+        }
+        let hexEvenCss = {
+            marginTop: `${(apothem+1)}px`,
+            ...hexOddCss
+        }
+        let topOfHexCss = {
+            float: 'left',
+            width : 0,
+            borderRight :  halfSideSolid,
+            borderTop : transparentApothem,
+            borderBottom: transparentApothem,
+        };
+        let middleOfHexCss = {
+            float: 'left',
+            width : `${sidePixels}px`,
+            height: `${shortDiagonal}px`,
+            backgroundColor: hexColor,
+        }
+        let bottomOfHexCss = {
+            float: 'left',
+            width : 0,
+            borderLeft: halfSideSolid,
+            borderTop: transparentApothem,
+            borderBottom: transparentApothem,
+        };
+        let hexRowOdd = {
+            clear: 'left',
+        }
+        let hexRowEven = {
+            clear: 'left',
+        }
+        return {
+            topOfHexCss,
+            middleOfHexCss,
+            bottomOfHexCss,
+            hexRowOdd,
+            hexRowEven,
+            hexOddCss,
+            hexEvenCss
+        }
+    }
+
+    let hexOddCss :CSSProperties = {
+        float:'left',
+        marginLeft: `3px`,
+        marginBottom: `-${Math.round((apothem/2))}px`,
+    }
+    let hexEvenCss = hexOddCss
+    let topOfHexCss = {
+        borderBottom: halfSideSolid,
+        borderLeft: transparentApothem,
+        borderRight: transparentApothem,
+        width : 0,
+    };
+    let middleOfHexCss = {
+        width : `${shortDiagonal}px`,
+        height: `${sidePixels}px`,
+        backgroundColor: hexColor
+    }
+    let bottomOfHexCss = {
+        borderTop: halfSideSolid,
+        borderLeft: transparentApothem,
+        borderRight: transparentApothem,
+        width : 0,
+    };
+    let hexRowOdd = {
+        clear: 'left',
+    }
+    let hexRowEven = {
+        marginLeft: `${(apothem+1)}px`,
+        clear: 'left',
+    }
+    return {
+        hexOddCss,
+        hexEvenCss,
+        topOfHexCss,
+        middleOfHexCss,
+        bottomOfHexCss,
+        hexRowOdd,
+        hexRowEven,
+    }
+}
+
+
 function HexagonBoard({}:props) {
 
     return (
         <div>
-            <Hex hex={hex} column={1} row={1} />
+            <Rows />
         </div>
 
     );
@@ -55,13 +184,13 @@ function rowGenerator (rowCount:number, columnCount:number):hex[][]{
 
 function Rows (){
 
-    let rows = rowGenerator(20,80);
+    let rows = rowGenerator(4,4);
     return (
-        <div>
+        <>
             {rows.map((column, row)=>(
-                <Columns column={column} row={row}/>
+                <Row column={column} row={row}/>
                 ))}
-        </div>
+        </>
 
     );
 }
@@ -70,10 +199,11 @@ type columnsProps ={
     column: hex[],
     row: number
 }
-function Columns ({column, row}:columnsProps){
+function Row ({column, row}:columnsProps){
+    let hexStyles = hexCss(hexColor, pxUnit, vertical)
     return (
 
-        <div>
+        <div className={'row'} style={oddOrEven(row)? hexStyles.hexRowEven: hexStyles.hexRowOdd}>
         {column.map((hex,column)=>(
                 <Hex hex={hex} column={column} row={row} />
             )
@@ -81,8 +211,8 @@ function Columns ({column, row}:columnsProps){
         </div>
     )
 }
-function oddOrEven(number:number){
-    return number % 2
+function oddOrEven(number:number):boolean{
+    return !!(number % 2)
 }
 
 type hexProps ={
@@ -102,39 +232,34 @@ function Hex ({hex, column, row}:hexProps){
     // top-= (row * chosenSize * .04)
     //
     //
-    let hexColor = `#6C6`
-    const transparent = 'transparent'
-    const topAndBottomPixels = `${30}px`
-    const leftAndRightPixels = `${52}px`
-    let borderLeftandRight = `${leftAndRightPixels} solid ${transparent}`;
-    let borderTopOrBottom = `${topAndBottomPixels} solid ${hexColor}`;
+    let hexStyles = hexCss(hexColor, pxUnit, vertical)
 
-    let style :CSSProperties = {
-        width: '0',
-        borderLeft: borderLeftandRight,
-        borderRight: borderLeftandRight,
+    const [clicked, setClicked] = useState(false);
+    if (clicked){
+        hexStyles = hexCss('blue', pxUnit, vertical)
     }
-    let topOfHexCss = {
-        borderBottom: borderTopOrBottom,
-        ...style
-    };
-    let middleofHex = {
-        width : `104px`,
-        height: `60px`,
-        backgroundColor: hexColor
+    const onClick = ()=>{
+        console.log('clicked')
+        setClicked(!clicked)
     }
-    let bottomOfHex = {
-        borderTop: borderTopOrBottom,
-        ...style
-    };
-
     return (
-      <>
-        <div style={topOfHexCss}/>
-        <div style={middleofHex}/>
-        <div style={bottomOfHex}/>
-      </>
+      <div className={'hex'} style={oddOrEven(column)? hexStyles.hexEvenCss: hexStyles.hexOddCss}>
+        <div onClick={onClick} style={hexStyles.topOfHexCss}/>
+        <div onClick={onClick} style={hexStyles.middleOfHexCss}/>
+        <div onClick={onClick} style={hexStyles.bottomOfHexCss}/>
+      </div>
     );
+}
+
+interface hexCSS  {
+    hexOddCss: object;
+    hexEvenCss: object;
+    topOfHexCss : object;
+    middleOfHexCss : object;
+    bottomOfHexCss : object;
+    hexRowOdd : object;
+    hexRowEven : object;
+
 }
 
 function oldHex ({hex, column, row}:hexProps){
