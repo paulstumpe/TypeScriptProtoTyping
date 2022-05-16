@@ -23,3 +23,13 @@ export type hexProps = {
   row: number,
   boardSettings:boardSettings,
 }
+export interface hexCSS  {
+  hexOddCss: object;
+  hexEvenCss: object;
+  topOfHexCss : object;
+  middleOfHexCss : object;
+  bottomOfHexCss : object;
+  hexRowOdd : object;
+  hexRowEven : object;
+
+}

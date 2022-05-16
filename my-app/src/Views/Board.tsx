@@ -1,13 +1,15 @@
 import HexagonBoard from "./hexagonBoard/HexagonBoard";
-type props = {
+import {boardSettings} from "./hexagonBoard/hexagonBoardTypes";
 
+type props = {
+boardSettings : boardSettings
 }
 
-function Board({}:props) {
+function Board({boardSettings}:props) {
 
     return (
         <div>
-            <HexagonBoard/>
+            <HexagonBoard boardSettings={boardSettings} />
         </div>
 
     );
