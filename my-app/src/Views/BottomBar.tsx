@@ -5,6 +5,8 @@ import {boardSettings} from "./hexagonBoard/hexagonBoardTypes";
 import React from "react";
 import {SetBoardSettings} from "../App";
 import SettingsView from "./SettingsView";
+import {useAppSelector, useAppDispatch } from "../reduxCustomHooks";
+import {increment} from "../counterSlice";
 
 type props = {
   boardSettings: boardSettings,
@@ -12,9 +14,18 @@ type props = {
 }
 
 function BottomBar({boardSettings, setBoardSettings}:props) {
+  let counter = useAppSelector((state) => state.counter.value);
+  const dispatch = useAppDispatch()
 
-    return (
+
+  return (
         <div>
+          <div>{counter}</div>
+          <button
+            onClick={()=>dispatch(increment())}
+          >
+            increment value
+          </button>
           <EndTurnButton endTurn={endTurn}/>
           <SettingsView boardSettings={boardSettings} setBoardSettings={setBoardSettings} />
 

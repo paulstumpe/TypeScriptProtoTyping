@@ -6,6 +6,7 @@ import Board from "./Views/Board";
 import {boardSettings} from "./Views/hexagonBoard/hexagonBoardTypes";
 
 
+
 let defaultBoardSettings = {
   hexColor : `#6C6`,
   pxUnit : 60,
