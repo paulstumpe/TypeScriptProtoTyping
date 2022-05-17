@@ -41,7 +41,7 @@ interface DrawGrid {
   context: CanvasRenderingContext2D
   layout: LayoutStruct,
   labels? : boolean,
-  hexes?: HexStruct[],
+  hexes: HexStruct[],
   center?: PointStruct,
 }
 type QRSConstructor = (q:number,r:number,s:number)=>HexStruct
@@ -50,7 +50,7 @@ function permuteQRS(q:number, r:number, s:number) {
 }
 
 
-function shapeRectangleArbitrary(w:number, h:number, constructor:QRSConstructor) {
+export function shapeRectangleArbitrary(w:number, h:number, constructor:QRSConstructor=permuteQRS) {
   var hexes = [];
   var i1 = -Math.floor(w/2), i2 = i1 + w;
   var j1 = -Math.floor(h/2), j2 = j1 + h;
@@ -66,7 +66,7 @@ function shapeRectangleArbitrary(w:number, h:number, constructor:QRSConstructor)
 
 export function drawGrid({canvas, context, labels, layout, hexes, center, }:DrawGrid) {
   labels = labels ?? false;
-  hexes = hexes ?? shapeRectangleArbitrary(15, 15, permuteQRS);
+  // hexes = hexes ?? shapeRectangleArbitrary(15, 15, permuteQRS);
   center = center ?? {x: 0, y: 0};
   if (!canvas) { return; }
   let ctx = context;
