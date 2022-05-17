@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit'
 import counterReducer from "./counterSlice";
+import unitsReducer from "./Views/hexagonBoard/unitsSlice";
 // ...
 
 export const store = configureStore({
   reducer: {
     counter: counterReducer,
+    units: unitsReducer,
   },
 })
 
