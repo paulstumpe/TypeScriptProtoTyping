@@ -9,6 +9,7 @@ import {AxialHexStruct, HexStruct} from "./Structs/Hex";
 //my hex classes call to transform the hex into the type they work with.
 
 
+
 class HexUtility {
   /**
    * confirms that q , r , s currently add up to zero
@@ -139,7 +140,71 @@ class HexUtility {
     HexUtility.validateZeroConstraint(newHex)
     return newHex;
   }
+  //rounds a fraction hex to a standard hex
+  public static hexRound (hex:HexStruct):HexStruct{
+    let q = Math.round(hex.q);
+    let r = Math.round(hex.r);
+    let s = Math.round(hex.s);
+    let qDiff = Math.abs(q - hex.q);
+    let rDiff = Math.abs(r - hex.r);
+    let sDiff = Math.abs(s - hex.s);
+        if (qDiff > rDiff && qDiff > sDiff) {
+            q = -r - s;
+        } else if (rDiff > sDiff) {
+            r = -q - s;
+        } else {
+            s = -q - r;
+        }
+    return HexUtility.createAndValidateNewHexStruct(q, r, s);
+  }
 
+  public static lerp(a:number, b:number, t:number):number{
+    return a * (1-t) + b * t;
+
+    /* better for floating point precision than
+       a + (b - a) * t, which is what I usually write */
+  }
+
+  //linear interpolate hex
+  //returns a fractional hex
+  public static hexLerp (a:HexStruct, b:HexStruct, t: number) :HexStruct {
+    return this.createAndValidateNewHexStruct(
+      HexUtility.lerp(a.q, b.q, t),
+      HexUtility.lerp(a.r, b.r, t),
+      HexUtility.lerp(a.s, b.s, t)
+    );
+  }
+
+  /**
+   *    I needed to stick that max(N, 1) bit in there to handle lines with length 0 (when A == B).
+   *    Sometimes the hex_lerp will output a point that’s on an edge. On some systems, the rounding code
+   *    will push that to one side or the other, somewhat unpredictably and inconsistently.
+   *    To make it always push these points in the same direction, add an “epsilon” value to a.
+   *    This will “nudge” things in the same direction when it’s on an edge,
+   *    and leave other points unaffected.
+   * @param a
+   * @param b
+   */
+  public static hexLineDraw(a:HexStruct, b:HexStruct) {
+    let n = HexUtility.hexDistance(a,b);
+    let aNudge = HexUtility.createAndValidateNewHexStruct(
+      a.q + 1e-06,
+      a.r + 1e-06,
+      a.s - 2e-06
+    );
+    let bNudge = HexUtility.createAndValidateNewHexStruct(
+      b.q + 1e-06,
+      b.r + 1e-06,
+      b.s - 2e-06
+    );
+    let results = [];
+    let step = 1.0 / Math.max(n, 1);
+    for (let i = 0; i <= n; i++) {
+      const res1 = HexUtility.hexRound(HexUtility.hexLerp(aNudge, bNudge, step * i));
+      results.push(res1);
+    }
+    return results;
+  }
 
 }
 

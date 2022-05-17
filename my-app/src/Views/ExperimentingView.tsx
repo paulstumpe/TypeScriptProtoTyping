@@ -1,8 +1,9 @@
-import {useEffect, useRef} from "react";
+import {MouseEvent, SyntheticEvent, useEffect, useRef, RefObject} from "react";
 import useCanvas, {PostDraw, PreDraw, DrawCB} from "./CanvasHook";
 
 interface props {
   draw: DrawCB,
+  onClick: (e:MouseEvent, canvas:RefObject<HTMLCanvasElement>)=>void
   preDraw? : PreDraw
   postDraw?: PostDraw
   rest? : {},
@@ -58,9 +59,9 @@ const preDrawDefault = (context: CanvasRenderingContext2D, canvas:HTMLCanvasElem
   context.clearRect(0, 0, width, height)
 }
 
-const ExperimentingView = ({draw, postDraw=postDrawDefault, preDraw=preDrawDefault,  rest = {}}:props)=>{
+const ExperimentingView = ({draw, onClick, postDraw=postDrawDefault, preDraw=preDrawDefault,  rest = {}}:props)=>{
   const canvasRef = useCanvas(draw,{preDraw, postDraw})
   //could always pass in other things we need by having a rest props
-  return <canvas ref={canvasRef} {...rest} style={{width:'100%', height:'100%'}}/>
+  return <canvas onClick={(e)=>onClick(e, canvasRef)} ref={canvasRef} {...rest} style={{width:'100%', height:'100%'}}/>
 }
 export default ExperimentingView;
