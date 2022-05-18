@@ -8,6 +8,7 @@ import {AxialHexStruct, HexStruct} from "./Structs/Hex";
 //idea, union type of all my hex structs, and a Seperate converter library that all
 //my hex classes call to transform the hex into the type they work with.
 
+export type HexConstructer = (q:number,r:number,s:number)=>HexStruct
 
 
 class HexUtility {

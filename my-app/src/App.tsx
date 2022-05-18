@@ -24,8 +24,8 @@ function App() {
   return (
         <div>
             <TopBar/>
-            {/*<Board boardSettings={boardSettings} />*/}
-            {/*<BottomBar boardSettings={boardSettings} setBoardSettings={setBoardSettings}/>*/}
+            <Board />
+            <BottomBar/>
         </div>
 
   );

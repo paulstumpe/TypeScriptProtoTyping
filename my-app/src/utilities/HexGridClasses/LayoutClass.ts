@@ -14,7 +14,7 @@
  * for screen to hex, so it makes sense to put them together.
  */
 import {HexStruct} from "./Structs/Hex";
-import HexUtility from "./HexClass";
+import HexUtility, {HexConstructer} from "./HexClass";
 import HexClass from "./HexClass";
 
 
@@ -153,5 +153,21 @@ export default class LayoutClass {
     }
     return corners;
   }
+  /**
+   * takes in a width and height, and uses those to generate one array of hexes, containing one for each qrs point
+   *
+   **/
 
+  public static shapeRectangleArbitrary(w:number, h:number, constructor:HexConstructer=HexUtility.createAndValidateNewHexStruct) {
+    var hexes = [];
+    var i1 = -Math.floor(w/2), i2 = i1 + w;
+    var j1 = -Math.floor(h/2), j2 = j1 + h;
+    for (var j = j1; j < j2; j++) {
+      var jOffset = -Math.floor(j/2);
+      for (var i = i1 + jOffset; i < i2 + jOffset; i++) {
+        hexes.push(constructor(i, j, -i-j));
+      }
+    }
+    return hexes;
+  }
 }
