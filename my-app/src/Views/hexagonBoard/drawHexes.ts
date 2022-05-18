@@ -18,11 +18,23 @@ import HexUtility from "./HexGridClasses/HexClass";
 //   });
 // }
 
-export const drawHex = (context:CanvasRenderingContext2D, layout:LayoutStruct, hex: HexStruct)=> {
+//drawHex should probably take a hexStyle, with a bunch of hexStyles I make in the graphics area,
+//and then during render I can look at actual explicit hexproperty likes hexselect, or unit onhex and apply a mix of
+//hex style based on that... maybe.
+
+//would be better if I could take these drawings and also Handle Them closer to react. Should refactor these into react like
+//composition
+export const drawHex = (
+    context:CanvasRenderingContext2D,
+    layout:LayoutStruct,
+    hex: HexStruct,
+    strokeStyle='black',
+    fillStyle ='white',
+  )=>{
   let corners = LayoutClass.polygonCorners(hex,layout)
   context.beginPath();
-  context.strokeStyle = "black";
-  context.fillStyle = "white";
+  context.strokeStyle = strokeStyle;
+  context.fillStyle = fillStyle;
   context.lineWidth = 1;
   context.moveTo(corners[5].x, corners[5].y);
   for (let i = 0; i < 6; i++) {
@@ -43,13 +55,17 @@ interface DrawGrid {
   labels? : boolean,
   hexes: HexStruct[],
   center?: PointStruct,
+  selectedHex?: HexStruct
 }
 type QRSConstructor = (q:number,r:number,s:number)=>HexStruct
+
+//todo get rid of this, pointeless wrapper around create and validate
 function permuteQRS(q:number, r:number, s:number) {
   return HexUtility.createAndValidateNewHexStruct(q, r, s);
 }
 
 
+//takes in a width and height, and uses those to generate one array of hexes, containing one for each qrs point
 export function shapeRectangleArbitrary(w:number, h:number, constructor:QRSConstructor=permuteQRS) {
   var hexes = [];
   var i1 = -Math.floor(w/2), i2 = i1 + w;
@@ -88,7 +104,7 @@ function drawHexLabel(ctx:CanvasRenderingContext2D, layout:LayoutStruct, hex:Hex
   ctx.fillText(HexUtility.hexLength(hex) === 0? "q,r,s" : (hex.q + "," + hex.r + "," + hex.s), center.x, center.y);
 }
 let counter =0;
-export function drawGrid({canvas, context, labels, layout, hexes, center, }:DrawGrid) {
+export function drawGrid({canvas, context, labels, layout, hexes, center, selectedHex}:DrawGrid) {
   labels = labels ?? false;
   // hexes = hexes ?? shapeRectangleArbitrary(15, 15, permuteQRS);
   center = center ?? {x: 0, y: 0};
@@ -105,19 +121,13 @@ export function drawGrid({canvas, context, labels, layout, hexes, center, }:Draw
   ctx.clearRect(0, 0, width, height);
   ctx.translate(width/2, height/2);
   ctx.translate(-center.x, -center.y);
-  if (counter<4){
-    console.log('drawing')
-    console.log('width', width)
-    console.log('height', height)
-    console.log('height/2', height/2)
-    console.log('width/2', width/2)
-    console.log('-center.x', -center.x)
-    counter++;
-  }
-
 
   hexes.forEach(function(hex) {
-    drawHex(ctx, layout, hex);
+    if(selectedHex && HexUtility.equalTo(hex, selectedHex)){
+      drawHex(ctx, layout, hex,'red', 'blue');
+    } else {
+      drawHex(ctx, layout, hex);
+    }
     if (labels) drawHexLabel(ctx, layout, hex);
   });
 }

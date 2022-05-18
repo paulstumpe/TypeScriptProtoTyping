@@ -4,7 +4,7 @@ import LayoutClass, {makePoint} from "./hexagonBoard/HexGridClasses/LayoutClass"
 import drawGrid, {shapeRectangleArbitrary} from "./hexagonBoard/drawHexes";
 import drawCircle from "./drawAnimatedCircle";
 import HexUtility from "./hexagonBoard/HexGridClasses/HexClass";
-
+import {HexStruct} from "./hexagonBoard/HexGridClasses/Structs/Hex";
 type props = {
 
 }
@@ -19,8 +19,12 @@ const fourbysix = {
   height: '400px'
 }
 
-
-
+const findHexIndex =(hexes: HexStruct[], needle:HexStruct)=>{
+  return hexes.findIndex(hex=>HexUtility.equalTo(hex,needle))
+}
+const noHexThere = ()=>{
+  console.log('no hex here!')
+}
 function TopBar({}:props) {
 
   const [isCircle, setIsCircle] = useState(false);
@@ -29,8 +33,8 @@ function TopBar({}:props) {
   const [height, setHeight] = useState(25);
   const [verticalHexes, setVH] = useState(15);
   const [horizontalHexes, setHH] = useState(15);
-
-  const hexes = shapeRectangleArbitrary(verticalHexes, horizontalHexes);
+  const hexes = shapeRectangleArbitrary(verticalHexes, horizontalHexes);;
+  const [selectedHex, setSelectedHex] = useState<HexStruct |undefined>();
   const layOut = LayoutClass.newLayout(
     isPointy ? LayoutClass.pointy : LayoutClass.flat,
     makePoint(width, height),
@@ -47,7 +51,8 @@ function TopBar({}:props) {
       labels:true,
       hexes:hexes,
       layout: layOut,
-      center
+      center,
+      selectedHex
     });
   }
 
@@ -74,20 +79,18 @@ function TopBar({}:props) {
       nativeCanvasClick.x - locationOfNewOriginOnOldPlane.x,
       nativeCanvasClick.y - locationOfNewOriginOnOldPlane.y
       )
-
-    //this is just for devhelp reasoning about graph
-    let oldOriginOnNewPlane = makePoint(
-      0-locationOfNewOriginOnOldPlane.x,
-      0-locationOfNewOriginOnOldPlane.y
-    )
-    console.log('oldOriginOnNewPlane',oldOriginOnNewPlane)
-    console.log('locationOfNewOriginOnOldPlane',locationOfNewOriginOnOldPlane,)
-    console.log('nativeCanvasClick',nativeCanvasClick)
-    console.log('pointWithRespectToNewOrigin',pointWithRespectToNewOrigin,)
     // HexUtility.
     let hex = LayoutClass.pixelToHex(pointWithRespectToNewOrigin, layOut)
     hex = HexUtility.hexRound(hex)
     console.log(hex)
+
+
+    let i = findHexIndex(hexes, hex);
+    if (i===-1){
+      noHexThere()
+      return;
+    }
+    setSelectedHex(hex);
   }
 
 
