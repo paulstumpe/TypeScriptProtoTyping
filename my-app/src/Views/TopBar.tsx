@@ -68,24 +68,24 @@ function TopBar({}:props) {
     const rect = canvas.getBoundingClientRect()
     const x = nativeEvent.clientX - rect.left
     const y = nativeEvent.clientY - rect.top
-    //x and y relative to top left corner
-    //need x and y relative to center
-    let xCenter = (canvas.width/2 -center.x)
-    let yCenter = (canvas.height/2 -center.y)
+    let nativeCanvasClick = makePoint(x,y);
+    let locationOfNewOriginOnOldPlane = makePoint(canvas.width/2/2, canvas.height/2/2)
+    let pointWithRespectToNewOrigin = makePoint(
+      nativeCanvasClick.x - locationOfNewOriginOnOldPlane.x,
+      nativeCanvasClick.y - locationOfNewOriginOnOldPlane.y
+      )
 
-    //need the diff between x center and x, and y center and y
-
-
-    const point = {
-      x:x-xCenter,
-      y:y-yCenter,
-    }
-
-    // ctx.translate(canvas.width/2, canvas.height/2);
-    // ctx.translate(-center.x, -center.y);
-    console.log(point)
+    //this is just for devhelp reasoning about graph
+    let oldOriginOnNewPlane = makePoint(
+      0-locationOfNewOriginOnOldPlane.x,
+      0-locationOfNewOriginOnOldPlane.y
+    )
+    console.log('oldOriginOnNewPlane',oldOriginOnNewPlane)
+    console.log('locationOfNewOriginOnOldPlane',locationOfNewOriginOnOldPlane,)
+    console.log('nativeCanvasClick',nativeCanvasClick)
+    console.log('pointWithRespectToNewOrigin',pointWithRespectToNewOrigin,)
     // HexUtility.
-    let hex = LayoutClass.pixelToHex(point, layOut)
+    let hex = LayoutClass.pixelToHex(pointWithRespectToNewOrigin, layOut)
     hex = HexUtility.hexRound(hex)
     console.log(hex)
   }

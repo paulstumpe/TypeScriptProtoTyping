@@ -87,7 +87,7 @@ function drawHexLabel(ctx:CanvasRenderingContext2D, layout:LayoutStruct, hex:Hex
   ctx.textBaseline = "middle";
   ctx.fillText(HexUtility.hexLength(hex) === 0? "q,r,s" : (hex.q + "," + hex.r + "," + hex.s), center.x, center.y);
 }
-
+let counter =0;
 export function drawGrid({canvas, context, labels, layout, hexes, center, }:DrawGrid) {
   labels = labels ?? false;
   // hexes = hexes ?? shapeRectangleArbitrary(15, 15, permuteQRS);
@@ -105,6 +105,17 @@ export function drawGrid({canvas, context, labels, layout, hexes, center, }:Draw
   ctx.clearRect(0, 0, width, height);
   ctx.translate(width/2, height/2);
   ctx.translate(-center.x, -center.y);
+  if (counter<4){
+    console.log('drawing')
+    console.log('width', width)
+    console.log('height', height)
+    console.log('height/2', height/2)
+    console.log('width/2', width/2)
+    console.log('-center.x', -center.x)
+    counter++;
+  }
+
+
   hexes.forEach(function(hex) {
     drawHex(ctx, layout, hex);
     if (labels) drawHexLabel(ctx, layout, hex);
