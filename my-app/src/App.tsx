@@ -3,7 +3,6 @@ import axios from "axios";
 import BottomBar from "./Views/BottomBar";
 import TopBar from "./Views/TopBar";
 import Board from "./Views/Board";
-import {boardSettings} from "./Views/hexagonBoard/hexagonBoardTypes";
 
 
 
@@ -14,10 +13,8 @@ let defaultBoardSettings = {
   rowCount : 4,
   columnCount : 4,
 }
-export type SetBoardSettings = React.Dispatch<React.SetStateAction<boardSettings>>
 
 function App() {
-  let [boardSettings, setBoardSettings] = useState<boardSettings>(defaultBoardSettings)
 
   useEffect(()=>{
         axios.get('hello')

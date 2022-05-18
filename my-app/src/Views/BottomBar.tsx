@@ -1,24 +1,14 @@
 import axios from "axios";
 import EndTurnButton from "./EndTurnButton";
-import endTurn from "../Game Entities/endTurn";
-import {boardSettings} from "./hexagonBoard/hexagonBoardTypes";
+import endTurn from "../endTurn";
 import React from "react";
-import {SetBoardSettings} from "../App";
-import SettingsView from "./SettingsView";
 import {useAppSelector, useAppDispatch } from "../reduxCustomHooks";
 import {selectAllUnitIds, selectAllUnits, selectUnit} from "./hexagonBoard/unitsSlice";
 import {increment} from "../counterSlice";
 import {shallowEqual} from "react-redux";
 import UnitViewThing from "./UnitViewThing";
 
-type props = {
-  boardSettings: boardSettings,
-  setBoardSettings: SetBoardSettings,
-}
-
-
-
-function BottomBar({boardSettings, setBoardSettings}:props) {
+function BottomBar() {
   let counter = useAppSelector((state) => state.counter.value);
   // https://react-redux.js.org/api/hooks#equality-comparisons-and-updates
   let unitIds = useAppSelector(selectAllUnitIds, shallowEqual)
@@ -34,7 +24,6 @@ function BottomBar({boardSettings, setBoardSettings}:props) {
             increment value
           </button>
           <EndTurnButton endTurn={endTurn}/>
-          <SettingsView boardSettings={boardSettings} setBoardSettings={setBoardSettings} />
           {unitIds.map(unitID=>
             <UnitViewThing unitID={unitID}></UnitViewThing>
           )}

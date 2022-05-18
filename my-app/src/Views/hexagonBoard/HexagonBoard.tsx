@@ -1,18 +1,14 @@
 import {useState} from "react";
-import Rows from "./Rows";
-import {boardSettings} from "./hexagonBoardTypes";
 
 
 
 
-type props = {
-    boardSettings: boardSettings
-}
+type props = {}
 
-function HexagonBoard({boardSettings}:props) {
+function HexagonBoard({}:props) {
     return (
         <div>
-            <Rows boardSettings={boardSettings} />
+
         </div>
 
     );
