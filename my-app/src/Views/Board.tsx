@@ -1,4 +1,4 @@
-import HexagonBoard from "./hexagonBoard/HexagonBoard";
+import HexagonBoard from "../Hexagonal/Board/HexagonBoard";
 
 
 

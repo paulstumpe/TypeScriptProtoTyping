@@ -1,5 +1,5 @@
-import LayoutClass, {LayoutStruct, makePoint, PointStruct} from "../../utilities/HexGridClasses/LayoutClass";
-import HexUtility from "../../utilities/HexGridClasses/HexClass";
+import LayoutClass, {LayoutStruct, makePoint, PointStruct} from "../../Hexagonal/Board/LayoutClass";
+import HexUtility from "../../Hexagonal/Hex/HexClass";
 
 /**
  * takes a mouseevent, and tells you what the canvas coordinates of that even were

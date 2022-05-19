@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import axios from "axios";
-import BottomBar from "./Views/BottomBar";
-import TopBar from "./Views/TopBar";
+import BottomBar from "./Views/BelowBoard/BottomBar";
+import TopBar from "./Views/AboveBoard/TopBar";
 import Board from "./Views/Board";
 
 
