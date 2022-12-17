@@ -52,8 +52,10 @@ function HexagonBoard({}:props) {
         }
         const canvas = canvasRef.current;
         let nativeCanvasClick = clickToCanvas(canvas,nativeEvent);
+        console.log("nativecanvas click cord" + nativeCanvasClick.x + ',' + nativeCanvasClick.y)
         let hex = canvasToGrid(canvas,nativeCanvasClick,layOut);
         console.log(hex)
+        console.log()
         setSelectedHex(hex);
     }
 

@@ -26,8 +26,23 @@ export function Grid({canvas, context, labels=false, layout, hexes, center={x: 0
   const width = canvas.width;
   const height = canvas.height;
   if (window.devicePixelRatio && window.devicePixelRatio != 1) {
+  // if (window.devicePixelRatio && window.devicePixelRatio === 1) {
     canvas.width = width * window.devicePixelRatio;
     canvas.height = height * window.devicePixelRatio;
+    //this is my fucking problem. i'm setting canvas width and height but not setting the
+    // width and height i'm actually passing to context.
+    //i'm almost positive this is where the issue is
+    //the program only works right when i'm hitting this if block, otherwise it's f'd up for some reason
+    // i think because otherwise i never set canvas width and height maybe???
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+  } else {
+    canvas.width = width * window.devicePixelRatio;
+    canvas.height = height * window.devicePixelRatio;
+    //this is my fucking problem. i'm setting canvas width and height but not setting the
+    // width and height i'm actually passing to context.
+    //i'm almost positive this is where the issue is
+    //the program only works right when i'm hitting this if block, otherwise it's f'd up for some reason
+    // i think because otherwise i never set canvas width and height maybe???
     ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
   }
   ctx.clearRect(0, 0, width, height);

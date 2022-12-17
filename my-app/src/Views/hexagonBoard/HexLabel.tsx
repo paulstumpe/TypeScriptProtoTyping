@@ -18,6 +18,9 @@ const colorForHexFont =(hex:HexStruct) => {
 }
 
 function HexLabel(ctx:CanvasRenderingContext2D, layout:LayoutStruct, hex:HexStruct):void{
+  if(hex.q ===-3 && hex.r===-7 && hex.s===10){
+    // console.log(ctx);
+  }
   const pointSize = Math.round(0.5 * Math.min(Math.abs(layout.size.x), Math.abs(layout.size.y)));
   const center = LayoutClass.hexToPixel(hex,layout);
   const render = ()=>{
