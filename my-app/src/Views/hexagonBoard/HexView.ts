@@ -1,6 +1,7 @@
 import LayoutClass, {LayoutStruct} from "../../utilities/HexGridClasses/LayoutClass";
 import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
 import HexLabel from "./HexLabel";
+import HexContents from "../../utilities/HexGridClasses/HexContents";
 
  const HexView = (
   context:CanvasRenderingContext2D,
@@ -9,6 +10,7 @@ import HexLabel from "./HexLabel";
   label?: boolean,
   strokeStyle='black',
   fillStyle ='white',
+  content?: HexContents,
 )=>{
    let corners = LayoutClass.polygonCorners(hex,layout)
    const render =()=>{
@@ -31,7 +33,11 @@ import HexLabel from "./HexLabel";
        if(hex.q ===-3 && hex.r===-7 && hex.s===10){
            // console.log(corners[5].x, corners[5].y)
        }
-     if (label) HexLabel(context, layout, hex);
+       if(content && label){
+         HexLabel(context, layout, hex, content);
+       } else if (label) {
+         HexLabel(context, layout, hex);
+       }
    }
    render();
 

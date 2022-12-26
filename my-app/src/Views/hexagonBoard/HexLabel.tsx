@@ -1,6 +1,7 @@
 import LayoutClass, {LayoutStruct} from "../../utilities/HexGridClasses/LayoutClass";
 import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
 import HexUtility from "../../utilities/HexGridClasses/HexClass";
+import HexContents from "../../utilities/HexGridClasses/HexContents";
 
 const colorForHexFont =(hex:HexStruct) => {
   // Match the color style used in the main article
@@ -17,7 +18,7 @@ const colorForHexFont =(hex:HexStruct) => {
   }
 }
 
-function HexLabel(ctx:CanvasRenderingContext2D, layout:LayoutStruct, hex:HexStruct):void{
+function HexLabel(ctx:CanvasRenderingContext2D, layout:LayoutStruct, hex:HexStruct, content?:HexContents):void{
   if(hex.q ===-3 && hex.r===-7 && hex.s===10){
     // console.log(ctx);
   }
@@ -28,7 +29,11 @@ function HexLabel(ctx:CanvasRenderingContext2D, layout:LayoutStruct, hex:HexStru
     ctx.font = `${pointSize}px sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(HexUtility.hexLength(hex) === 0? "q,r,s" : (hex.q + "," + hex.r + "," + hex.s), center.x, center.y);
+    let text = HexUtility.hexLength(hex) === 0? "q,r,s" : (hex.q + "," + hex.r + "," + hex.s)
+    if ( content && content.unit && content.unit && content.unit.name){
+      text = content.unit.name
+    }
+    ctx.fillText(text, center.x, center.y);
   }
   render();
 }
