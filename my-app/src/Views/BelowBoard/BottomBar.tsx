@@ -1,12 +1,12 @@
 import EndTurnButton from "./EndTurnButton";
 import React from "react";
-import {useAppSelector, useAppDispatch } from "../reduxCustomHooks";
-import {selectAllUnitIds, selectAllUnits, selectUnit} from "../store/slices/unitsSlice";
-import {increment} from "../store/slices/counterSlice";
+import {useAppSelector, useAppDispatch } from "../../reduxCustomHooks";
+import {selectAllUnitIds, selectAllUnits, selectUnit} from "../../store/slices/unitsSlice";
+import {increment} from "../../store/slices/counterSlice";
 import {shallowEqual} from "react-redux";
 import UnitViewThing from "./UnitViewThing";
 import SelectedHex from "./SelectedHex";
-import {getSelectedHex} from "../store/slices/uiSlice";
+import {getSelectedHex} from "../../store/slices/uiSlice";
 
 function BottomBar() {
   let counter = useAppSelector((state) => state.counter.value);

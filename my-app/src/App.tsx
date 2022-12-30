@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import axios from "axios";
-import BottomBar from "./Views/BottomBar";
-import TopBar from "./Views/TopBar";
-import Board from "./Views/Board";
+import BottomBar from "./Views/BelowBoard/BottomBar";
+import TopBar from "./Views/AboveBoard/TopBar";
+import HexagonBoard from "./Views/hexagonBoard/HexagonBoard";
 
 
 
@@ -24,7 +24,7 @@ function App() {
   return (
         <div>
             <TopBar/>
-            <Board />
+            <HexagonBoard />
             <BottomBar/>
         </div>
 

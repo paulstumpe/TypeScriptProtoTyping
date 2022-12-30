@@ -1,4 +1,4 @@
-import {HydratedUnit, selectUnit} from "../store/slices/unitsSlice";
+import {HydratedUnit, selectUnit} from "../../store/slices/unitsSlice";
 import UnitViewThing from "./UnitViewThing";
 
 
