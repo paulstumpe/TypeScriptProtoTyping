@@ -3,6 +3,7 @@ import type {RootState} from "../store";
 import {HydratedUnit, selectUnit} from "./unitsSlice";
 import HexUtility from "../../utilities/HexGridClasses/HexClass";
 import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
+import {useState} from "react";
 
 //define a type for the slice state
 interface HexState {
@@ -14,8 +15,10 @@ interface HexesState {
   byId : {
     //has string keys that all point to hexstates
     [key: string]: HexState | undefined;
-  },
-  allIds : string[]
+  };
+  allIds : string[];
+  verticalHexes : number;
+  horizontalHexes : number;
 }
 export interface HydratedHex{
   unit?: HydratedUnit
@@ -28,6 +31,8 @@ export interface HydratedHex{
 const initialState: HexesState = {
   byId : {},
   allIds : [],
+  verticalHexes: 9,
+  horizontalHexes:9
 }
 
 export const hexesSlice = createSlice({
@@ -72,10 +77,16 @@ export const hexesSlice = createSlice({
       }
       hexState.unit = unit.id;
     },
+    setVerticalHexes:(state, action:PayloadAction<{vertical:number}>)=>{
+      state.verticalHexes = action.payload.vertical;
+    },
+    setHorizontalHexes:(state, action:PayloadAction<{horizontal:number}>)=>{
+      state.horizontalHexes = action.payload.horizontal
+    },
   }
 })
 
-export const {setTerrain, setUnit} = hexesSlice.actions;
+export const {setTerrain, setUnit, setVerticalHexes, setHorizontalHexes} = hexesSlice.actions;
 
 export const selectAllHexIds = (state:RootState) => state.hexes.allIds;
 
@@ -104,6 +115,9 @@ export const selectHex = (state:RootState, hex:HexStruct): HydratedHex => {
   }
   return hydratedHex;
 }
+
+export const selectVerticalHexes = (state:RootState)=>state.hexes.verticalHexes;
+export const selectHorizontalHexes = (state:RootState)=>state.hexes.horizontalHexes;
 
 export const selectOccupiedHexes = (state:RootState) => state.hexes.allIds.reduce<string[]>((prev,id)=>{
   let hex = selectHexById(state,id);

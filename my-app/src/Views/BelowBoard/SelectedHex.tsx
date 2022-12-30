@@ -1,5 +1,5 @@
 import {useAppDispatch } from "../../store/reduxCustomHooks";
-import {HydratedHex, selectHex, setUnit} from "../../store/slices/hexSlice";
+import {HydratedHex, selectHex, setTerrain, setUnit} from "../../store/slices/hexSlice";
 import {addUnit, selectUnit} from "../../store/slices/unitsSlice";
 import HexInfo from "./HexInfo";
 
@@ -7,7 +7,7 @@ type props = {
   hex:HydratedHex
 }
 
-
+const terrains:string[] = ['grass',]
 
 function SelectedHex({hex}:props) {
   let dispatch = useAppDispatch();
@@ -15,7 +15,13 @@ function SelectedHex({hex}:props) {
     let dispatchedUnit = dispatch(addUnit('charname'))
     dispatch(setUnit({
         unit: dispatchedUnit.payload,
-        hex: hex
+        hex
+    }))
+  }
+  const handleSetTerrain = (terrain:string)=>{
+    dispatch(setTerrain({
+      hex,
+      terrain
     }))
   }
 
@@ -41,6 +47,17 @@ function SelectedHex({hex}:props) {
       <div>
         <div>add unit to hex</div>
         <button onClick={addUnitToSelected} > add</button>
+      </div>
+      <div>
+        <div>
+          set terrain:
+          <ul>
+            {terrains.map(terrain=>(
+              <>
+                <li><button onClick={()=>{handleSetTerrain(terrain)}}>{terrain}</button></li>
+              </>))}
+          </ul>
+        </div>
       </div>
     </div>
   );

@@ -2,10 +2,14 @@ import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
 import LayoutClass, {LayoutStruct} from "../../utilities/HexGridClasses/LayoutClass";
 import HexLabel, {PartialLabelProps} from "./HexLabel";
 
-export interface renderHexProps {
-  context: CanvasRenderingContext2D;
+
+export interface partialHexProps {
   strokeStyle?:CanvasFillStrokeStyles["strokeStyle"];
   fillStyle?:CanvasFillStrokeStyles["fillStyle"];
+}
+
+export interface renderHexProps extends partialHexProps{
+  context: CanvasRenderingContext2D;
   hex: HexStruct;
   layout:LayoutStruct;
   labelProps?: PartialLabelProps,

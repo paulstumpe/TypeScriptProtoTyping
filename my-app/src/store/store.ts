@@ -3,6 +3,7 @@ import counterReducer from "./slices/counterSlice";
 import unitsReducer from "./slices/unitsSlice";
 import hexesReducer from "./slices/hexSlice";
 import uiReducer from "./slices/uiSlice"
+import layoutReducer from "./slices/layoutSlice"
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     units: unitsReducer,
     hexes: hexesReducer,
     ui:uiReducer,
+    layout:layoutReducer,
   },
 })
 
