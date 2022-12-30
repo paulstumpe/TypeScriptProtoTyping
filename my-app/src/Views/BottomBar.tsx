@@ -7,11 +7,14 @@ import {selectAllUnitIds, selectAllUnits, selectUnit} from "./hexagonBoard/units
 import {increment} from "../counterSlice";
 import {shallowEqual} from "react-redux";
 import UnitViewThing from "./UnitViewThing";
+import SelectedHex from "./SelectedHex";
+import {getSelectedHex} from "../uiSlice";
 
 function BottomBar() {
   let counter = useAppSelector((state) => state.counter.value);
   // https://react-redux.js.org/api/hooks#equality-comparisons-and-updates
   let unitIds = useAppSelector(selectAllUnitIds, shallowEqual)
+  let selectedHex = useAppSelector(getSelectedHex);
   const dispatch = useAppDispatch()
 
 
@@ -23,11 +26,11 @@ function BottomBar() {
           >
             increment value
           </button>
+          {selectedHex && <SelectedHex hex={selectedHex}/>}
           <EndTurnButton endTurn={endTurn}/>
           {unitIds.map(unitID=>
             <UnitViewThing unitID={unitID}></UnitViewThing>
           )}
-
         </div>
 
     );

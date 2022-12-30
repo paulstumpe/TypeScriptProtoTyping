@@ -6,10 +6,12 @@ interface UnitState {
   value: number,
   id : string,
   // this should be the id of the hex this unit is occupying, if any
-  hex? : number,
   name? : string,
 }
 
+export interface HydratedUnit extends UnitState{
+
+}
 // Define the initial state using that type
 const initialState: UnitState[] = [
   {
@@ -62,8 +64,7 @@ export const unitsSlice = createSlice({
 export const { nameUnit, addUnit } = unitsSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
-// export const selectUnit = (state: RootState) => state.counter.value
-export const selectUnit = (state: RootState, unitID: string) => state.units.find(unit=>unitID===unit.id);
+export const selectUnit = (state: RootState, unitID: string = ''):UnitState|undefined => state.units.find(unit=>unitID===unit.id);
 export const selectAllUnits = (state: RootState) => state.units;
 export const selectAllUnitIds = (state: RootState) => state.units.map(unit=>unit.id);
 

@@ -5,8 +5,9 @@ import React from "react";
 
 interface props {
   unitID :string;
+  highlight? : boolean;
 }
-function UnitViewThing({unitID}:props) {
+function UnitViewThing({unitID, highlight}:props) {
   let dispatch = useAppDispatch();
   let counter = useAppSelector((state) => state.counter.value);
   // https://react-redux.js.org/api/hooks#equality-comparisons-and-updates
@@ -15,6 +16,7 @@ function UnitViewThing({unitID}:props) {
   if(!unit){
     return null
   }
+  let border = highlight ? 'red solid' : 'black solid';
 
   let onClick = ()=>{
 
@@ -23,7 +25,7 @@ function UnitViewThing({unitID}:props) {
         name : unit?.name ==='Goku'? 'Luffy':'Goku'
     }))
   }
-  return <div style={{backgroundColor:'lightblue', border:'red solid', width:"fit-content"}}>
+  return <div style={{backgroundColor:'lightblue', border, width:"fit-content"}}>
     <h3 style={{borderBottom:'solid black', textAlign:'center', marginLeft:'20px', marginRight:'20px'}}>{unit.name}</h3>
     <ul>
       <li>
@@ -33,7 +35,7 @@ function UnitViewThing({unitID}:props) {
         name: {unit.name}
       </li>
       <li>
-        hex: {unit.hex}
+        hex: todo
       </li>
       <li>
         value: {unit.value}

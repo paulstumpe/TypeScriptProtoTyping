@@ -41,6 +41,19 @@ class HexUtility {
   }
 
   /**
+   *     id format"qnumrnum"
+    * @param id
+   */
+  public static hexFromId(id:string):HexStruct{
+    let idWithoutQ = id.slice(1);
+    let tuple = idWithoutQ.split('r').map(str=>parseInt(str));
+    let [q,r] = tuple;
+    return HexUtility.createAndValidateNewHexStruct(q, r, -q - r);
+  }
+  public static hexIdFromHex(hex:HexStruct):string{
+    return `q${hex.q}r${hex.r}`;
+  }
+  /**
    * @param a
    * @param b
    * @return boolean true if hexes are equal

@@ -5,6 +5,13 @@ import Grid from "./Grid";
 import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
 import {clickToCanvas} from "../Canvas/CanvasUtilities";
 import {canvasToGrid} from "./Grid";
+import {useAppSelector, useAppDispatch } from "../../reduxCustomHooks";
+import {selectOccupiedHexes} from "../../hexSlice";
+import {selectAllUnitIds} from "./unitsSlice";
+import {shallowEqual} from "react-redux";
+import {setSelectedHex} from "../../uiSlice"
+import HexUtility from "../../utilities/HexGridClasses/HexClass";
+
 
 type props = {
 }
@@ -23,7 +30,18 @@ function HexagonBoard({}:props) {
     const [verticalHexes, setVH] = useState(15);
     const [horizontalHexes, setHH] = useState(15);
     const hexes = LayoutClass.shapeRectangleArbitrary(verticalHexes, horizontalHexes);;
-    const [selectedHex, setSelectedHex] = useState<HexStruct |undefined>();
+    const dispatch = useAppDispatch();
+
+    const hexIdsWithUnits = useAppSelector(selectOccupiedHexes)
+
+
+
+    // let counter = useAppSelector((state) => state.counter.value);
+    // // https://react-redux.js.org/api/hooks#equality-comparisons-and-updates
+    // let unitIds = useAppSelector(selectAllUnitIds, shallowEqual)
+    // const dispatch = useAppDispatch()
+
+
     const center = makePoint(0,0)
     const size = makePoint(width, height)
     const layOut = LayoutClass.newLayout(
@@ -39,7 +57,7 @@ function HexagonBoard({}:props) {
             hexes:hexes,
             layout: layOut,
             center,
-            selectedHex
+            hexIdsWithUnits
         });
     }
     const canvasClick  = (
@@ -55,8 +73,8 @@ function HexagonBoard({}:props) {
         console.log("nativecanvas click cord" + nativeCanvasClick.x + ',' + nativeCanvasClick.y)
         let hex = canvasToGrid(canvas,nativeCanvasClick,layOut);
         console.log(hex)
-        console.log()
-        setSelectedHex(hex);
+        let hexId = HexUtility.hexIdFromHex(hex);
+        dispatch(setSelectedHex({hexId}));
     }
 
 

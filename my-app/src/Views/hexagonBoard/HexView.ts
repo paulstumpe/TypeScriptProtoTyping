@@ -2,6 +2,7 @@ import LayoutClass, {LayoutStruct} from "../../utilities/HexGridClasses/LayoutCl
 import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
 import HexLabel from "./HexLabel";
 import HexContents from "../../utilities/HexGridClasses/HexContents";
+import {HydratedHex} from "../../hexSlice";
 
  const HexView = (
   context:CanvasRenderingContext2D,
@@ -10,7 +11,7 @@ import HexContents from "../../utilities/HexGridClasses/HexContents";
   label?: boolean,
   strokeStyle='black',
   fillStyle ='white',
-  content?: HexContents,
+  content?: HydratedHex,
 )=>{
    let corners = LayoutClass.polygonCorners(hex,layout)
    const render =()=>{
