@@ -18,6 +18,7 @@ import renderHex from "./renderHex";
    let selectedHex = getSelectedHex(state);
    let labelVisuals = {}
    let hexVisuals = {}
+   //todo create all the conditional logic i want that will decide what the hexes should like
    renderHex({context,layout,hex});
  }
 
