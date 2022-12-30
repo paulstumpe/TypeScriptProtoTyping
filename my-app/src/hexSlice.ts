@@ -91,9 +91,8 @@ export const selectHex = (state:RootState, hex:HexStruct): HydratedHex => {
   let hexState = state.hexes.byId[hexId];
   //create hydrated form
   let hydratedHex:HydratedHex = {
-    q: 0,
-    r: 0,
-    s: 0,
+    //copy hexstruct coordinates
+    ...hex
   };
 
   //populate

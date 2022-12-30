@@ -22,7 +22,8 @@ export const getSelectedHex = (state:RootState):HydratedHex|undefined=>{
   if(!state.ui.selectedHex){
     return;
   }
-  return selectHexById(state,state.ui.selectedHex)
+  let hex =  selectHexById(state,state.ui.selectedHex)
+  return hex;
 }
 
 export const {setSelectedHex} = uiSlice.actions;
