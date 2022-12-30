@@ -18,26 +18,29 @@ const colorForHexFont =(hex:HexStruct) => {
   }
 }
 
-function HexLabel(ctx:CanvasRenderingContext2D, layout:LayoutStruct, hex:HexStruct, content?:HydratedHex):void{
-  if(hex.q ===-3 && hex.r===-7 && hex.s===10){
-    // console.log(ctx);
-  }
-  const pointSize = Math.round(0.5 * Math.min(Math.abs(layout.size.x), Math.abs(layout.size.y)));
+export interface PartialLabelProps {
+  fillStyle?:CanvasFillStrokeStyles['fillStyle'];
+  font?:CanvasTextDrawingStyles['font'];
+  textAlign?:CanvasTextDrawingStyles['textAlign'];
+  textBaseline?: CanvasTextDrawingStyles['textBaseline'];
+  text?: string;
+}
+export interface HexLabelProps extends PartialLabelProps{
+  layout:LayoutStruct,
+  ctx:CanvasRenderingContext2D,
+  hex:HexStruct,
+}
+const getPointSize =  (layout:LayoutStruct):number=>Math.round(0.5 * Math.min(Math.abs(layout.size.x), Math.abs(layout.size.y)))
+
+function HexLabel( {layout, ctx, hex, fillStyle, font, textBaseline, text, textAlign}:HexLabelProps):void{
+  const altText = HexUtility.hexLength(hex) === 0? "q,r,s" : (hex.q + "," + hex.r + "," + hex.s);
   const center = LayoutClass.hexToPixel(hex,layout);
   const render = ()=>{
-    ctx.fillStyle = colorForHexFont(hex);
-    ctx.font = `${pointSize}px sans-serif`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    let text = HexUtility.hexLength(hex) === 0? "q,r,s" : (hex.q + "," + hex.r + "," + hex.s)
-    // if ( content && content.unit && content.unit && content.unit.name){
-    //   text = content.unit.name
-    // }
-    if ( content && content.unit && content.unit.name){
-      text = content.unit.name
-    }
-
-    ctx.fillText(text, center.x, center.y);
+    ctx.fillStyle = fillStyle ?fillStyle: colorForHexFont(hex);
+    ctx.font = font ? font: `${getPointSize(layout)}px sans-serif`;
+    ctx.textAlign = textAlign ? textAlign :  "center";
+    ctx.textBaseline = textBaseline ? textBaseline: "middle";
+    ctx.fillText(text ? text : altText, center.x, center.y);
   }
   render();
 }

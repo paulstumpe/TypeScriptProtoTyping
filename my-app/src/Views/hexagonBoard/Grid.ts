@@ -52,15 +52,8 @@ export function Grid({canvas, context, labels=false, layout, hexes, center={x: 0
   ctx.translate(width/2, height/2);
   ctx.translate(-center.x, -center.y);
 
-  let selectedHex = getSelectedHex(state);
   hexes.forEach(function(hex) {
-    let hexState = selectHex(state, hex)
-    let selected = selectedHex && HexUtility.equalTo(hex,selectedHex)
-    if(hexState.unit){
-      HexView(ctx, layout, hex, labels,'red', selected? 'blue':'green', hexState);
-    } else {
-      HexView(ctx, layout, hex, labels,undefined,selected? 'blue':undefined);
-    }
+      HexView(ctx, layout, hex,);
   });
 }
 
