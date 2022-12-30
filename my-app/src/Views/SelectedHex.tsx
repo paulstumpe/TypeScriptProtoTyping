@@ -1,9 +1,7 @@
-import {useAppSelector, useAppDispatch } from "../reduxCustomHooks";
-import {getSelectedHex} from "../uiSlice";
+import {useAppDispatch } from "../reduxCustomHooks";
 import {HydratedHex, selectHex, setUnit} from "../hexSlice";
 import {addUnit, selectUnit} from "./hexagonBoard/unitsSlice";
 import HexInfo from "./HexInfo";
-import HexUtility from "../utilities/HexGridClasses/HexClass";
 
 type props = {
   hex:HydratedHex

@@ -3,7 +3,6 @@
  * but it’s not always straightforward, so I’ll create a Map class for this.
  */
 import {HexStruct} from "./Structs/Hex";
-import HexClass from "./HexClass";
 import HexContents from "./HexContents";
 
 

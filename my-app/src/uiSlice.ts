@@ -1,6 +1,6 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import type {RootState} from "./store";
-import {HydratedHex, selectHex, selectHexById} from "./hexSlice";
+import {HydratedHex, selectHexById} from "./hexSlice";
 
 export interface UiState {
   selectedHex?: string,

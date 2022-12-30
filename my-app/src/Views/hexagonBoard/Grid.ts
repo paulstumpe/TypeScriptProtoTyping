@@ -2,11 +2,6 @@ import LayoutClass, {LayoutStruct, makePoint, PointStruct} from "../../utilities
 import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
 import HexUtility from "../../utilities/HexGridClasses/HexClass";
 import HexView from "./HexView";
-import HexLabel from "./HexLabel";
-import MapClass from "../../utilities/HexGridClasses/MapClass";
-import Map from "../../utilities/HexGridClasses/MapClass";
-import HexContents, {Unit} from "../../utilities/HexGridClasses/HexContents";
-import {selectAllUnitIds, selectUnit} from "./unitsSlice";
 import {selectHex} from "../../hexSlice";
 import {store} from "../../store";
 import {getSelectedHex} from "../../uiSlice";

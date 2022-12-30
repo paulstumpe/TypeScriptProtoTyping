@@ -2,13 +2,10 @@ import Canvas from "../Canvas/Canvas";
 import React, { useState, RefObject} from "react";
 import LayoutClass, { makePoint} from "../../utilities/HexGridClasses/LayoutClass";
 import Grid from "./Grid";
-import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
 import {clickToCanvas} from "../Canvas/CanvasUtilities";
 import {canvasToGrid} from "./Grid";
 import {useAppSelector, useAppDispatch } from "../../reduxCustomHooks";
 import {selectOccupiedHexes} from "../../hexSlice";
-import {selectAllUnitIds} from "./unitsSlice";
-import {shallowEqual} from "react-redux";
 import {setSelectedHex} from "../../uiSlice"
 import HexUtility from "../../utilities/HexGridClasses/HexClass";
 
@@ -23,7 +20,6 @@ const oneHundredPercent = {
 }
 function HexagonBoard({}:props) {
 
-    const [isCircle, setIsCircle] = useState(false);
     const [isPointy, setIsPointy] = useState(true);
     const [width, setWidth] = useState(25);
     const [height, setHeight] = useState(25);

@@ -1,6 +1,5 @@
 import {useAppDispatch, useAppSelector} from "../reduxCustomHooks";
 import {nameUnit, selectAllUnitIds, selectUnit} from "./hexagonBoard/unitsSlice";
-import {shallowEqual} from "react-redux";
 import React from "react";
 
 interface props {
