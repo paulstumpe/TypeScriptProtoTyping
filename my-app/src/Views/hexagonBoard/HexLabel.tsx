@@ -1,7 +1,7 @@
 import LayoutClass, {LayoutStruct} from "../../utilities/HexGridClasses/LayoutClass";
 import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
 import HexUtility from "../../utilities/HexGridClasses/HexClass";
-import {HydratedHex} from "../../hexSlice";
+import {HydratedHex} from "../../store/slices/hexSlice";
 
 const colorForHexFont =(hex:HexStruct) => {
   // Match the color style used in the main article

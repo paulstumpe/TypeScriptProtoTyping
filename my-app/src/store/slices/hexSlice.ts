@@ -1,8 +1,8 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import type {RootState} from "./store";
-import {HydratedUnit, selectUnit} from "./Views/hexagonBoard/unitsSlice";
-import HexUtility from "./utilities/HexGridClasses/HexClass";
-import {HexStruct} from "./utilities/HexGridClasses/Structs/Hex";
+import type {RootState} from "../store";
+import {HydratedUnit, selectUnit} from "./unitsSlice";
+import HexUtility from "../../utilities/HexGridClasses/HexClass";
+import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
 
 //define a type for the slice state
 interface HexState {

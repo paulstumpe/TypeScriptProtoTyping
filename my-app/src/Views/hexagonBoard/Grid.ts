@@ -2,9 +2,9 @@ import LayoutClass, {LayoutStruct, makePoint, PointStruct} from "../../utilities
 import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
 import HexUtility from "../../utilities/HexGridClasses/HexClass";
 import HexView from "./HexView";
-import {selectHex} from "../../hexSlice";
-import {store} from "../../store";
-import {getSelectedHex} from "../../uiSlice";
+import {selectHex} from "../../store/slices/hexSlice";
+import {store} from "../../store/store";
+import {getSelectedHex} from "../../store/slices/uiSlice";
 //drawHex should probably take a hexStyle, with a bunch of hexStyles I make in the graphics area,
 //and then during render I can look at actual explicit hexproperty likes hexselect, or unit onhex and apply a mix of
 //hex style based on that... maybe.

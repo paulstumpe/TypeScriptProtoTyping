@@ -1,6 +1,6 @@
 import {useAppDispatch } from "../reduxCustomHooks";
-import {HydratedHex, selectHex, setUnit} from "../hexSlice";
-import {addUnit, selectUnit} from "./hexagonBoard/unitsSlice";
+import {HydratedHex, selectHex, setUnit} from "../store/slices/hexSlice";
+import {addUnit, selectUnit} from "../store/slices/unitsSlice";
 import HexInfo from "./HexInfo";
 
 type props = {

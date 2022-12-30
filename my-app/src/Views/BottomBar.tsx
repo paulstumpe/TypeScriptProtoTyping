@@ -1,13 +1,12 @@
 import EndTurnButton from "./EndTurnButton";
-import endTurn from "../endTurn";
 import React from "react";
 import {useAppSelector, useAppDispatch } from "../reduxCustomHooks";
-import {selectAllUnitIds, selectAllUnits, selectUnit} from "./hexagonBoard/unitsSlice";
-import {increment} from "../counterSlice";
+import {selectAllUnitIds, selectAllUnits, selectUnit} from "../store/slices/unitsSlice";
+import {increment} from "../store/slices/counterSlice";
 import {shallowEqual} from "react-redux";
 import UnitViewThing from "./UnitViewThing";
 import SelectedHex from "./SelectedHex";
-import {getSelectedHex} from "../uiSlice";
+import {getSelectedHex} from "../store/slices/uiSlice";
 
 function BottomBar() {
   let counter = useAppSelector((state) => state.counter.value);
@@ -26,7 +25,7 @@ function BottomBar() {
             increment value
           </button>
           {selectedHex && <SelectedHex hex={selectedHex}/>}
-          <EndTurnButton endTurn={endTurn}/>
+          <EndTurnButton endTurn={()=>{console.log('todo endturn')}}/>
           {unitIds.map(unitID=>
             <UnitViewThing unitID={unitID}></UnitViewThing>
           )}

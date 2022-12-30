@@ -1,8 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit'
-import counterReducer from "./counterSlice";
-import unitsReducer from "./Views/hexagonBoard/unitsSlice";
-import hexesReducer from "./hexSlice";
-import uiReducer from "./uiSlice"
+import counterReducer from "./slices/counterSlice";
+import unitsReducer from "./slices/unitsSlice";
+import hexesReducer from "./slices/hexSlice";
+import uiReducer from "./slices/uiSlice"
 
 export const store = configureStore({
   reducer: {

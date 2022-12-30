@@ -1,7 +1,7 @@
 import LayoutClass, {LayoutStruct} from "../../utilities/HexGridClasses/LayoutClass";
 import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
 import HexLabel from "./HexLabel";
-import {HydratedHex} from "../../hexSlice";
+import {HydratedHex} from "../../store/slices/hexSlice";
 
  const HexView = (
   context:CanvasRenderingContext2D,
