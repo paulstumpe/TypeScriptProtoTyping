@@ -30,9 +30,6 @@ import {HydratedHex} from "../../store/slices/hexSlice";
      }
      context.fill();
      context.stroke();
-       if(hex.q ===-3 && hex.r===-7 && hex.s===10){
-           // console.log(corners[5].x, corners[5].y)
-       }
        if(content && label){
          HexLabel(context, layout, hex, content);
        } else if (label) {

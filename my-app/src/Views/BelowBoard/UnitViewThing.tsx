@@ -1,4 +1,4 @@
-import {useAppDispatch, useAppSelector} from "../../reduxCustomHooks";
+import {useAppDispatch, useAppSelector} from "../../store/reduxCustomHooks";
 import {nameUnit, selectAllUnitIds, selectUnit} from "../../store/slices/unitsSlice";
 import React from "react";
 

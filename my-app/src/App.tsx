@@ -4,16 +4,6 @@ import BottomBar from "./Views/BelowBoard/BottomBar";
 import TopBar from "./Views/AboveBoard/TopBar";
 import HexagonBoard from "./Views/hexagonBoard/HexagonBoard";
 
-
-
-let defaultBoardSettings = {
-  hexColor : `#6C6`,
-  pxUnit : 60,
-  vertical : false,
-  rowCount : 4,
-  columnCount : 4,
-}
-
 function App() {
 
   useEffect(()=>{

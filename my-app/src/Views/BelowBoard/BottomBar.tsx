@@ -1,6 +1,6 @@
 import EndTurnButton from "./EndTurnButton";
 import React from "react";
-import {useAppSelector, useAppDispatch } from "../../reduxCustomHooks";
+import {useAppSelector, useAppDispatch } from "../../store/reduxCustomHooks";
 import {selectAllUnitIds, selectAllUnits, selectUnit} from "../../store/slices/unitsSlice";
 import {increment} from "../../store/slices/counterSlice";
 import {shallowEqual} from "react-redux";

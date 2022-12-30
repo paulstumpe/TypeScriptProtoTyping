@@ -1,4 +1,4 @@
-import {useAppDispatch } from "../../reduxCustomHooks";
+import {useAppDispatch } from "../../store/reduxCustomHooks";
 import {HydratedHex, selectHex, setUnit} from "../../store/slices/hexSlice";
 import {addUnit, selectUnit} from "../../store/slices/unitsSlice";
 import HexInfo from "./HexInfo";

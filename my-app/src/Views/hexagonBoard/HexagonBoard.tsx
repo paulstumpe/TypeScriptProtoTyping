@@ -4,7 +4,7 @@ import LayoutClass, { makePoint} from "../../utilities/HexGridClasses/LayoutClas
 import Grid from "./Grid";
 import {clickToCanvas} from "../Canvas/CanvasUtilities";
 import {canvasToGrid} from "./Grid";
-import {useAppSelector, useAppDispatch } from "../../reduxCustomHooks";
+import {useAppSelector, useAppDispatch } from "../../store/reduxCustomHooks";
 import {selectOccupiedHexes} from "../../store/slices/hexSlice";
 import {setSelectedHex} from "../../store/slices/uiSlice"
 import HexUtility from "../../utilities/HexGridClasses/HexClass";
