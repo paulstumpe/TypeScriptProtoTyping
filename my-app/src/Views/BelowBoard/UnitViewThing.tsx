@@ -1,6 +1,8 @@
 import {useAppDispatch, useAppSelector} from "../../store/reduxCustomHooks";
 import {nameUnit, selectAllUnitIds, selectUnit} from "../../store/slices/unitsSlice";
 import React from "react";
+import {selectHexWithUnit} from "../../store/slices/hexSlice";
+import HexCordList from "./hexStructView";
 
 interface props {
   unitID :string;
@@ -11,6 +13,7 @@ function UnitViewThing({unitID, highlight}:props) {
   let counter = useAppSelector((state) => state.counter.value);
   // https://react-redux.js.org/api/hooks#equality-comparisons-and-updates
   let unit = useAppSelector((state)=>selectUnit(state, unitID))
+  let hex = useAppSelector((state)=>selectHexWithUnit(state,unitID));
 
   if(!unit){
     return null
@@ -34,7 +37,7 @@ function UnitViewThing({unitID, highlight}:props) {
         name: {unit.name}
       </li>
       <li>
-        hex: todo
+        hex: {hex ? <HexCordList hex={hex}/> : 'no hex'}
       </li>
       <li>
         value: {unit.value}

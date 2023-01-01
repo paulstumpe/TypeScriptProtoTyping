@@ -28,7 +28,7 @@ import {HexesForRender} from "./createsHexesForRender";
    // let state = store.getState()
    // let hexState = selectHex(state, hex)
    // let selectedHex = getSelectedHex(state);
-  const { selected, unit, terrain, movable} = hex
+  const { selected, unit, terrain, movable, moused} = hex
    let labelVisuals:PartialLabelProps = {}
    let hexVisuals:partialHexProps = {}
 
@@ -48,6 +48,7 @@ import {HexesForRender} from "./createsHexesForRender";
    //set outline based on occupied and selected
    if(unit){
      unitText = unit.name;
+     hexVisuals.fillStyle = 'aquamarine'
    }
    if (movable){
      hexVisuals.fillStyle = 'red';
@@ -55,6 +56,9 @@ import {HexesForRender} from "./createsHexesForRender";
    if(selected){
     hexVisuals.fillStyle = 'yellow';
    }
+  if(moused){
+    hexVisuals.fillStyle = 'lightgoldenrodyellow';
+  }
    if (terrainText || unitText) {
      labelVisuals.fillStyle = 'black';
      labelVisuals.text = unitText || terrainText;

@@ -4,9 +4,12 @@ import {HydratedHex, selectHexById} from "./hexSlice";
 
 export interface UiState {
   selectedHex?: string,
+  mousedHex?: string,
+
 }
 const initialState: UiState = {
   selectedHex: undefined,
+  mousedHex: undefined,
 }
 export const uiSlice = createSlice({
   name:'ui',
@@ -14,6 +17,9 @@ export const uiSlice = createSlice({
   reducers: {
     setSelectedHex: (state, action: PayloadAction<{hexId:string}>)=>{
       state.selectedHex = action.payload.hexId;
+    },
+    setMousedHex: (state, action: PayloadAction<{hexId:string}>)=>{
+      state.mousedHex = action.payload.hexId;
     }
   }
 })
@@ -26,6 +32,14 @@ export const getSelectedHex = (state:RootState):HydratedHex|undefined=>{
   return hex;
 }
 
-export const {setSelectedHex} = uiSlice.actions;
+export const getMousedHex = (state:RootState):HydratedHex|undefined=>{
+  if(!state.ui.mousedHex){
+    return;
+  }
+  let hex =  selectHexById(state,state.ui.mousedHex)
+  return hex;
+}
+
+export const {setSelectedHex, setMousedHex} = uiSlice.actions;
 
 export default uiSlice.reducer;

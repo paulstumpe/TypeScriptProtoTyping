@@ -5,6 +5,7 @@
 import {HexStruct} from "./Structs/Hex";
 import HexUtility from "./HexClass";
 import {HexDictionary, HydratedHex} from "../../store/slices/hexSlice";
+import {HexesWithState} from "../../Views/hexagonBoard/createsHexesForRender";
 
 export default class PathFinding {
   /**
@@ -76,5 +77,24 @@ export default class PathFinding {
       frontier=nextFrontier;
     }
     return reached;
+  }
+
+  public static getMovable = (selectedHex:HydratedHex|undefined, hexesWithState:HexesWithState)=>{
+    //if a hex is selected, and that hex contains a unit, calculate that units
+    //movable hexes and return
+    //creates an array of x's within n range of selected hex
+    let allowedMove = (hex:HydratedHex)=>!hex.unit
+    let movable:HexStruct[] = [];
+    if(selectedHex) {
+      let hexState = hexesWithState[HexUtility.hexIdFromHex(selectedHex)];
+      if(hexState){
+        if (hexState.unit){
+          if(hexState.unit.movement){
+            movable = PathFinding.floodSearch(selectedHex,hexState.unit.movement,hexesWithState, allowedMove);
+          }
+        }
+      }
+    }
+    return movable;
   }
 }

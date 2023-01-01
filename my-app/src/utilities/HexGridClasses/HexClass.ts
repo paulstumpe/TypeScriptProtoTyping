@@ -66,6 +66,17 @@ class HexUtility {
     )
   }
 
+
+  public static isEqualWithUndefined = (a:HexStruct, b?:HexStruct):boolean=>{
+    if(b) {
+      if (HexUtility.equalTo(a,b)){
+        return true;
+      }
+    }
+    return false;
+  }
+
+
   public static hexIsInArray(hex:HexStruct, arr:HexStruct[]){
     return arr.reduce<boolean>((found, hexB)=>{
       if(this.equalTo(hex, hexB)){

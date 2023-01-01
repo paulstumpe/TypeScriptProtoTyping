@@ -1,5 +1,7 @@
 import {createSlice, nanoid, PayloadAction} from '@reduxjs/toolkit'
 import type { RootState} from "../store";
+import HexUtility from "../../utilities/HexGridClasses/HexClass";
+import {HydratedHex, selectHex, selectHexWithUnit} from "./hexSlice";
 
 // Define a type for the slice state
 interface UnitState {
@@ -66,7 +68,9 @@ export const unitsSlice = createSlice({
 export const { nameUnit, addUnit } = unitsSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
-export const selectUnit = (state: RootState, unitID: string = ''):UnitState|undefined => state.units.find(unit=>unitID===unit.id);
+export const selectUnit = (state: RootState, unitID: string = ''):UnitState|undefined => {
+  return state.units.find(unit => unitID === unit.id);
+}
 export const selectAllUnits = (state: RootState) => state.units;
 export const selectAllUnitIds = (state: RootState) => state.units.map(unit=>unit.id);
 

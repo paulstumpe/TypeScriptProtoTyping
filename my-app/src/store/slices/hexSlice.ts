@@ -5,7 +5,8 @@ import HexUtility from "../../utilities/HexGridClasses/HexClass";
 import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
 import {useState} from "react";
 import selectedHex from "../../Views/BelowBoard/SelectedHex";
-import {getSelectedHex} from "./uiSlice";
+import {getMousedHex, getSelectedHex} from "./uiSlice";
+import HexClass from "../../utilities/HexGridClasses/HexClass";
 
 //define a type for the slice state
 interface HexState {
@@ -26,6 +27,7 @@ export interface HydratedHex{
   unit?: HydratedUnit
   terrain?: string,
   selected: boolean,
+  moused: boolean,
   q: number
   r: number
   s: number
@@ -68,8 +70,38 @@ export const hexesSlice = createSlice({
       //assign terrain
       hexState.terrain = terrain;
     },
-    setUnit: (state, action:PayloadAction<{hex:HydratedHex, unit:HydratedUnit}>)=>{
+    setUnit: (state, action:PayloadAction<{hex:HexStruct, unit:HydratedUnit}>)=>{
       const {hex, unit } = action.payload;
+      const hexId = HexUtility.hexIdFromHex(hex);
+      let hexState = state.byId[hexId]
+
+      //hex not created, add to dict
+      if(!hexState){
+        //create hex
+        hexState = { id:hexId }
+        //add to dict
+        state.byId[hexId] = hexState;
+        //add to list of all
+        state.allIds.push(hexId);
+      }
+      //hex not included on allIds, add
+      if(!state.allIds.includes(hexId)){
+        state.allIds.push(hexId);
+      }
+      hexState.unit = unit.id;
+    },
+    moveUnit:(state,action:PayloadAction<{hex:HexStruct, unit:HydratedUnit}>)=>{
+      const {hex, unit} = action.payload;
+      let newHex= hex;
+      let oldHexStruct = internalSelectHexWithUnit(state,unit.id)
+      if(oldHexStruct){
+        let stateHex = state.byId[HexUtility.hexIdFromHex(oldHexStruct)];
+        if(stateHex){
+          stateHex.unit = undefined;
+        }
+      }
+
+      //todo this is repeated code, should look up how to call a reducer within another reducer
       const hexId = HexUtility.hexIdFromHex(hex);
       let hexState = state.byId[hexId]
 
@@ -97,7 +129,7 @@ export const hexesSlice = createSlice({
   }
 })
 
-export const {setTerrain, setUnit, setVerticalHexes, setHorizontalHexes} = hexesSlice.actions;
+export const {setTerrain, setUnit, setVerticalHexes, setHorizontalHexes, moveUnit} = hexesSlice.actions;
 
 export const selectAllHexIds = (state:RootState) => state.hexes.allIds;
 
@@ -114,6 +146,15 @@ export const selectAllHexesWithState = (state:RootState):HexDictionary =>{
       dictionary[id] = selectedHex;
     }
   }
+
+  let mousedHex = getMousedHex(state);
+  if(mousedHex){
+    let id = HexUtility.hexIdFromHex(mousedHex)
+    if(!dictionary[id]){
+      dictionary[id] = mousedHex;
+    }
+  }
+
   return dictionary;
 };
 
@@ -131,10 +172,15 @@ export const selectHex = (state:RootState, hex:HexStruct): HydratedHex => {
   if(state.ui.selectedHex){
     selectedHex=HexUtility.hexFromId(state.ui.selectedHex);
   }
+  let mousedHex;
+  if(state.ui.mousedHex){
+    mousedHex=HexUtility.hexFromId(state.ui.mousedHex);
+  }
   //create hydrated form
   let hydratedHex:HydratedHex = {
     //copy hexstruct coordinates
     selected:!!selectedHex && HexUtility.equalTo(selectedHex,hex),
+    moused:!!mousedHex && HexUtility.equalTo(mousedHex,hex),
     ...hex
   };
 
@@ -150,6 +196,23 @@ export const selectHex = (state:RootState, hex:HexStruct): HydratedHex => {
 
 export const selectVerticalHexes = (state:RootState)=>state.hexes.verticalHexes;
 export const selectHorizontalHexes = (state:RootState)=>state.hexes.horizontalHexes;
+export const selectHexWithUnit = (state:RootState, unitId:string):HexStruct | undefined =>{
+  return internalSelectHexWithUnit(state.hexes, unitId);
+}
+
+const internalSelectHexWithUnit = (state:RootState['hexes'], unitId:string)=>{
+  let hexId;
+  for (let id in state.byId) {
+    let unit = state.byId[id]?.unit
+    if(unit===unitId){
+      hexId=id;
+    }
+  }
+  if(!hexId){
+    return undefined;
+  }
+  return HexUtility.hexFromId(hexId);
+}
 
 export const selectOccupiedHexes = (state:RootState) => state.hexes.allIds.reduce<string[]>((prev,id)=>{
   let hex = selectHexById(state,id);
