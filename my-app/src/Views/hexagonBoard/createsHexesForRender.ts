@@ -74,13 +74,18 @@ const getMovable = (selectedHex:HydratedHex|undefined, hexesWithState:hexesWithS
     if(hexState){
       if (hexState.unit){
         if(hexState.unit.movement){
-          movable = PathFinding.floodSearch(selectedHex,hexState.unit.movement);
+          movable = PathFinding.floodSearch(selectedHex,hexState.unit.movement,hexesWithState, allowedMove);
         }
       }
     }
   }
   return movable;
 }
+
+const allowedMove = (hex:HydratedHex)=>{
+  return !hex.unit
+}
+
 
 const isSelected = (hex:HexStruct, selected?:HexStruct)=>{
   if(selected) {

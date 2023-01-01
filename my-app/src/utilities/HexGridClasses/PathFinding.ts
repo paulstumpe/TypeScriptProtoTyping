@@ -4,9 +4,17 @@
 
 import {HexStruct} from "./Structs/Hex";
 import HexUtility from "./HexClass";
+import {HexDictionary, HydratedHex} from "../../store/slices/hexSlice";
 
 export default class PathFinding {
-  public static floodSearch(start:HexStruct, movement:number){
+  /**
+   *
+   * @param start
+   * @param movement
+   * @param hexDictionary
+   * @param allowed callback that takes a stateful hex from the dictionary, and should return true if that hex is an allowed space
+   */
+  public static floodSearch(start:HexStruct, movement:number, hexDictionary?:HexDictionary, allowed?:(a: HydratedHex) => boolean){
 
 
 //so we have visited
@@ -21,7 +29,8 @@ export default class PathFinding {
     frontier.push(start);
     for(let i=0; i<movement;i++){
       let nextFrontier:HexStruct[] = [];
-      //all of current frontier can be added to reached
+
+      //add hexes from current frontier to reached
       frontier.forEach(frontierHex=>{
         let hexInReached = HexUtility.hexIsInArray(frontierHex,reached)
         if(!hexInReached){
@@ -29,19 +38,36 @@ export default class PathFinding {
         }
       })
 
+      //determine the next frontier.
       frontier.forEach((frontierHex)=>{
         //get all the neighbors of the hex
         let neighbors = HexUtility.allNeighbors(frontierHex);
-        //for each neighbor that hasn't been reached yet, it should be
-        //added to the new frontier;
+
+        //loop neighbors of currenthex to see if they can be added to frontier
         neighbors.forEach(neighbor=>{
-          let hexInReached = HexUtility.hexIsInArray(neighbor,reached);
+          //see if hex is reached
+          let hexNotReached = !HexUtility.hexIsInArray(neighbor,reached);
           //haven't been reached yet, they can be added to the next frontier
-          if(!hexInReached){
+          if(hexNotReached){
+
            //make sure next frontier doesn't already include them
-            let inNextFrontier = HexUtility.hexIsInArray(neighbor,nextFrontier)
-            if(!inNextFrontier){
-              nextFrontier.push(neighbor)
+
+            let notInNextFrontier = !HexUtility.hexIsInArray(neighbor,nextFrontier)
+            if(notInNextFrontier){
+              //make sure the hex is allowed based on provided filter
+              if(hexDictionary && allowed){
+                let hydratedHex = hexDictionary[HexUtility.hexIdFromHex(neighbor)];
+                if (hydratedHex){
+                  let isAllowed = allowed(hydratedHex);
+                  if (isAllowed){
+                    nextFrontier.push(neighbor)
+                  }
+                } else {
+                  nextFrontier.push(neighbor)
+                }
+              } else {
+                nextFrontier.push(neighbor)
+              }
             }
           }
         })
@@ -51,48 +77,4 @@ export default class PathFinding {
     }
     return reached;
   }
-
-
-  //   let frontier = [];
-  //   frontier.unshift(start);
-  //   let reached:HexStruct[] = [];
-  //   reached.push(start);
-  //   let i=0;
-  //   while (frontier.length > 0 && i<movement ){
-  //     let current = frontier.pop();
-  //     if(current){
-  //       //get all the neighbors of current
-  //       let neighbors = HexUtility.allNeighbors(current);
-  //       neighbors.forEach((next:HexStruct)=>{
-  //         //if next no in reached
-  //         let nextIsNew = !reached.filter(hex=>HexUtility.equalTo(hex,next)).length
-  //         if(nextIsNew){
-  //           frontier.unshift(next);
-  //           reached.push(next);
-  //         }
-  //       })
-  //     }
-  //     i++;
-  //   };
-  //   return reached;
-  // }
 }
-
-
-
-// function hex_reachable(start, movement):
-// var visited = set() # set of hexes
-// add start to visited
-// var fringes = [] # array of arrays of hexes
-// fringes.append([start])
-//
-// for each 1 < k ≤ movement:
-//   fringes.append([])
-// for each hex in fringes[k-1]:
-// for each 0 ≤ dir < 6:
-// var neighbor = hex_neighbor(hex, dir)
-// if neighbor not in visited and not blocked:
-//   add neighbor to visited
-// fringes[k].append(neighbor)
-//
-// return visited
