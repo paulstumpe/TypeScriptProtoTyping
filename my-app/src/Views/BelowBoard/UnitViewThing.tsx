@@ -39,6 +39,9 @@ function UnitViewThing({unitID, highlight}:props) {
       <li>
         value: {unit.value}
       </li>
+      <li>
+        value: {unit.movement}
+      </li>
     </ul>
     <button
       onClick={onClick}

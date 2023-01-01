@@ -3,10 +3,11 @@ import type { RootState} from "../store";
 
 // Define a type for the slice state
 interface UnitState {
-  value: number,
-  id : string,
+  value: number;
+  id : string;
+  movement? : number;
   // this should be the id of the hex this unit is occupying, if any
-  name? : string,
+  name? : string;
 }
 
 export interface HydratedUnit extends UnitState{
@@ -49,6 +50,7 @@ export const unitsSlice = createSlice({
         let newPayload:UnitState = {
           id: nanoid(),
           value: 1,
+          movement: 3,
           name: name
         }
         return {

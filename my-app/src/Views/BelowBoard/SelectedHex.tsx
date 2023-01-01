@@ -12,7 +12,7 @@ const terrains:string[] = ['grass',]
 function SelectedHex({hex}:props) {
   let dispatch = useAppDispatch();
   const addUnitToSelected = ()=>{
-    let dispatchedUnit = dispatch(addUnit('charname'))
+    let dispatchedUnit = dispatch(addUnit('unit'))
     dispatch(setUnit({
         unit: dispatchedUnit.payload,
         hex

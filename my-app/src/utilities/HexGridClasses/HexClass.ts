@@ -66,6 +66,15 @@ class HexUtility {
     )
   }
 
+  public static hexIsInArray(hex:HexStruct, arr:HexStruct[]){
+    return arr.reduce<boolean>((found, hexB)=>{
+      if(this.equalTo(hex, hexB)){
+        found = true;
+      }
+      return found;
+    },false)
+  }
+
   public static hexAdd( a : HexStruct, b: HexStruct): HexStruct{
     return  HexUtility.createAndValidateNewHexStruct(
       a.q + b.q,
@@ -138,6 +147,14 @@ class HexUtility {
    */
   public static hexNeighbor( hex:HexStruct, direction:number):HexStruct {
     return HexUtility.hexAdd( hex, HexUtility.hexDirection(direction))
+  }
+
+  public static allNeighbors(hex:HexStruct){
+    let neighbors = [];
+    for(let i =0; i<6; i++){
+      neighbors.push(this.hexNeighbor(hex,i));
+    }
+    return neighbors;
   }
 
   // To make directions outside the range 0..5 work, use hex_directions[(6 + (direction % 6)) % 6].

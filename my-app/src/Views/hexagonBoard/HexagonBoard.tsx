@@ -1,14 +1,24 @@
 import Canvas from "../Canvas/Canvas";
 import React, { useState, RefObject} from "react";
-import LayoutClass, { makePoint} from "../../utilities/HexGridClasses/LayoutClass";
+import LayoutClass, {LayoutStruct, makePoint} from "../../utilities/HexGridClasses/LayoutClass";
 import Grid from "./Grid";
 import {clickToCanvas} from "../Canvas/CanvasUtilities";
 import {canvasToGrid} from "./Grid";
 import {useAppSelector, useAppDispatch } from "../../store/reduxCustomHooks";
-import {selectHorizontalHexes, selectOccupiedHexes, selectVerticalHexes} from "../../store/slices/hexSlice";
-import {setSelectedHex} from "../../store/slices/uiSlice"
+import {
+    HydratedHex, selectAllHexesWithState,
+    selectHorizontalHexes,
+    selectOccupiedHexes,
+    selectVerticalHexes
+} from "../../store/slices/hexSlice";
+import {getSelectedHex, setSelectedHex, UiState} from "../../store/slices/uiSlice"
 import HexUtility from "../../utilities/HexGridClasses/HexClass";
 import {selectLayout} from "../../store/slices/layoutSlice";
+import PathFinding from "../../utilities/HexGridClasses/PathFinding";
+import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
+import selectedHex from "../BelowBoard/SelectedHex";
+import {HydratedUnit} from "../../store/slices/unitsSlice";
+import createHexesForRender from "./createsHexesForRender";
 
 
 type props = {
@@ -24,21 +34,29 @@ function HexagonBoard({}:props) {
     const verticalHexes = useAppSelector(selectVerticalHexes);
     const horizontalHexes = useAppSelector(selectHorizontalHexes);
     const layOut = useAppSelector(selectLayout)
-    const hexes = LayoutClass.shapeRectangleArbitrary(verticalHexes, horizontalHexes);
     const hexIdsWithUnits = useAppSelector(selectOccupiedHexes)
+    const hexesWithState = useAppSelector(selectAllHexesWithState);
+    let selectedHex = useAppSelector(getSelectedHex);
     const dispatch = useAppDispatch();
+
+    let hexesForRender = createHexesForRender({
+        verticalHexes,
+        horizontalHexes,
+        hexesWithState,
+        selectedHex,
+    });
 
     const drawGrid = (context:CanvasRenderingContext2D , frameCount:number, canvas:HTMLCanvasElement)=>{
         Grid({
             canvas,
-            context,
+            canvasContext: context,
             labels:true,
-            hexes:hexes,
+            hexes:hexesForRender,
             layout: layOut,
             center: layOut.origin,
-            hexIdsWithUnits
         });
     }
+
     const canvasClick  = (
       e:React.MouseEvent,
       canvasRef:RefObject<HTMLCanvasElement>
@@ -69,10 +87,5 @@ function HexagonBoard({}:props) {
 
     );
 }
-
-
-
-
-
 
 export default HexagonBoard;

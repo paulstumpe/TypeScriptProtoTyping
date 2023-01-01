@@ -4,6 +4,8 @@ import {HydratedUnit, selectUnit} from "./unitsSlice";
 import HexUtility from "../../utilities/HexGridClasses/HexClass";
 import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
 import {useState} from "react";
+import selectedHex from "../../Views/BelowBoard/SelectedHex";
+import {getSelectedHex} from "./uiSlice";
 
 //define a type for the slice state
 interface HexState {
@@ -22,11 +24,20 @@ interface HexesState {
 }
 export interface HydratedHex{
   unit?: HydratedUnit
-  terrain?: string
+  terrain?: string,
+  selected: boolean,
   q: number
   r: number
   s: number
 }
+
+export interface HexDictionary {
+  //has string keys that all point to hexstates
+  [key: string]: HydratedHex | undefined;
+}
+
+
+
 
 const initialState: HexesState = {
   byId : {},
@@ -90,6 +101,22 @@ export const {setTerrain, setUnit, setVerticalHexes, setHorizontalHexes} = hexes
 
 export const selectAllHexIds = (state:RootState) => state.hexes.allIds;
 
+export const selectAllHexesWithState = (state:RootState):HexDictionary =>{
+  let dictionary:HexDictionary = {}
+  for (const hexId in state.hexes.byId) {
+    dictionary[hexId] = selectHexById(state, hexId)
+  }
+
+  let selectedHex = getSelectedHex(state);
+  if(selectedHex){
+    let id = HexUtility.hexIdFromHex(selectedHex)
+    if(!dictionary[id]){
+      dictionary[id] = selectedHex;
+    }
+  }
+  return dictionary;
+};
+
 // export const selectHex = (state:RootState, id:string) => state.hexes.byId[id];
 
 export const selectHexById = (state:RootState, id:string)=>{
@@ -100,9 +127,14 @@ export const selectHexById = (state:RootState, id:string)=>{
 export const selectHex = (state:RootState, hex:HexStruct): HydratedHex => {
   let hexId = HexUtility.hexIdFromHex(hex)
   let hexState = state.hexes.byId[hexId];
+  let selectedHex;
+  if(state.ui.selectedHex){
+    selectedHex=HexUtility.hexFromId(state.ui.selectedHex);
+  }
   //create hydrated form
   let hydratedHex:HydratedHex = {
     //copy hexstruct coordinates
+    selected:!!selectedHex && HexUtility.equalTo(selectedHex,hex),
     ...hex
   };
 
