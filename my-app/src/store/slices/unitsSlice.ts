@@ -33,7 +33,7 @@ const initialState: UnitState[] = [
     turnMoved:0,
   }
 ]
-
+let timesAdded = 0;
 export const unitsSlice = createSlice({
   name: 'units',
   // `createSlice` will infer the state type from the `initialState` argument
@@ -87,7 +87,7 @@ export const unitsSlice = createSlice({
           id: nanoid(),
           hp: 10,
           movement: 3,
-          name: name,
+          name: name +' ' + timesAdded++,
           range: 1,
           turnMoved:0,
           turnAttacked:0,
@@ -156,6 +156,7 @@ export const selectHexesAttackableAfterMove = (state:RootState, unit:HydratedUni
   if(!unit){
     return [];
   }
+  //todo bug when movement is zero, this shows no attackable hexes, but should still show base attackable hexes
   let movableArr = selectMovable(state, unit);
   return PathFinding.attackableFromArrayOfHexes(movableArr, unit.range);
 }

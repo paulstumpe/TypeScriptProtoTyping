@@ -13,7 +13,6 @@ import {getMousedHex, getSelectedHex, setMousedHex, setSelectedHex, UiState} fro
 import HexUtility from "../../utilities/HexGridClasses/HexClass";
 import {selectLayout} from "../../store/slices/layoutSlice";
 import createHexesForRender from "./createsHexesForRender";
-import PathFinding from "../../utilities/HexGridClasses/PathFinding";
 import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
 import {
     selectAllAttackableHexesWithUnits,
