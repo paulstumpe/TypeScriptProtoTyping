@@ -1,13 +1,14 @@
 import {useAppDispatch } from "../../store/reduxCustomHooks";
-import {HydratedHex, selectHex, setTerrain, setUnit} from "../../store/slices/hexSlice";
+import {HydratedHex, selectHex, setTerrain, setUnit, Terrains, terrains} from "../../store/slices/hexSlice";
 import {addUnit} from "../../store/slices/unitsSlice";
 import HexInfo from "./HexInfo";
+import {blueBox} from "./UnitViewThing";
+
 
 type props = {
   hex:HydratedHex
 }
 
-const terrains:string[] = ['grass',]
 
 function SelectedHex({hex}:props) {
   let dispatch = useAppDispatch();
@@ -18,7 +19,7 @@ function SelectedHex({hex}:props) {
         hex
     }))
   }
-  const handleSetTerrain = (terrain:string)=>{
+  const handleSetTerrain = (terrain:Terrains)=>{
     dispatch(setTerrain({
       hex,
       terrain
@@ -27,15 +28,18 @@ function SelectedHex({hex}:props) {
 
   return (
     <div>
-        <div>
-            <div>hex</div>
-            <div>selected hex:</div>
-            <ul>
-              <li>Q: {hex.q}</li>
-              <li>R: {hex.r}</li>
-              <li>S: {hex.s}</li>
-            </ul>
-        </div>
+      {hex && !hex.unit &&
+          <div style={blueBox} >
+              <div>hex</div>
+              <div>selected hex:</div>
+              <ul>
+                  <li>Q: {hex.q}</li>
+                  <li>R: {hex.r}</li>
+                  <li>S: {hex.s}</li>
+              </ul>
+          </div>
+      }
+
       {hex && hex.terrain &&
           <div>
               terrain: {hex.terrain}
@@ -51,12 +55,12 @@ function SelectedHex({hex}:props) {
       <div>
         <div>
           set terrain:
-          <ul>
+          <div>
             {terrains.map(terrain=>(
               <>
-                <li><button onClick={()=>{handleSetTerrain(terrain)}}>{terrain}</button></li>
+                <div><button onClick={()=>{handleSetTerrain(terrain)}}>{terrain}</button></div>
               </>))}
-          </ul>
+          </div>
         </div>
       </div>
     </div>

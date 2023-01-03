@@ -1,56 +1,89 @@
 import {useAppDispatch, useAppSelector} from "../../store/reduxCustomHooks";
-import {nameUnit, selectAllUnitIds, selectUnit} from "../../store/slices/unitsSlice";
-import React from "react";
+import {nameUnit, selectUnit, setHp, setMovement, setRange} from "../../store/slices/unitsSlice";
+import React, {ChangeEvent, useState} from "react";
 import {selectHexWithUnit} from "../../store/slices/hexSlice";
 import HexCordList from "./hexStructView";
+import {selectTurn} from "../../store/slices/gameSlice";
 
 interface props {
   unitID :string;
   highlight? : boolean;
 }
+export const blueBox = {
+  backgroundColor:'lightblue',
+  border: 'black solid',
+  width:"fit-content",
+  minWidth: '262px'
+}
 function UnitViewThing({unitID, highlight}:props) {
-  let dispatch = useAppDispatch();
-  let counter = useAppSelector((state) => state.counter.value);
-  // https://react-redux.js.org/api/hooks#equality-comparisons-and-updates
-  let unit = useAppSelector((state)=>selectUnit(state, unitID))
-  let hex = useAppSelector((state)=>selectHexWithUnit(state,unitID));
-
+  const [nameInput,setNameInput] = useState('');
+  const dispatch = useAppDispatch();
+  const unit = useAppSelector((state)=>selectUnit(state, unitID))
+  const hex = useAppSelector((state)=>selectHexWithUnit(state,unitID));
+  const turn = useAppSelector(selectTurn);
   if(!unit){
     return null
   }
-  let border = highlight ? 'red solid' : 'black solid';
+  const movedThisTurn = unit.turnMoved >turn;
+  const border = highlight ? 'red solid' : 'black solid';
 
-  let onClick = ()=>{
-
-      dispatch(nameUnit({
-        unitID,
-        name : unit?.name ==='Goku'? 'Luffy':'Goku'
-    }))
+  const handleSubmit = (e: React.SyntheticEvent)=>{
+    e.preventDefault();
+    dispatch(nameUnit({unitID, name:nameInput}))
+    setNameInput('');
   }
-  return <div style={{backgroundColor:'lightblue', border, width:"fit-content"}}>
+  const handleNameChange=(e:ChangeEvent<HTMLInputElement>)=>{
+    setNameInput(e.target.value);
+  }
+  const handleSetMovement = (e:ChangeEvent<HTMLInputElement>)=>{
+    let movement =parseInt( e.target.value);
+    dispatch(setMovement({unitID,movement}))
+  }
+  const handleSetHp = (e:ChangeEvent<HTMLInputElement>)=>{
+    let hp =parseInt( e.target.value);
+    dispatch(setHp({unitID,hp}))
+  }
+  const handleSetRange = (e:ChangeEvent<HTMLInputElement>)=>{
+    let range =parseInt( e.target.value);
+    dispatch(setRange({unitID,range}))
+  }
+
+  return (
+    <div style={{
+      ...blueBox,
+      border
+    }}>
     <h3 style={{borderBottom:'solid black', textAlign:'center', marginLeft:'20px', marginRight:'20px'}}>{unit.name}</h3>
     <ul>
       <li>
-        id: {unit.id}
-      </li>
-      <li>
-        name: {unit.name}
+        <form onSubmit={handleSubmit}>
+          name: <input placeholder={unit.name} value={nameInput} onChange={handleNameChange}/>
+        </form>
       </li>
       <li>
         hex: {hex ? <HexCordList hex={hex}/> : 'no hex'}
       </li>
       <li>
-        value: {unit.value}
+        <label>HP:</label>
+        <input type={'number'} value={unit.hp} onChange={handleSetHp} /><br/>
       </li>
       <li>
-        value: {unit.movement}
+        <label>Movement:</label>
+        <input type={'number'} value={unit.movement} onChange={handleSetMovement} /><br/>
       </li>
+      <li>
+        <label>Range:</label>
+        <input type={'number'} value={unit.range} onChange={handleSetRange} /><br/>
+      </li>
+      <li>
+        <div>moved this turn: {movedThisTurn ? 'yes' : 'no'}</div>
+        <div>counter: {unit.turnMoved}</div>
+        {/*<input type={'number'} value={movedThisTurn} onChange={handleSetRange} /><br/>*/}
+      </li>
+
+
     </ul>
-    <button
-      onClick={onClick}
-    >
-      Click to rename to Luffy or Goku
-    </button>
-  </div>
+    </div>
+  )
 }
 export default UnitViewThing

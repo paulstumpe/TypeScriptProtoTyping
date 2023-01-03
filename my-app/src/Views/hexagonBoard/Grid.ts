@@ -84,7 +84,6 @@ export const canvasToGrid = (canvas:HTMLCanvasElement,nativeCanvasClick:PointStr
 
   //umm?
   let locationOfNewOriginOnOldPlane = makePoint(canvas.width/2/devicePixelRatio, canvas.height/2/devicePixelRatio)
-  console.log(window.devicePixelRatio)
   //uses location of the new origin on old plane and calculates it against the native canvas click to create
   //a point that respects the new origin
   let pointWithRespectToNewOrigin = makePoint(

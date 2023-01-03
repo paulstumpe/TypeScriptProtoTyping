@@ -158,10 +158,10 @@ export default class LayoutClass {
    *
    **/
 
-  public static shapeRectangleArbitrary(w:number, h:number, constructor:HexConstructer=HexUtility.createAndValidateNewHexStruct) {
+  public static shapeRectangleArbitrary(verticalHexes:number, horizontalHexes:number, constructor:HexConstructer=HexUtility.createAndValidateNewHexStruct) {
     var hexes = [];
-    var i1 = -Math.floor(w/2), i2 = i1 + w;
-    var j1 = -Math.floor(h/2), j2 = j1 + h;
+    var i1 = -Math.floor(verticalHexes/2), i2 = i1 + verticalHexes;
+    var j1 = -Math.floor(horizontalHexes/2), j2 = j1 + horizontalHexes;
     for (var j = j1; j < j2; j++) {
       var jOffset = -Math.floor(j/2);
       for (var i = i1 + jOffset; i < i2 + jOffset; i++) {

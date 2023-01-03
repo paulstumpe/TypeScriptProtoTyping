@@ -4,6 +4,7 @@ import unitsReducer from "./slices/unitsSlice";
 import hexesReducer from "./slices/hexSlice";
 import uiReducer from "./slices/uiSlice"
 import layoutReducer from "./slices/layoutSlice"
+import gameReducer from "./slices/gameSlice"
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     hexes: hexesReducer,
     ui:uiReducer,
     layout:layoutReducer,
+    game:gameReducer
   },
 })
 

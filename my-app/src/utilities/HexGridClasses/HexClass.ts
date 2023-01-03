@@ -248,6 +248,21 @@ class HexUtility {
     return results;
   }
 
+  public static getRing(center:HexStruct, radius:number){
+    const hexes = [];
+    // let startingHex = HexUtility.hexMultiply(center, radius);
+    let hex = HexUtility.hexAdd(center, HexUtility.hexMultiply(HexUtility.directions[4],radius));
+    for(let i=0; i<6; i++){
+      for (let j=0; j<radius; j++){
+        hexes.push(hex)
+        hex = HexUtility.hexNeighbor(hex,i);
+      }
+    }
+    return hexes;
+  }
+
+
+
 }
 
 

@@ -1,5 +1,5 @@
 import {HydratedUnit} from "../../store/slices/unitsSlice";
-import {HydratedHex} from "../../store/slices/hexSlice";
+import {HydratedHex, Terrains} from "../../store/slices/hexSlice";
 import LayoutClass from "../../utilities/HexGridClasses/LayoutClass";
 import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
 import HexUtility from "../../utilities/HexGridClasses/HexClass";
@@ -9,11 +9,12 @@ export interface HexesForRender {
   selected:boolean
   moused:boolean
   movable:boolean
+  frontier: boolean
   q:number,
   r:number,
   s:number,
   unit?:HydratedUnit,
-  terrain?: string,
+  terrain?: Terrains,
 }
 
 interface CreateHexesForRenderProps {
@@ -22,6 +23,8 @@ interface CreateHexesForRenderProps {
   hexesWithState: HexesWithState,
   selectedHex?:HydratedHex,
   mousedHex?:HydratedHex,
+  movableArr:  HexStruct[],
+  attackRngHexes: HexStruct[],
 }
 
 export interface HexesWithState {
@@ -38,20 +41,20 @@ const createHexesForRender = (props:CreateHexesForRenderProps):HexesForRender[]=
     horizontalHexes,
     hexesWithState,
     selectedHex,
-    mousedHex
+    mousedHex,
+    movableArr,
+    attackRngHexes
   } = props;
 
   // const selectedUI = ui.selectedHex;
   const statelessHexes = LayoutClass.shapeRectangleArbitrary(verticalHexes, horizontalHexes);
-  const movableArr = PathFinding.getMovable(selectedHex,hexesWithState);
-
   const hexesForRender:HexesForRender[] = statelessHexes.map((hex)=>{
-    return createHexForRender(hex,hexesWithState,selectedHex, mousedHex, movableArr)
+    return createHexForRender(hex,hexesWithState,selectedHex, mousedHex, movableArr, attackRngHexes)
   })
   return hexesForRender;
 }
 
-const createHexForRender = (hex:HexStruct,hexesWithState:HexesWithState,selectedHex:HydratedHex|undefined, mousedHex:HydratedHex|undefined, movableArr:HexStruct[]):HexesForRender=>{
+const createHexForRender = (hex:HexStruct,hexesWithState:HexesWithState,selectedHex:HydratedHex|undefined, mousedHex:HydratedHex|undefined, movableArr:HexStruct[], attackRngHexes:HexStruct[]):HexesForRender=>{
   let stateHex = hexesWithState[HexUtility.hexIdFromHex(hex)];
   let unit = stateHex?.unit;
   let terrain = stateHex?.terrain;
@@ -59,6 +62,8 @@ const createHexForRender = (hex:HexStruct,hexesWithState:HexesWithState,selected
   let moused = stateHex?.moused || HexUtility.isEqualWithUndefined(hex, mousedHex);
   // let moused = stateHex?.moused || isSelected(hex, selectedHex);
   let movable = HexUtility.hexIsInArray(hex,movableArr)
+  let frontier = HexUtility.hexIsInArray(hex,attackRngHexes)
+  //todo
 
   return {
     ...hex,
@@ -67,6 +72,7 @@ const createHexForRender = (hex:HexStruct,hexesWithState:HexesWithState,selected
     selected,
     movable,
     moused,
+    frontier
   }
 }
 

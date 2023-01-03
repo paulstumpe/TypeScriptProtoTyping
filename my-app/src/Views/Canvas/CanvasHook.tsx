@@ -15,7 +15,6 @@ const useCanvas = (draw:DrawCB, {postDraw, preDraw}:DrawCBS) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    console.log('hit')
     const canvas = canvasRef?.current ;
     const context = canvas?.getContext('2d');
     if (!canvas || !context){

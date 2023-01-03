@@ -8,9 +8,14 @@ import selectedHex from "../../Views/BelowBoard/SelectedHex";
 import {getMousedHex, getSelectedHex} from "./uiSlice";
 import HexClass from "../../utilities/HexGridClasses/HexClass";
 
+
+export type Terrains = 'grass' | 'rock'
+export const terrains:Terrains[] = ['grass', "rock"]
+
+
 //define a type for the slice state
 interface HexState {
-  terrain?: string,
+  terrain?: Terrains,
   unit?: string,
   id: string,
 }
@@ -25,7 +30,7 @@ interface HexesState {
 }
 export interface HydratedHex{
   unit?: HydratedUnit
-  terrain?: string,
+  terrain?: Terrains,
   selected: boolean,
   moused: boolean,
   q: number
@@ -52,7 +57,7 @@ export const hexesSlice = createSlice({
   name: 'hexes',
   initialState,
   reducers: {
-    setTerrain: (state, action: PayloadAction<{hex:HydratedHex, terrain:string}>)=>{
+    setTerrain: (state, action: PayloadAction<{hex:HydratedHex, terrain:Terrains}>)=>{
       const {hex, terrain} = action.payload;
       const hexId = HexUtility.hexIdFromHex(hex);
       let hexState = state.byId[hexId];
@@ -200,7 +205,7 @@ export const selectHexWithUnit = (state:RootState, unitId:string):HexStruct | un
   return internalSelectHexWithUnit(state.hexes, unitId);
 }
 
-const internalSelectHexWithUnit = (state:RootState['hexes'], unitId:string)=>{
+const internalSelectHexWithUnit = (state:RootState['hexes'], unitId:string):HexStruct|undefined=>{
   let hexId;
   for (let id in state.byId) {
     let unit = state.byId[id]?.unit

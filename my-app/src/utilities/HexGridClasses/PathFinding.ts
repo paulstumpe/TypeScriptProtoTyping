@@ -4,8 +4,10 @@
 
 import {HexStruct} from "./Structs/Hex";
 import HexUtility from "./HexClass";
-import {HexDictionary, HydratedHex} from "../../store/slices/hexSlice";
+import {HexDictionary, HydratedHex, Terrains} from "../../store/slices/hexSlice";
 import {HexesWithState} from "../../Views/hexagonBoard/createsHexesForRender";
+import {HydratedUnit} from "../../store/slices/unitsSlice";
+import LayoutClass from "./LayoutClass";
 
 export default class PathFinding {
   /**
@@ -15,7 +17,7 @@ export default class PathFinding {
    * @param hexDictionary
    * @param allowed callback that takes a stateful hex from the dictionary, and should return true if that hex is an allowed space
    */
-  public static floodSearch(start:HexStruct, movement:number, hexDictionary?:HexDictionary, allowed?:(a: HydratedHex) => boolean){
+  public static floodSearch(start:HexStruct, movement:number, allowed:(a: HexStruct) => boolean){
 
 
 //so we have visited
@@ -25,13 +27,18 @@ export default class PathFinding {
 // a loop is finished when the current batch of frontiers have been processed
     //the first hex is the one you occupy, so we need to add a freebie to account for it
     movement++
+
+    //hexes I'm touching and can possibly move to next
     let frontier = [];
+    //hexes I've already reached
     let reached:HexStruct[] = [];
     frontier.push(start);
+    //for each hex you can move
     for(let i=0; i<movement;i++){
+      //this will become frontier, after I finish searching all of my movement on this move
       let nextFrontier:HexStruct[] = [];
 
-      //add hexes from current frontier to reached
+      //proccesses the previous frontier to decide if any needed to be added to eached
       frontier.forEach(frontierHex=>{
         let hexInReached = HexUtility.hexIsInArray(frontierHex,reached)
         if(!hexInReached){
@@ -56,17 +63,7 @@ export default class PathFinding {
             let notInNextFrontier = !HexUtility.hexIsInArray(neighbor,nextFrontier)
             if(notInNextFrontier){
               //make sure the hex is allowed based on provided filter
-              if(hexDictionary && allowed){
-                let hydratedHex = hexDictionary[HexUtility.hexIdFromHex(neighbor)];
-                if (hydratedHex){
-                  let isAllowed = allowed(hydratedHex);
-                  if (isAllowed){
-                    nextFrontier.push(neighbor)
-                  }
-                } else {
-                  nextFrontier.push(neighbor)
-                }
-              } else {
+              if(allowed(neighbor)){
                 nextFrontier.push(neighbor)
               }
             }
@@ -79,22 +76,75 @@ export default class PathFinding {
     return reached;
   }
 
-  public static getMovable = (selectedHex:HydratedHex|undefined, hexesWithState:HexesWithState)=>{
+
+  public static getMovable = (unit:HydratedUnit, selectedHex:HexStruct, hexesWithState:HexesWithState, horizontal:number, vertical:number)=>{
     //if a hex is selected, and that hex contains a unit, calculate that units
     //movable hexes and return
     //creates an array of x's within n range of selected hex
-    let allowedMove = (hex:HydratedHex)=>!hex.unit
+    let allHexes = {
+      ...hexesWithState
+    }
+    const statelessHexes = LayoutClass.shapeRectangleArbitrary(vertical, horizontal);
+    statelessHexes.forEach(hex=>{
+      let hexId = HexUtility.hexIdFromHex(hex)
+      if(!allHexes[hexId]){
+        allHexes[hexId] = {
+          ...hex,
+          selected: false,
+          moused: false,
+        }
+      }
+    })
+
+    let allowedMove = (hex:HexStruct)=>{
+      let hydratedHex = allHexes[HexUtility.hexIdFromHex(hex)];
+      if(!hydratedHex){
+        return false;
+      }
+      if (hydratedHex.unit){
+        return false;
+      }
+      return true;
+    }
+
     let movable:HexStruct[] = [];
     if(selectedHex) {
       let hexState = hexesWithState[HexUtility.hexIdFromHex(selectedHex)];
       if(hexState){
         if (hexState.unit){
           if(hexState.unit.movement){
-            movable = PathFinding.floodSearch(selectedHex,hexState.unit.movement,hexesWithState, allowedMove);
+            movable = PathFinding.floodSearch(selectedHex,hexState.unit.movement, allowedMove);
           }
         }
       }
     }
     return movable;
   }
+
+
+  //todo update to actually use radius
+  public static attackableFromHex = (hex:HexStruct, attackRange:number):HexStruct[]=>{
+    return HexUtility.getRing(hex,attackRange);
+  }
+
+  //calculate move array first, then feed move array through this
+  public static attackableFromArrayOfHexes = (hexes:HexStruct[], attackRange:number):HexStruct[]=>{
+    //so this is basically, getting all movable hexes, and then running attack out from those hexes, and then making a unique array of those
+    //and returning that?
+    //my first idea is super inneficient...
+    //todo make more efficient algorithm answer
+    const attackable:HexStruct[] = []
+    hexes.forEach(hexA=>{
+      let attackableFromCurrentHex = PathFinding.attackableFromHex(hexA, attackRange);
+      attackableFromCurrentHex.forEach(hexB=>{
+        let inAttackable = HexUtility.hexIsInArray(hexB,attackable)
+        if(!inAttackable){
+          attackable.push(hexB);
+        }
+      })
+    })
+    return attackable
+  }
+
+
 }

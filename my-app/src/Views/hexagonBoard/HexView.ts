@@ -28,7 +28,7 @@ import {HexesForRender} from "./createsHexesForRender";
    // let state = store.getState()
    // let hexState = selectHex(state, hex)
    // let selectedHex = getSelectedHex(state);
-  const { selected, unit, terrain, movable, moused} = hex
+  const { selected, unit, terrain, movable, moused, frontier} = hex
    let labelVisuals:PartialLabelProps = {}
    let hexVisuals:partialHexProps = {}
 
@@ -50,8 +50,11 @@ import {HexesForRender} from "./createsHexesForRender";
      unitText = unit.name;
      hexVisuals.fillStyle = 'aquamarine'
    }
+   if (frontier){
+     hexVisuals.fillStyle='red'
+   }
    if (movable){
-     hexVisuals.fillStyle = 'red';
+     hexVisuals.fillStyle = 'blue';
    }
    if(selected){
     hexVisuals.fillStyle = 'yellow';
