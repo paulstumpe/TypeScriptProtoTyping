@@ -14,7 +14,7 @@
  * for screen to hex, so it makes sense to put them together.
  */
 import {HexStruct} from "./Structs/Hex";
-import HexUtility, {HexConstructer} from "./HexClass";
+import HexUtility, {HexConstructer, Orientation} from "./HexClass";
 import HexClass from "./HexClass";
 
 
@@ -55,6 +55,14 @@ export interface PointStruct {
   y:number
 }
 
+export interface LineStruct {
+  start:PointStruct,
+  end:PointStruct,
+}
+
+/**
+ * size is the radius of a circle(or oval if the hexes are streched on the x or y axis) that would touch the corners of the hexagon
+ */
 export interface LayoutStruct {
   orientation: OrientationStruct,
   size : PointStruct,
@@ -66,6 +74,10 @@ export function makePoint (x:number,y:number): PointStruct{
     y
   }
 }
+
+/**
+ *
+ */
 export default class LayoutClass {
 
   public static pointy:OrientationStruct = {
@@ -138,6 +150,19 @@ export default class LayoutClass {
   }
 
 
+  /**
+   * generates the pixel coordinates for a single hex
+   * one issues with this in terms of rendering is when I am drawing my hexes the lines for each hex actually overlap,
+   * so the strokes that draw a a hex after the first will draw over the previous strokes so stroke color
+   * can't actually be different unless I find a way to adress this.
+   *
+   * on pointy slice the first line is the very bottom of the hex
+   * 5 is the bottom of the hex. 0 is the first point to the right.
+   *
+   * on flat, 5 is the bottom right and  0 is the next point to the right.
+   * @param hex
+   * @param layout
+   */
   public static polygonCorners(hex:HexStruct, layout: LayoutStruct):PointStruct[]
   {
     const corners:PointStruct[] = [];
@@ -153,6 +178,62 @@ export default class LayoutClass {
     }
     return corners;
   }
+
+
+
+//In the flat top orientation, the horizontal distance between adjacent hexagons centers is horiz = 3/4 * width = 3/2 * size. The vertical distance is vert = height = sqrt(3) * size.
+
+  public static getHexEdge(hex:HexStruct, layout:LayoutStruct, side1:Orientation):LineStruct{
+    let side2 = HexUtility.getPreviousOrientation(side1);
+    const corners = this.polygonCorners(hex, layout);
+    const start = corners[side2]
+    const end = corners[side1]
+    const line = {
+      start,
+      end,
+    }
+    return line;
+  }
+  public static getHexEdgeLength(){
+
+  }
+
+  /**
+   * inCircle is a technical term related to hexagons for the circle whos radius when overlapped with the cernter of the hex
+   * would have its edges would overlap with the edges/apothem of the hex
+   */
+  public static getHexInCircleRadius(){
+
+  }
+
+  public static getHexEdgeCenter(hex:HexStruct, layout:LayoutStruct, side1:Orientation):PointStruct{
+    let edge = this.getHexEdge(hex,layout,side1);
+    return lineMidPoint(edge);
+  }
+
+  public static getApothem(hex:HexStruct, layout:LayoutStruct, side1:Orientation){
+    let edgeCenter = this.getHexEdgeCenter(hex, layout, side1);;
+    let center = this.hexToPixel(hex,layout);
+    let line = {
+      start: center,
+      end: edgeCenter,
+    }
+    return line;
+  }
+
+  public static getApothemLength(hex:HexStruct, layout:LayoutStruct, side1:Orientation){
+    let apothem = this.getApothem(hex,layout,side1);
+    let apothemLength = lineLength(apothem);
+    return apothem;
+  }
+
+  public static getHexCorner(){
+
+  }
+//
+// In the pointy top orientation, the horizontal distance between adjacent hexagon centers is horiz = width = sqrt(3) * size. The vertical distance is vert == 3/4 * height == 3/2 * size.
+
+
   /**
    * takes in a width and height, and uses those to generate one array of hexes, containing one for each qrs point
    *
@@ -170,4 +251,24 @@ export default class LayoutClass {
     }
     return hexes;
   }
+
+}
+const lineMidPoint = (line:LineStruct):PointStruct=>{
+
+
+  let xDist = line.end.x - line.start.x;
+  let yDist = line.end.y - line.start.y;
+  // let pthag = Math.sqrt(xDist * xDist + yDist * yDist);
+  let p = {
+    x: line.start.x + xDist * .5,
+    y: line.start.y + yDist * .5
+  }
+  return p;
+}
+
+const lineLength = (line:LineStruct)=>{
+  let xDist = line.end.x - line.start.x;
+  let yDist = line.end.y - line.start.y;
+  let pthag = Math.sqrt(xDist * xDist + yDist * yDist);
+  return pthag;
 }

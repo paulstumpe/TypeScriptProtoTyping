@@ -5,11 +5,11 @@ import {clickToCanvas, getCanvas} from "../Canvas/CanvasUtilities";
 import {canvasToGrid} from "./Grid";
 import {useAppSelector, useAppDispatch } from "../../store/reduxCustomHooks";
 import {
-    selectAllHexesWithState,
+    selectAllHexesWithState, selectHex,
     selectHorizontalHexes,
     selectVerticalHexes,
 } from "../../store/slices/hexSlice";
-import {getMousedHex, getSelectedHex, setMousedHex, setSelectedHex, UiState} from "../../store/slices/uiSlice"
+import {getMousedHex, getSelectedHex, setMousedHex, setSelectedHex} from "../../store/slices/uiSlice"
 import HexUtility from "../../utilities/HexGridClasses/HexClass";
 import {selectLayout} from "../../store/slices/layoutSlice";
 import createHexesForRender from "./createsHexesForRender";
@@ -25,6 +25,7 @@ import ConfirmAttack from "./ConfirmAttack";
 import ConfirmMove from "./ConfirmMove";
 import StartMoveOrAttack from "./StartMoveOrAttack";
 import {selectTurn} from "../../store/slices/gameSlice";
+import {selectPrimaryPlayer} from "../../store/slices/playersSlice";
 
 
 type TypeOfBox = 'AddUnitOrTerrain'| 'ConfirmAttack' |'ConfirmMove' |'StartMoveOrAttack' | ''
@@ -56,6 +57,9 @@ function HexagonBoard({}:props) {
     let attackableHexesWithUnits = useAppSelector((state)=> selectAllAttackableHexesWithUnits(state,selectedHex?.unit))
     const attackRngHexes = useAppSelector((state)=>selectAttackableHexes(state,selectedHex?.unit))
     const attackableAfterMove = useAppSelector((state)=>selectHexesAttackableAfterMove(state, selectedHex?.unit))
+    const [boxClickedHexId, setBoxClickedHexId] = useState('');
+    const clickedHex = useAppSelector(state=>selectHex(state,HexUtility.hexFromId(boxClickedHexId? boxClickedHexId: 'q0r0')))
+    const player = useAppSelector(selectPrimaryPlayer);
     const dispatch = useAppDispatch();
 
     const [left, setLeft] = useState(0)
@@ -64,7 +68,6 @@ function HexagonBoard({}:props) {
     const [typeOfBoxToShow, setTypeOfBoxToShow] = useState<TypeOfBox>('');
     const [startedMove, setStartedMove] = useState(false);
     const [startedAttack, setStartedAttack] = useState(false);
-    const [boxClickedHexId, setBoxClickedHexId] = useState('');
 
     const allowedToMove = !!(selectedHex && selectedHex.unit && (selectedHex.unit.turnMoved < turn));
     const allowedToAttack = !!(selectedHex && selectedHex.unit && (selectedHex.unit.turnAttacked < turn));
@@ -81,6 +84,19 @@ function HexagonBoard({}:props) {
         setStartedMove(false);
     }
 
+    let movableToShow = startedAttack ? [] : movableArr;
+    let attackableToShow = startedAttack ? attackRngHexes : attackableAfterMove;
+
+
+    //movable hexes
+    //attackable hexes
+    //if in move phase, movable should be shown
+    //if in attack phase, movable should not be shown, and attackable should be direct range, instead of attackable plus movable range
+
+    if(startedAttack){
+
+    }
+
     const drawGrid = (context:CanvasRenderingContext2D , frameCount:number, canvas:HTMLCanvasElement)=>{
         Grid({
             canvas,
@@ -92,8 +108,10 @@ function HexagonBoard({}:props) {
                 hexesWithState,
                 selectedHex,
                 mousedHex,
-                movableArr,
-                attackRngHexes: attackableAfterMove
+                movableArr:movableToShow,
+                attackRngHexes: attackableToShow,
+                playerId:player.id,
+                turn
             }),
             layout: layOut,
             center: layOut.origin,
@@ -195,11 +213,10 @@ function HexagonBoard({}:props) {
                 onMouseMove={handleOnMouseMove}
               />
           </div>
-          {/*{showBox && <FloatyBox style={floatyBox} clickedHex={boxClickedHexId} setShowBox={setShowBox} />}*/}
           {showBox && typeOfBoxToShow==='AddUnitOrTerrain' &&
             <AddUnitOrTerrain style={floatyBox} clickedHex={boxClickedHexId} clearBoxState={clearBoxState}/>}
-          {showBox && typeOfBoxToShow==='ConfirmAttack' &&
-            <ConfirmAttack style={floatyBox} clickedHex={boxClickedHexId} clearBoxState={clearBoxState}/>}
+          {showBox && typeOfBoxToShow==='ConfirmAttack' && selectedHex?.unit &&
+            <ConfirmAttack style={floatyBox} clickedHexId={boxClickedHexId} clearBoxState={clearBoxState} unit={selectedHex.unit}/>}
           {showBox && typeOfBoxToShow==='ConfirmMove' && selectedHex?.unit &&
             <ConfirmMove style={floatyBox} unit={selectedHex.unit} clickedHex={boxClickedHexId} clearBoxState={clearBoxState}/>}
           {showBox && typeOfBoxToShow==='StartMoveOrAttack' &&

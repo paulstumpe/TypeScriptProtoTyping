@@ -70,6 +70,18 @@ export function Grid({canvas, canvasContext, labels=false, layout, hexes, center
       //renders this hex
       HexView(canvasContext, layout, hex);
   });
+
+
+  // I can actually re render over any given hex in specific here if I want their outline to be different.
+  // I can also do any other rendering here such as a line across multiples hex ect here.
+  // I can also try and do an arrow here like I was thinking of trying, to show unit orientation
+  // or go and draw each unit to here in its own call lol
+
+  let testHex = HexUtility.createAndValidateNewHexStruct(0,0,0);
+  let centerOfHex = LayoutClass.hexToPixel(testHex, layout);
+  let corners = LayoutClass.polygonCorners(testHex,layout)
+
+
 }
 
 

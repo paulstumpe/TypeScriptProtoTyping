@@ -10,9 +10,12 @@ export interface HexesForRender {
   moused:boolean
   movable:boolean
   frontier: boolean
+  enemy:boolean
   q:number,
   r:number,
   s:number,
+  usedMove:boolean,
+  usedAttack:boolean,
   unit?:HydratedUnit,
   terrain?: Terrains,
 }
@@ -25,6 +28,8 @@ interface CreateHexesForRenderProps {
   mousedHex?:HydratedHex,
   movableArr:  HexStruct[],
   attackRngHexes: HexStruct[],
+  playerId: string;
+  turn:number
 }
 
 export interface HexesWithState {
@@ -43,26 +48,30 @@ const createHexesForRender = (props:CreateHexesForRenderProps):HexesForRender[]=
     selectedHex,
     mousedHex,
     movableArr,
-    attackRngHexes
+    attackRngHexes,
+    playerId,
+    turn
   } = props;
 
   // const selectedUI = ui.selectedHex;
   const statelessHexes = LayoutClass.shapeRectangleArbitrary(verticalHexes, horizontalHexes);
   const hexesForRender:HexesForRender[] = statelessHexes.map((hex)=>{
-    return createHexForRender(hex,hexesWithState,selectedHex, mousedHex, movableArr, attackRngHexes)
+    return createHexForRender(hex,hexesWithState,selectedHex, mousedHex, movableArr, attackRngHexes, playerId, turn)
   })
   return hexesForRender;
 }
 
-const createHexForRender = (hex:HexStruct,hexesWithState:HexesWithState,selectedHex:HydratedHex|undefined, mousedHex:HydratedHex|undefined, movableArr:HexStruct[], attackRngHexes:HexStruct[]):HexesForRender=>{
+const createHexForRender = (hex:HexStruct,hexesWithState:HexesWithState,selectedHex:HydratedHex|undefined, mousedHex:HydratedHex|undefined, movableArr:HexStruct[], attackRngHexes:HexStruct[], playerId:string, turn:number):HexesForRender=>{
   let stateHex = hexesWithState[HexUtility.hexIdFromHex(hex)];
   let unit = stateHex?.unit;
   let terrain = stateHex?.terrain;
   let selected = stateHex?.selected || HexUtility.isEqualWithUndefined(hex, selectedHex);
   let moused = stateHex?.moused || HexUtility.isEqualWithUndefined(hex, mousedHex);
-  // let moused = stateHex?.moused || isSelected(hex, selectedHex);
   let movable = HexUtility.hexIsInArray(hex,movableArr)
   let frontier = HexUtility.hexIsInArray(hex,attackRngHexes)
+  let enemy = !!(stateHex?.unit && stateHex?.unit?.player !== playerId)
+  let usedMove = !!(unit && unit.turnMoved >= turn);
+  let usedAttack = !!(unit && unit.turnAttacked >= turn);
   //todo
 
   return {
@@ -72,7 +81,10 @@ const createHexForRender = (hex:HexStruct,hexesWithState:HexesWithState,selected
     selected,
     movable,
     moused,
-    frontier
+    frontier,
+    enemy,
+    usedMove,
+    usedAttack
   }
 }
 

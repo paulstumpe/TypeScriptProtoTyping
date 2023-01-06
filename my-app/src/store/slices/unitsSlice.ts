@@ -1,12 +1,13 @@
 import {createSlice, nanoid, PayloadAction} from '@reduxjs/toolkit'
 import type { RootState} from "../store";
-import HexUtility from "../../utilities/HexGridClasses/HexClass";
+import HexUtility, {Orientation} from "../../utilities/HexGridClasses/HexClass";
 import {HydratedHex, selectAllHexesWithState, selectHex, selectHexWithUnit} from "./hexSlice";
 import PathFinding from "../../utilities/HexGridClasses/PathFinding";
 import {getSelectedHex} from "./uiSlice";
 import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
 
 // Define a type for the slice state
+
 interface UnitState {
   hp: number;
   id : string;
@@ -16,6 +17,9 @@ interface UnitState {
   range : number,
   turnMoved:number,
   turnAttacked:number,
+  player?:string,
+  attack:number,
+  orientation:Orientation,
 }
 
 export interface HydratedUnit extends UnitState{
@@ -31,6 +35,8 @@ const initialState: UnitState[] = [
     range: 1,
     turnAttacked:0,
     turnMoved:0,
+    attack:1,
+    orientation:0,
   }
 ]
 let timesAdded = 0;
@@ -75,6 +81,48 @@ export const unitsSlice = createSlice({
         unit.turnAttacked = action.payload.turnAttacked;
       }
     },
+    setUnitsPlayer : (state, action:PayloadAction<{unitId:string, playerId:string}>)=>{
+      const {unitId, playerId} = action.payload
+      let unit = state.find(unit=>unit.id===unitId)
+      if(unit){
+        unit.player= playerId;
+      }
+    },
+    setUnitsOrientation: (state, action:PayloadAction<{unitId:string, orientation:Orientation}>)=>{
+      const {unitId, orientation} = action.payload
+      let unit = state.find(unit=>unit.id===unitId)
+      if(unit){
+        unit.orientation=orientation;
+      }
+    },
+    attack: {
+      // reducer:(state, action: PayloadAction<number>)=>{
+      reducer:(state, action:PayloadAction<{attackerId:string, targetId:string, rng:number, currentTurn:number}>)=>{
+        const {attackerId, targetId, rng, currentTurn}=action.payload;
+        let attacker = state.find(unit=>unit.id===attackerId);
+        let target = state.find(unit=>unit.id===targetId);
+
+        if(!attacker || !target){
+          throw new DOMException('attack reducer received an attacker or target unit id that can not be found in state')
+        }
+        attacker.turnAttacked = currentTurn;
+
+        target.hp = target.hp - attacker.attack;
+
+      },
+      // prepare : (value: number) => ({ payload: value }),
+      prepare:({attackerId,targetId, currentTurn}:{attackerId:string, targetId:string, currentTurn:number})=>{
+
+        return {
+          payload:{
+            attackerId,
+            targetId,
+            currentTurn,
+            rng: Math.random()
+          },
+        }
+      },
+    },
     addUnit : {
       reducer(
         state,
@@ -91,6 +139,8 @@ export const unitsSlice = createSlice({
           range: 1,
           turnMoved:0,
           turnAttacked:0,
+          attack:1,
+          orientation:0,
         }
         return {
           payload : newPayload,
@@ -102,13 +152,13 @@ export const unitsSlice = createSlice({
   },
 })
 
-export const { nameUnit, addUnit, setMovement, setHp, setRange, setTurnAttacked, setTurnMoved } = unitsSlice.actions
+export const { nameUnit, addUnit, setMovement, setHp, setRange, setTurnAttacked, setTurnMoved, setUnitsPlayer, attack } = unitsSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectUnit = (state: RootState, unitID: string = ''):UnitState|undefined => {
   return state.units.find(unit => unitID === unit.id);
 }
-export const selectAllUnits = (state: RootState) => state.units;
+export const selectAllUnits = (state: RootState):UnitState[] => state.units;
 export const selectAllUnitIds = (state: RootState) => state.units.map(unit=>unit.id);
 
 export const selectAllAttackableHexesWithUnits = (state:RootState, attacker:HydratedUnit|undefined):HydratedHex[]=>{
@@ -129,15 +179,17 @@ export const selectAllAttackableHexesWithUnits = (state:RootState, attacker:Hydr
   allUnits.forEach((unit)=>{
     let hex = selectHexWithUnit(state,unit.id)
     let differentHexFromAttacker = hex && !HexUtility.equalTo(hex,attackerHex)
+    let differentPlayerFromAttacker = attacker.player !== unit.player
     if(hex && HexUtility.hexIsInArray(hex,hexesInRange)){
 
-      differentHexFromAttacker && attackableHexes.push(selectHex(state,hex));
+      differentHexFromAttacker && differentPlayerFromAttacker && attackableHexes.push(selectHex(state,hex));
 
     }
   })
 
   return attackableHexes;
 }
+
 export const selectAttackableHexes = (state:RootState, attacker:HydratedUnit|undefined):HexStruct[]=>{
   let attackableHexes:HexStruct[] = [];
   if(!attacker){
@@ -177,6 +229,12 @@ export const selectMovable = (state:RootState, unit:HydratedUnit|undefined):HexS
   const hexesWithState = selectAllHexesWithState(state);
   arr = PathFinding.getMovable(unit, hex,hexesWithState, horizontal, vertical);
   return arr;
+}
+
+export const selectAllUnitsBelongingToPlayerId = (state:RootState, playerId:string):UnitState[]=>{
+  const allUnits = selectAllUnits(state);
+  const allUnitsBelongingToPlayer = allUnits.filter(unit=>unit.player===playerId);
+  return allUnitsBelongingToPlayer;
 }
 
 

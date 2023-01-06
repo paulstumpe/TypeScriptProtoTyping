@@ -1,12 +1,13 @@
 import LayoutClass, {LayoutStruct} from "../../utilities/HexGridClasses/LayoutClass";
 import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
 import HexLabel, {HexLabelProps, PartialLabelProps} from "./HexLabel";
-import {HydratedHex, selectHex} from "../../store/slices/hexSlice";
+import {HydratedHex, selectHex, Terrains} from "../../store/slices/hexSlice";
 import HexUtility from "../../utilities/HexGridClasses/HexClass";
 import {store} from "../../store/store";
 import {getSelectedHex} from "../../store/slices/uiSlice";
 import renderHex, {partialHexProps} from "./renderHex";
 import {HexesForRender} from "./createsHexesForRender";
+import {HydratedUnit} from "../../store/slices/unitsSlice";
 
 
 /**
@@ -28,7 +29,8 @@ import {HexesForRender} from "./createsHexesForRender";
    // let state = store.getState()
    // let hexState = selectHex(state, hex)
    // let selectedHex = getSelectedHex(state);
-  const { selected, unit, terrain, movable, moused, frontier} = hex
+  // const { selected, unit, terrain, movable, moused, frontier, enemy} = hex
+  const {  selected, moused, movable, frontier, enemy, q, r, s, usedMove, usedAttack, unit, terrain,} = hex
    let labelVisuals:PartialLabelProps = {}
    let hexVisuals:partialHexProps = {}
 
@@ -51,17 +53,28 @@ import {HexesForRender} from "./createsHexesForRender";
      hexVisuals.fillStyle = 'aquamarine'
    }
    if (frontier){
-     hexVisuals.fillStyle='red'
+     hexVisuals.fillStyle='pink'
    }
    if (movable){
      hexVisuals.fillStyle = 'blue';
    }
+   if(enemy){
+     hexVisuals.fillStyle = 'crimson';
+   }
    if(selected){
     hexVisuals.fillStyle = 'yellow';
    }
+   if(usedMove && usedAttack && unit && !enemy ){
+    hexVisuals.fillStyle = 'lightsteelblue'
+   }
+  if(usedMove && usedAttack && unit && enemy ){
+    hexVisuals.fillStyle = 'grey'
+  }
   if(moused){
     hexVisuals.fillStyle = 'lightgoldenrodyellow';
   }
+
+
    if (terrainText || unitText) {
      labelVisuals.fillStyle = 'black';
      labelVisuals.text = unitText || terrainText;

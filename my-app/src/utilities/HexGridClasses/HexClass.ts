@@ -9,7 +9,8 @@ import {AxialHexStruct, HexStruct} from "./Structs/Hex";
 //my hex classes call to transform the hex into the type they work with.
 
 export type HexConstructer = (q:number,r:number,s:number)=>HexStruct
-
+export type Orientation = 0 | 1 | 2 |3 | 4 | 5;
+export const orientationArr:Orientation[] = [0,1,2,3,4,5];
 
 class HexUtility {
   /**
@@ -261,6 +262,12 @@ class HexUtility {
     return hexes;
   }
 
+  public static getPreviousOrientation(i:Orientation):Orientation{
+    if(i===0){
+      return orientationArr[5];
+    }
+    return orientationArr[i-1]
+  }
 
 
 }

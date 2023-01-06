@@ -1,9 +1,10 @@
 import {useAppDispatch, useAppSelector} from "../../store/reduxCustomHooks";
-import {nameUnit, selectUnit, setHp, setMovement, setRange} from "../../store/slices/unitsSlice";
+import {nameUnit, selectUnit, setHp, setMovement, setRange, setUnitsPlayer} from "../../store/slices/unitsSlice";
 import React, {ChangeEvent, useState} from "react";
 import {selectHexWithUnit} from "../../store/slices/hexSlice";
 import HexCordList from "./hexStructView";
 import {selectTurn} from "../../store/slices/gameSlice";
+import {Player, selectAllPlayers} from "../../store/slices/playersSlice";
 
 interface props {
   unitID :string;
@@ -21,10 +22,12 @@ function UnitViewThing({unitID, highlight}:props) {
   const unit = useAppSelector((state)=>selectUnit(state, unitID))
   const hex = useAppSelector((state)=>selectHexWithUnit(state,unitID));
   const turn = useAppSelector(selectTurn);
+  const players = useAppSelector(selectAllPlayers)
   if(!unit){
     return null
   }
   const movedThisTurn = unit.turnMoved >turn;
+  const attackedThisTurn = unit.turnAttacked >turn;
   const border = highlight ? 'red solid' : 'black solid';
 
   const handleSubmit = (e: React.SyntheticEvent)=>{
@@ -46,6 +49,12 @@ function UnitViewThing({unitID, highlight}:props) {
   const handleSetRange = (e:ChangeEvent<HTMLInputElement>)=>{
     let range =parseInt( e.target.value);
     dispatch(setRange({unitID,range}))
+  }
+  const handleSetPlayer = (player:Player)=>{
+    dispatch(setUnitsPlayer({
+      unitId: unit.id,
+      playerId: player.id
+    }))
   }
 
   return (
@@ -77,10 +86,20 @@ function UnitViewThing({unitID, highlight}:props) {
       </li>
       <li>
         <div>moved this turn: {movedThisTurn ? 'yes' : 'no'}</div>
-        <div>counter: {unit.turnMoved}</div>
-        {/*<input type={'number'} value={movedThisTurn} onChange={handleSetRange} /><br/>*/}
+        <div>last turn moved: {unit.turnMoved}</div>
       </li>
-
+      <li>
+        <div>attacked this turn: {attackedThisTurn ? 'yes' : 'no'}</div>
+        <div>last turn attacked: {unit.turnAttacked}</div>
+      </li>
+      <li>
+        <label>Player:</label>
+        <ul>
+          {players.map(player=>(<li>
+            <button style={{border: unit?.player===player.id ? 'blue solid' : ''}} onClick={()=>handleSetPlayer(player)}>{player.name}</button>
+          </li>))}
+        </ul>
+      </li>
 
     </ul>
     </div>
