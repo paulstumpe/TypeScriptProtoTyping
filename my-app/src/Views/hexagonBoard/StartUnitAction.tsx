@@ -1,4 +1,6 @@
 import React, {CSSProperties} from "react";
+import {setSelectedHex} from "../../store/slices/uiSlice";
+import {useDispatch} from "react-redux";
 
 export interface props {
   style : CSSProperties
@@ -6,17 +8,24 @@ export interface props {
   clearBoxState:  React.Dispatch<React.SetStateAction<boolean>>
   setStartMove:  React.Dispatch<React.SetStateAction<boolean>>;
   setStartAttack:  React.Dispatch<React.SetStateAction<boolean>>;
+  setStartOrient: React.Dispatch<React.SetStateAction<boolean>>;
   allowedToMove:boolean;
   allowedToAttack:boolean;
+  allowedToOrient:boolean;
 }
 
-function StartMoveOrAttack({style,
-                             clickedHex,
-                             clearBoxState,
-                             setStartMove,
-                             setStartAttack,
-                             allowedToMove,
-                             allowedToAttack}:props) {
+function StartUnitAction({
+                           style,
+                           clickedHex,
+                           clearBoxState,
+                           setStartMove,
+                           setStartAttack,
+                           allowedToMove,
+                           allowedToAttack,
+                           allowedToOrient,
+                           setStartOrient,
+                         }:props) {
+  const dispatch = useDispatch();
   const handleStartAttack = ()=>{
     clearBoxState(false);
     setStartAttack(true);
@@ -26,7 +35,12 @@ function StartMoveOrAttack({style,
     setStartMove(true);
   }
   const handleDismiss = ()=>{
+    dispatch(setSelectedHex({}));
     clearBoxState(false);
+  }
+  const handleOrientUnit = ()=>{
+    clearBoxState(false);
+    setStartOrient(true);
   }
 
   return (
@@ -38,9 +52,12 @@ function StartMoveOrAttack({style,
       {allowedToMove &&
         <div><button onClick={handleStartMove}>move</button></div>
       }
+      {allowedToOrient &&
+          <div><button onClick={handleOrientUnit}>orient</button></div>
+      }
       <div><button onClick={handleDismiss}>dismiss</button></div>
     </div>
   );
 }
 
-export default StartMoveOrAttack;
+export default StartUnitAction;

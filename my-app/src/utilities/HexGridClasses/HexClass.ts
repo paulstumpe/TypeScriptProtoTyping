@@ -211,11 +211,11 @@ class HexUtility {
   //linear interpolate hex
   //returns a fractional hex
   public static hexLerp (a:HexStruct, b:HexStruct, t: number) :HexStruct {
-    return this.createAndValidateNewHexStruct(
-      HexUtility.lerp(a.q, b.q, t),
-      HexUtility.lerp(a.r, b.r, t),
-      HexUtility.lerp(a.s, b.s, t)
-    );
+    return {
+      q:HexUtility.lerp(a.q, b.q, t),
+      r:HexUtility.lerp(a.r, b.r, t),
+      s:HexUtility.lerp(a.s, b.s, t),
+    }
   }
 
   /**
@@ -228,18 +228,18 @@ class HexUtility {
    * @param a
    * @param b
    */
-  public static hexLineDraw(a:HexStruct, b:HexStruct) {
+  public static hexLineDraw(a:HexStruct, b:HexStruct):HexStruct[] {
     let n = HexUtility.hexDistance(a,b);
-    let aNudge = HexUtility.createAndValidateNewHexStruct(
-      a.q + 1e-06,
-      a.r + 1e-06,
-      a.s - 2e-06
-    );
-    let bNudge = HexUtility.createAndValidateNewHexStruct(
-      b.q + 1e-06,
-      b.r + 1e-06,
-      b.s - 2e-06
-    );
+    let aNudge = {
+      q: a.q + 1e-06,
+      r: a.r + 1e-06,
+      s: a.s - 2e-06
+    };
+    let bNudge = {
+      q: b.q + 1e-06,
+      r: b.r + 1e-06,
+      s: b.s - 2e-06
+    }
     let results = [];
     let step = 1.0 / Math.max(n, 1);
     for (let i = 0; i <= n; i++) {
@@ -268,6 +268,13 @@ class HexUtility {
     }
     return orientationArr[i-1]
   }
+  public static getNextOrientation(i:Orientation):Orientation{
+    if(i===5){
+      return orientationArr[0];
+    }
+    return orientationArr[i+1]
+  }
+
 
 
 }

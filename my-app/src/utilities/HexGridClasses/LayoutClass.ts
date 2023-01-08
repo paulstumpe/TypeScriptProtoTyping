@@ -194,8 +194,10 @@ export default class LayoutClass {
     }
     return line;
   }
-  public static getHexEdgeLength(){
-
+  public static getHexEdgeLength(layout:LayoutStruct):number{
+    let hex = HexUtility.createAndValidateNewHexStruct(0,0,0);
+    let edge = this.getHexEdge(hex,layout,0);
+    return lineLength(edge);
   }
 
   /**
@@ -253,22 +255,33 @@ export default class LayoutClass {
   }
 
 }
-const lineMidPoint = (line:LineStruct):PointStruct=>{
+export const lineMidPoint = (line:LineStruct):PointStruct=>{
 
+  return linePointPercentageAlongLine(line, .5)
+}
+
+export const linePointPercentageAlongLine = (line:LineStruct, decimal:number):PointStruct=>{
 
   let xDist = line.end.x - line.start.x;
   let yDist = line.end.y - line.start.y;
   // let pthag = Math.sqrt(xDist * xDist + yDist * yDist);
   let p = {
-    x: line.start.x + xDist * .5,
-    y: line.start.y + yDist * .5
+    x: line.start.x + xDist * decimal,
+    y: line.start.y + yDist * decimal
   }
   return p;
 }
 
-const lineLength = (line:LineStruct)=>{
+export const lineLength = (line:LineStruct)=>{
   let xDist = line.end.x - line.start.x;
   let yDist = line.end.y - line.start.y;
   let pthag = Math.sqrt(xDist * xDist + yDist * yDist);
   return pthag;
+}
+
+export const reverseLine = (line:LineStruct):LineStruct=>{
+  return {
+    start:line.end,
+    end:line.start,
+  }
 }

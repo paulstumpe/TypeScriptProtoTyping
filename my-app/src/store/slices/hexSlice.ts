@@ -49,10 +49,10 @@ export interface HexDictionary {
 const initialState: HexesState = {
   byId : {},
   allIds : [],
-  verticalHexes: 1,
-  // verticalHexes: 19,
-  horizontalHexes:1
-  // horizontalHexes:11
+  // verticalHexes: 1,
+  verticalHexes: 19,
+  // horizontalHexes:1
+  horizontalHexes:11
 }
 
 export const hexesSlice = createSlice({

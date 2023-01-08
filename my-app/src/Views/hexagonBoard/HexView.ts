@@ -8,6 +8,8 @@ import {getSelectedHex} from "../../store/slices/uiSlice";
 import renderHex, {partialHexProps} from "./renderHex";
 import {HexesForRender} from "./createsHexesForRender";
 import {HydratedUnit} from "../../store/slices/unitsSlice";
+import {drawHP, drawUnitOrientationArrow} from "./Grid";
+import {basesDict} from "../../ProtoType Mechanics/unitClasses/soldier";
 
 
 /**
@@ -74,7 +76,6 @@ import {HydratedUnit} from "../../store/slices/unitsSlice";
     hexVisuals.fillStyle = 'lightgoldenrodyellow';
   }
 
-
    if (terrainText || unitText) {
      labelVisuals.fillStyle = 'black';
      labelVisuals.text = unitText || terrainText;
@@ -85,6 +86,9 @@ import {HydratedUnit} from "../../store/slices/unitsSlice";
 
    //todo create all the conditional logic i want that will decide what the hexes should like
    renderHex({context,layout,hex, labelProps:labelVisuals, ...hexVisuals});
+   if(unit){
+     drawHP(hex,layout,context,unit.hp,basesDict[unit.unitToInherit].hp);
+   }
  }
 
 export default HexView

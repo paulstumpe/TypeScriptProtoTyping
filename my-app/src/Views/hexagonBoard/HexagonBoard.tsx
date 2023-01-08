@@ -23,12 +23,14 @@ import {
 import AddUnitOrTerrain from "./AddUnitOrTerrain";
 import ConfirmAttack from "./ConfirmAttack";
 import ConfirmMove from "./ConfirmMove";
-import StartMoveOrAttack from "./StartMoveOrAttack";
+import StartUnitAction from "./StartUnitAction";
 import {selectTurn} from "../../store/slices/gameSlice";
 import {selectPrimaryPlayer} from "../../store/slices/playersSlice";
+import ConfirmOrient from "./ConfirmOrient";
+import {feAttackFull, knightPlusMissing} from "../../ProtoType Mechanics/feAttack";
 
 
-type TypeOfBox = 'AddUnitOrTerrain'| 'ConfirmAttack' |'ConfirmMove' |'StartMoveOrAttack' | ''
+type TypeOfBox = 'AddUnitOrTerrain'| 'ConfirmAttack' |'ConfirmMove' |'StartMoveOrAttack' | 'ConfirmOrient' | ''
 type props = {
 
 }
@@ -68,6 +70,7 @@ function HexagonBoard({}:props) {
     const [typeOfBoxToShow, setTypeOfBoxToShow] = useState<TypeOfBox>('');
     const [startedMove, setStartedMove] = useState(false);
     const [startedAttack, setStartedAttack] = useState(false);
+    const [startedOrient, setStartOrient] = useState(false);
 
     const allowedToMove = !!(selectedHex && selectedHex.unit && (selectedHex.unit.turnMoved < turn));
     const allowedToAttack = !!(selectedHex && selectedHex.unit && (selectedHex.unit.turnAttacked < turn));
@@ -82,20 +85,28 @@ function HexagonBoard({}:props) {
         setTypeOfBoxToShow('');
         setStartedAttack(false);
         setStartedMove(false);
+        setStartOrient(false);
     }
 
-    let movableToShow = startedAttack ? [] : movableArr;
-    let attackableToShow = startedAttack ? attackRngHexes : attackableAfterMove;
+    let movableToShow = allowedToMove ? movableArr : [];
+    let attackableToShow = allowedToMove ? attackableAfterMove : attackRngHexes;
 
-
+    //todo
+    let allowedToOrient = allowedToAttack;
     //movable hexes
     //attackable hexes
     //if in move phase, movable should be shown
     //if in attack phase, movable should not be shown, and attackable should be direct range, instead of attackable plus movable range
 
     if(startedAttack){
-
+        movableToShow = [];
+        attackableToShow = attackRngHexes;
     }
+    if(startedOrient){
+        movableToShow = [];
+        attackableToShow = [];
+    }
+
 
     const drawGrid = (context:CanvasRenderingContext2D , frameCount:number, canvas:HTMLCanvasElement)=>{
         Grid({
@@ -156,6 +167,8 @@ function HexagonBoard({}:props) {
         //have clicked start move, and clickedhex is in movable
         actionToTake = unitIsSelected && validMove && startedMove ? 'makeMoveConfirm': actionToTake;
 
+        actionToTake = unitIsSelected && startedOrient ? 'makeOrientConfirm' : actionToTake;
+
         //should make attack confirmation
         //have clicked start attack and clicked is a valid attack target
         actionToTake = unitIsSelected && validAttackTarget && startedAttack ? 'makeAttackConfirm': actionToTake;
@@ -176,6 +189,10 @@ function HexagonBoard({}:props) {
             case 'makeMoveConfirm':
                 setTypeOfBoxToShow('ConfirmMove')
                 makeFloatyBox(nativeEvent, hex);
+                break;
+            case 'makeOrientConfirm':
+                setTypeOfBoxToShow('ConfirmOrient')
+                makeFloatyBox(nativeEvent,hex)
                 break;
             case 'makeAttackConfirm':
                 setTypeOfBoxToShow('ConfirmAttack')
@@ -217,10 +234,12 @@ function HexagonBoard({}:props) {
             <AddUnitOrTerrain style={floatyBox} clickedHex={boxClickedHexId} clearBoxState={clearBoxState}/>}
           {showBox && typeOfBoxToShow==='ConfirmAttack' && selectedHex?.unit &&
             <ConfirmAttack style={floatyBox} clickedHexId={boxClickedHexId} clearBoxState={clearBoxState} unit={selectedHex.unit}/>}
+          {showBox && typeOfBoxToShow==='ConfirmOrient' && selectedHex?.unit &&
+            <ConfirmOrient style={floatyBox} clickedHex={boxClickedHexId} clearBoxState={clearBoxState} unit={selectedHex.unit}/>}
           {showBox && typeOfBoxToShow==='ConfirmMove' && selectedHex?.unit &&
             <ConfirmMove style={floatyBox} unit={selectedHex.unit} clickedHex={boxClickedHexId} clearBoxState={clearBoxState}/>}
           {showBox && typeOfBoxToShow==='StartMoveOrAttack' &&
-            <StartMoveOrAttack
+            <StartUnitAction
               style={floatyBox}
               clickedHex={boxClickedHexId}
               clearBoxState={clearBoxState}
@@ -228,6 +247,8 @@ function HexagonBoard({}:props) {
               setStartAttack={setStartedAttack}
               allowedToMove = {allowedToMove}
               allowedToAttack = {allowedToAttack}
+              setStartOrient={setStartOrient}
+              allowedToOrient={allowedToOrient}
             />}
       </div>
 

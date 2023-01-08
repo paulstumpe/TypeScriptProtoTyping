@@ -5,6 +5,7 @@ import {HydratedUnit, selectUnit, setTurnMoved} from "../../store/slices/unitsSl
 import HexUtility from "../../utilities/HexGridClasses/HexClass";
 import {useAppSelector} from "../../store/reduxCustomHooks";
 import {selectTurn} from "../../store/slices/gameSlice";
+import {setSelectedHex} from "../../store/slices/uiSlice";
 
 export interface props {
   style : CSSProperties
@@ -26,9 +27,11 @@ function ConfirmMove({style, clickedHex, clearBoxState, unit}:props) {
       unitID:unit.id,
       turnMoved: turn,
     }))
+    dispatch(setSelectedHex({}));
     clearBoxState(false);
   }
   const handleDismiss = ()=>{
+    dispatch(setSelectedHex({}));
     clearBoxState(false);
   }
 

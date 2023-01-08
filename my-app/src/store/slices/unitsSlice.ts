@@ -5,6 +5,14 @@ import {HydratedHex, selectAllHexesWithState, selectHex, selectHexWithUnit} from
 import PathFinding from "../../utilities/HexGridClasses/PathFinding";
 import {getSelectedHex} from "./uiSlice";
 import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
+import {useDispatch} from "react-redux";
+import {store} from "../store";
+import {
+  analyzeFullAttackResults,
+  feAttackFull,
+  knightPlusMissing,
+} from "../../ProtoType Mechanics/feAttack";
+import {addOnMissing, basesDict, BaseUnits} from "../../ProtoType Mechanics/unitClasses/soldier";
 
 // Define a type for the slice state
 
@@ -18,8 +26,10 @@ interface UnitState {
   turnMoved:number,
   turnAttacked:number,
   player?:string,
-  attack:number,
+  // attack:number,
   orientation:Orientation,
+  // maxHp:number;
+  unitToInherit:BaseUnits
 }
 
 export interface HydratedUnit extends UnitState{
@@ -28,15 +38,17 @@ export interface HydratedUnit extends UnitState{
 // Define the initial state using that type
 const initialState: UnitState[] = [
   {
-    hp: 10,
+    hp: basesDict.Oswin.hp,
     id: nanoid(),
-    name : 'JayZeeSnoCat',
-    movement: 1,
+    name : basesDict.Oswin.name,
+    movement: basesDict.Oswin.move,
     range: 1,
     turnAttacked:0,
     turnMoved:0,
-    attack:1,
+    // attack:1,
     orientation:0,
+    // maxHp:10,
+    unitToInherit:basesDict.Oswin.name,
   }
 ]
 let timesAdded = 0;
@@ -95,30 +107,99 @@ export const unitsSlice = createSlice({
         unit.orientation=orientation;
       }
     },
+    setUnitsOrientationUsingFacingHex:(state, action:PayloadAction<{unitId:string, unitHex:HexStruct, targetHex:HexStruct}>)=>{
+      const {unitId, unitHex, targetHex} = action.payload;
+      const arr = HexUtility.hexLineDraw(unitHex,targetHex);
+      let neighbors = HexUtility.allNeighbors(unitHex);
+      let direction;
+      if(arr.length){
+        neighbors.forEach((neighbor,i)=>{
+          arr.forEach(hexInLine=>{
+            let equal = HexUtility.equalTo(neighbor,hexInLine);
+            if (equal){
+              if (i===0||i===1||i===2 ||i===3 ||i===4 ||i===5){
+                direction = HexUtility.getNextOrientation(i)
+              }
+            }
+          });
+        })
+        if(!direction){
+          throw new Error('somehow no neighbor matched in confirm orient');
+        }
+        let unit = state.find(unit=>unit.id===unitId)
+        if(unit){
+          unit.orientation=direction;
+        }
+      }
+
+
+    },
     attack: {
       // reducer:(state, action: PayloadAction<number>)=>{
-      reducer:(state, action:PayloadAction<{attackerId:string, targetId:string, rng:number, currentTurn:number}>)=>{
-        const {attackerId, targetId, rng, currentTurn}=action.payload;
+      reducer:(state, action:PayloadAction<{attackerId:string, targetId:string, rngArr:number[], currentTurn:number,attackerHex:HexStruct,targetHex:HexStruct}>)=>{
+        const {attackerId, targetId, rngArr, currentTurn, targetHex, attackerHex}=action.payload;
         let attacker = state.find(unit=>unit.id===attackerId);
         let target = state.find(unit=>unit.id===targetId);
+        //todo figure out how not to repeat this code
+        const arr = HexUtility.hexLineDraw(attackerHex,targetHex);
+        let neighbors = HexUtility.allNeighbors(attackerHex);
+        let direction;
+        if(arr.length){
+          neighbors.forEach((neighbor,i)=>{
+            arr.forEach(hexInLine=>{
+              let equal = HexUtility.equalTo(neighbor,hexInLine);
+              if (equal){
+                if (i===0||i===1||i===2 ||i===3 ||i===4 ||i===5){
+                  direction = HexUtility.getNextOrientation(i)
+                }
+              }
+            });
+          })
+          if(!direction){
+            throw new Error('somehow no neighbor matched in confirm orient');
+          }
+          let unit = state.find(unit=>unit.id===attackerId)
+          if(unit){
+            unit.orientation=direction;
+          }
+        }
 
         if(!attacker || !target){
           throw new DOMException('attack reducer received an attacker or target unit id that can not be found in state')
         }
         attacker.turnAttacked = currentTurn;
 
-        target.hp = target.hp - attacker.attack;
+        // target.hp = target.hp - attacker.attack;
+        //do attack
+        let attackerBase = basesDict[attacker.unitToInherit];
+        let targetBase = basesDict[target.unitToInherit];
+        let attackResults = feAttackFull(attackerBase,targetBase,false, rngArr);
+        console.log(attackResults);
+        let hpAfter = analyzeFullAttackResults(attackResults,attacker,target);
+        attacker.hp = hpAfter.attackerHp;
+        target.hp = hpAfter.targetHp;
+        if(attacker.hp <= 0){
+          //todo remove from board if killed
+        }
+        if(target.hp <= 0){
+          //todo remove from board if killed
+        }
 
       },
       // prepare : (value: number) => ({ payload: value }),
-      prepare:({attackerId,targetId, currentTurn}:{attackerId:string, targetId:string, currentTurn:number})=>{
-
+      prepare:({attackerId,targetId, currentTurn,attackerHex,targetHex}:{attackerId:string, targetId:string, currentTurn:number, attackerHex:HexStruct,targetHex:HexStruct})=>{
+        let rngArr = [];
+        for(let i=0; i<10; i++){
+          rngArr.push(Math.random()*100);
+        }
         return {
           payload:{
             attackerId,
             targetId,
             currentTurn,
-            rng: Math.random()
+            rngArr,
+            attackerHex,
+            targetHex
           },
         }
       },
@@ -130,17 +211,19 @@ export const unitsSlice = createSlice({
       ) {
         state.push(action.payload)
       },
-      prepare(name:string) {
+      prepare(base:BaseUnits) {
         let newPayload:UnitState = {
           id: nanoid(),
-          hp: 10,
-          movement: 3,
-          name: name +' ' + timesAdded++,
+          hp: basesDict[base].hp,
+          movement: basesDict[base].move,
+          name: basesDict[base].name +' ' + timesAdded++,
           range: 1,
           turnMoved:0,
           turnAttacked:0,
-          attack:1,
+          // attack:1,
           orientation:0,
+          // maxHp:10,
+          unitToInherit:basesDict[base].name
         }
         return {
           payload : newPayload,
@@ -152,7 +235,7 @@ export const unitsSlice = createSlice({
   },
 })
 
-export const { nameUnit, addUnit, setMovement, setHp, setRange, setTurnAttacked, setTurnMoved, setUnitsPlayer, attack } = unitsSlice.actions
+export const { nameUnit, addUnit, setMovement, setHp, setRange, setTurnAttacked, setTurnMoved, setUnitsPlayer, attack, setUnitsOrientation, setUnitsOrientationUsingFacingHex } = unitsSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectUnit = (state: RootState, unitID: string = ''):UnitState|undefined => {

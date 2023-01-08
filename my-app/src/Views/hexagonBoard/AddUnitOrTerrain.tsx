@@ -1,4 +1,6 @@
 import React, {CSSProperties} from "react";
+import {setSelectedHex} from "../../store/slices/uiSlice";
+import {useDispatch} from "react-redux";
 
 export interface props {
   style : CSSProperties
@@ -7,7 +9,7 @@ export interface props {
 }
 
 function AddUnitOrTerrain({style, clickedHex, clearBoxState}:props) {
-
+  const dispatch = useDispatch();
   const addUnit = ()=>{
 
   }
@@ -16,6 +18,7 @@ function AddUnitOrTerrain({style, clickedHex, clearBoxState}:props) {
   }
   const handleDismiss = ()=>{
     clearBoxState(false);
+    dispatch(setSelectedHex({}));
   }
 
   return (

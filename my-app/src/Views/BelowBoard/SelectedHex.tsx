@@ -3,6 +3,7 @@ import {HydratedHex, selectHex, setTerrain, setUnit, Terrains, terrains} from ".
 import {addUnit} from "../../store/slices/unitsSlice";
 import HexInfo from "./HexInfo";
 import {blueBox} from "./UnitViewThing";
+import {basesDict, BaseUnits} from "../../ProtoType Mechanics/unitClasses/soldier";
 
 
 type props = {
@@ -12,8 +13,15 @@ type props = {
 
 function SelectedHex({hex}:props) {
   let dispatch = useAppDispatch();
-  const addUnitToSelected = ()=>{
-    let dispatchedUnit = dispatch(addUnit('unit'))
+  const basesArr:BaseUnits[] = [];
+  let obj = basesDict;
+  for (const basesArrKey in basesDict) {
+    // @ts-ignore
+    basesArr.push(basesDict[basesArrKey].name);
+  }
+
+  const addUnitToSelected = (base:BaseUnits)=>{
+    let dispatchedUnit = dispatch(addUnit(base))
     dispatch(setUnit({
         unit: dispatchedUnit.payload,
         hex
@@ -50,7 +58,12 @@ function SelectedHex({hex}:props) {
       }
       <div>
         <div>add unit to hex</div>
-        <button onClick={addUnitToSelected} > add</button>
+        {basesArr.map(base=>(
+          <div>
+            <button onClick={e=>addUnitToSelected(base)} > add {base}</button>
+          </div>
+        ))}
+        {/*<button onClick={addUnitToSelected} > add</button>*/}
       </div>
       <div>
         <div>

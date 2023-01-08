@@ -15,7 +15,10 @@ export const uiSlice = createSlice({
   name:'ui',
   initialState,
   reducers: {
-    setSelectedHex: (state, action: PayloadAction<{hexId:string}>)=>{
+    setSelectedHex: (state, action: PayloadAction<{hexId?:string}>)=>{
+      if(action.payload.hexId===undefined){
+        state.selectedHex=undefined;
+      }
       state.selectedHex = action.payload.hexId;
     },
     setMousedHex: (state, action: PayloadAction<{hexId:string}>)=>{

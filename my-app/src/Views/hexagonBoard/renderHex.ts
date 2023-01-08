@@ -1,6 +1,7 @@
 import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
 import LayoutClass, {LayoutStruct} from "../../utilities/HexGridClasses/LayoutClass";
 import HexLabel, {PartialLabelProps} from "./HexLabel";
+import {drawHP} from "./Grid";
 
 
 export interface partialHexProps {
