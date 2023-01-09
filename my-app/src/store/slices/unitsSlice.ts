@@ -155,7 +155,7 @@ export const unitsSlice = createSlice({
               }
             });
           })
-          if(!direction){
+          if(direction === undefined){
             throw new Error('somehow no neighbor matched in confirm orient');
           }
           let unit = state.find(unit=>unit.id===attackerId)
