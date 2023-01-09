@@ -1,5 +1,13 @@
 import {useAppDispatch } from "../../store/reduxCustomHooks";
-import {HydratedHex, selectHex, setTerrain, setUnit, Terrains, terrains} from "../../store/slices/hexSlice";
+import {
+  HydratedHex,
+  selectHex,
+  setTerrain,
+  setUnit,
+  Terrains,
+  terrains,
+  terrainsArr
+} from "../../store/slices/hexSlice";
 import {addUnit} from "../../store/slices/unitsSlice";
 import HexInfo from "./HexInfo";
 import {blueBox} from "./UnitViewThing";
@@ -69,7 +77,7 @@ function SelectedHex({hex}:props) {
         <div>
           set terrain:
           <div>
-            {terrains.map(terrain=>(
+            {terrainsArr.map(terrain=>(
               <>
                 <div><button onClick={()=>{handleSetTerrain(terrain)}}>{terrain}</button></div>
               </>))}

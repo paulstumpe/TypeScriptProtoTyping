@@ -5,7 +5,7 @@
     <scripts>
       <script value="start" />
     </scripts>
-    <node-interpreter value="$USER_HOME$/.nvm/versions/node/v14.20.1/bin/node" />
+    <node-interpreter value="wsl://Ubuntu@/home/jerkey2/.nvm/versions/node/v16.19.0/bin/node" />
     <envs />
     <method v="2" />
   </configuration>

@@ -1,3 +1,5 @@
+export default {};
+
 // A database of every character in their game and main details.
 //
 //     Opinions are not provided, in fear that they will influence the player's

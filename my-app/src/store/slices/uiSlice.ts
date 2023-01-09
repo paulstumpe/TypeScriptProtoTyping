@@ -1,15 +1,24 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import type {RootState} from "../store";
-import {HydratedHex, selectHexById} from "./hexSlice";
+import {HydratedHex, selectHexById, Terrains} from "./hexSlice";
+import {BaseUnits} from "../../ProtoType Mechanics/unitClasses/soldier";
 
 export interface UiState {
   selectedHex?: string,
   mousedHex?: string,
+  painterMode: boolean
+  painterModeIsTerrain: boolean,
+  painterModeBrushUnit: BaseUnits
+  painterModeBrushTerrain: Terrains
 
 }
 const initialState: UiState = {
   selectedHex: undefined,
   mousedHex: undefined,
+  painterMode:false,
+  painterModeIsTerrain: false,
+  painterModeBrushUnit: "brigandlvl1",
+  painterModeBrushTerrain: "grass",
 }
 export const uiSlice = createSlice({
   name:'ui',
@@ -23,6 +32,23 @@ export const uiSlice = createSlice({
     },
     setMousedHex: (state, action: PayloadAction<{hexId:string}>)=>{
       state.mousedHex = action.payload.hexId;
+    },
+    setPaintMode:(state, action:PayloadAction<boolean>)=>{
+      state.paintMode = action.payload
+    },
+    setPaintBrush:(state, action:PayloadAction<{
+      terrain?:Terrains,
+      unit?:BaseUnits,
+    }>)=>{
+      const {terrain, unit} = action.payload
+      if(terrain){
+        state.painterModeIsTerrain = true;
+        state.painterModeBrushTerrain = terrain;
+      }
+      if(unit){
+        state.painterModeIsTerrain = false;
+        state.painterModeBrushTerrain = unit;
+      }
     }
   }
 })
@@ -43,6 +69,19 @@ export const getMousedHex = (state:RootState):HydratedHex|undefined=>{
   return hex;
 }
 
-export const {setSelectedHex, setMousedHex} = uiSlice.actions;
+export const selectPaintSettings = (state:RootState)=>{
+  const {painterMode,
+    painterModeIsTerrain,
+    painterModeBrushUnit,
+    painterModeBrushTerrain} = state.ui;
+  return {
+    painterMode,
+    painterModeIsTerrain,
+    painterModeBrushUnit,
+    painterModeBrushTerrain,
+  }
+}
+
+export const {setSelectedHex, setMousedHex, setPaintMode, setPaintBrush} = uiSlice.actions;
 
 export default uiSlice.reducer;

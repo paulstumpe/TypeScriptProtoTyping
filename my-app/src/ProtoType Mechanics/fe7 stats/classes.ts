@@ -1,3 +1,5 @@
+export default {};
+
 // ===============================================================================
 //     I'll follow a standard format, because it saves some time.
 //

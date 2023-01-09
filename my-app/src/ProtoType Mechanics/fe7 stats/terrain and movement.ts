@@ -1,3 +1,5 @@
+export default {};
+
 // g) Terrain & Movement -------------------------------------------------- [1070]
 // -------------------------------------------------------------------------------
 //     Different terrain gives different bonuses, for example forests.

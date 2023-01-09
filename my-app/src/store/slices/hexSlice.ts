@@ -7,11 +7,163 @@ import {useState} from "react";
 import selectedHex from "../../Views/BelowBoard/SelectedHex";
 import {getMousedHex, getSelectedHex} from "./uiSlice";
 import HexClass from "../../utilities/HexGridClasses/HexClass";
+import {WeaponType} from "../../ProtoType Mechanics/weapons";
 
 
-export type Terrains = 'grass' | 'rock'
-export const terrains:Terrains[] = ['grass', "rock"]
+export type Terrains =
+    'grass' |
+    'rock' |
+    'plains' |
+    'woods' |
+    'sand' |
+    'high mountains' |
+    'pillar'|
+    'throne'|
+    'castle gate' |
+    'sea'|
+    'river' |
+    'mountains'|
+    'village'
+export interface Terrain {
+  evasion:number,
+  name:Terrains,
+  defense:number,
+  movement:{
+    mounted: number,
+    notMounted:number,
+  }
+}
+export type TerrainsDict = {
+  [key in Terrains]: Terrain
+}
 
+
+export const terrains:TerrainsDict = {
+  'grass': {
+    name:'grass',
+    evasion: 0,
+    defense:0,
+    movement:{
+      mounted:0,
+      notMounted:0
+    }
+  },
+  'rock': {
+    name:'rock',
+    evasion: 0,
+    defense:0,
+    movement:{
+      mounted:0,
+      notMounted:0
+    }
+  },
+  'plains': {
+    name:'plains',
+    evasion: 0,
+    defense:0,
+    movement:{
+      mounted:0,
+      notMounted:0
+    }
+  },
+  'woods': {
+    name:'woods',
+    evasion: 20,
+    defense:1,
+    movement:{
+      mounted:0,
+      notMounted:0
+    }
+  },
+  'sand': {
+    name:'sand',
+    evasion: 5,
+    defense:0,
+    movement:{
+      mounted:0,
+      notMounted:0
+    }
+  },
+  'high mountains': {
+    name:'high mountains',
+    evasion: 40,
+    defense:0,
+    movement:{
+      mounted:0,
+      notMounted:0
+    }
+  },
+  'pillar': {
+    name:'pillar',
+    evasion: 20,
+    defense:1,
+    movement:{
+      mounted:0,
+      notMounted:0
+    }
+  },
+  'throne': {
+    name:'throne',
+    evasion: 30,
+    defense:3,
+    movement:{
+      mounted:0,
+      notMounted:0
+    }
+  },
+  'castle gate': {
+    name:'castle gate',
+    evasion: 30,
+    defense:3,
+    movement:{
+      mounted:0,
+      notMounted:0
+    }
+  },
+  'sea': {
+    name:'sea',
+    evasion: 10,
+    defense:0,
+    movement:{
+      mounted:0,
+      notMounted:0
+    }
+  },
+  'river': {
+    name:'river',
+    evasion: 0,
+    defense:0,
+    movement:{
+      mounted:0,
+      notMounted:0
+    }
+  },
+  'mountains': {
+    name:'mountains',
+    evasion: 30,
+    defense:1,
+    movement:{
+      mounted:0,
+      notMounted:0
+    }
+  },
+  'village':{
+    name:'village',
+    evasion: 10,
+    defense:0,
+    movement:{
+      mounted:0,
+      notMounted:0
+    }
+  },
+}
+
+export const terrainsArr:Terrains[] = [];
+for (const terrainsKey in terrains) {
+  //@ts-ignore
+  let terrain:Terrains = terrains[terrainsKey].name;
+  terrainsArr.push(terrain);
+}
 
 //define a type for the slice state
 interface HexState {

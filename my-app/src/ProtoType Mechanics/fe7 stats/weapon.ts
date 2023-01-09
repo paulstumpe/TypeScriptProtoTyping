@@ -1,3 +1,4 @@
+export default {};
 // A reference guide to all the weapons in the game and their data.
 //
 //     If the price is 'cannot be obtained' it means that it can only be obtained via
