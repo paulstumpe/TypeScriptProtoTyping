@@ -94,6 +94,9 @@ export default class Fe7Calculator extends CombatCalculator{
     if(hit){
       damage = this.getDamage(attacker,target, isCritical);
     }
+    if(damage<0){
+      damage=0;
+    }
     return {
       hit,
       isCritical,
@@ -335,6 +338,7 @@ export default class Fe7Calculator extends CombatCalculator{
 
     targetHp = this.analyzeAttackResult(targetHp,firstAttack)
     if(targetHp <=0){
+      targetHp=0;
       return {
         attackerHp,
         targetHp
@@ -344,6 +348,7 @@ export default class Fe7Calculator extends CombatCalculator{
     if(counterAttack){
       attackerHp = this.analyzeAttackResult(attackerHp,counterAttack)
       if(attackerHp <=0){
+        attackerHp = 0;
         return {
           attackerHp,
           targetHp
@@ -354,6 +359,7 @@ export default class Fe7Calculator extends CombatCalculator{
     if(secondCounterAttack){
       attackerHp = this.analyzeAttackResult(attackerHp,secondCounterAttack)
       if(attackerHp <=0){
+        attackerHp = 0;
         return {
           attackerHp,
           targetHp
@@ -364,6 +370,7 @@ export default class Fe7Calculator extends CombatCalculator{
     if(secondAttack){
       targetHp = this.analyzeAttackResult(targetHp,secondAttack)
       if(targetHp <=0){
+        targetHp=0;
         return {
           attackerHp,
           targetHp
