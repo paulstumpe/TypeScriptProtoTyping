@@ -221,7 +221,7 @@ export const hexesSlice = createSlice({
   name: 'hexes',
   initialState,
   reducers: {
-    setTerrain: (state, action: PayloadAction<{hex:HydratedHex, terrain:Terrains}>)=>{
+    setTerrain: (state, action: PayloadAction<{hex:HexStruct, terrain:Terrains}>)=>{
       const {hex, terrain} = action.payload;
       const hexId = HexUtility.hexIdFromHex(hex);
       let hexState = state.byId[hexId];

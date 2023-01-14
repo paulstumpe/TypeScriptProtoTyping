@@ -1,7 +1,7 @@
 import React, {CSSProperties} from "react";
 import {useDispatch} from "react-redux";
 import {HydratedUnit, setUnitsOrientation, setUnitsOrientationUsingFacingHex} from "../../store/slices/unitsSlice";
-import {useAppSelector} from "../../store/reduxCustomHooks";
+import {useAppDispatch, useAppSelector} from "../../store/reduxCustomHooks";
 import {selectTurn} from "../../store/slices/gameSlice";
 import HexUtility from "../../utilities/HexGridClasses/HexClass";
 import {selectHexWithUnit} from "../../store/slices/hexSlice";
@@ -17,7 +17,7 @@ export interface props {
 
 function ConfirmOrient({style, clickedHex, clearBoxState, unit}:props) {
   const unitHex = useAppSelector(state=>selectHexWithUnit(state,unit.id))
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const handleOrient = ()=>{
     if(unitHex){
       dispatch(setUnitsOrientationUsingFacingHex({

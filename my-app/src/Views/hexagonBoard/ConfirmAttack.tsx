@@ -23,6 +23,10 @@ function ConfirmAttack({style, clickedHexId, clearBoxState, unit}:props) {
     if(targetUnit?.id && selectedHex){
 
       dispatch(attack({attackerId:unit.id,targetId:targetUnit.id, currentTurn,targetHex:clickedHex, attackerHex:selectedHex}))
+
+      //this needs to effect state in a way that the renderer will start rendering out the attack and therefore also continuing the attack
+
+
     } else {
       throw new DOMException('somehow in confirm attack targetunitid was not defined')
     }

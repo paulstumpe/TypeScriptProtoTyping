@@ -7,14 +7,21 @@ import {useAppSelector, useAppDispatch } from "../../store/reduxCustomHooks";
 import {
     selectAllHexesWithState, selectHex,
     selectHorizontalHexes,
-    selectVerticalHexes,
+    selectVerticalHexes, setTerrain, setUnit, Terrains,
 } from "../../store/slices/hexSlice";
-import {getMousedHex, getSelectedHex, setMousedHex, setSelectedHex} from "../../store/slices/uiSlice"
+import {
+    getMousedHex,
+    getSelectedHex,
+    selectPaintSettings,
+    setMousedHex,
+    setSelectedHex
+} from "../../store/slices/uiSlice"
 import HexUtility from "../../utilities/HexGridClasses/HexClass";
 import {selectLayout} from "../../store/slices/layoutSlice";
 import createHexesForRender from "./createsHexesForRender";
 import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
 import {
+    addUnit,
     selectAllAttackableHexesWithUnits,
     selectAttackableHexes,
     selectHexesAttackableAfterMove,
@@ -27,6 +34,7 @@ import StartUnitAction from "./StartUnitAction";
 import {selectTurn} from "../../store/slices/gameSlice";
 import {selectPrimaryPlayer} from "../../store/slices/playersSlice";
 import ConfirmOrient from "./ConfirmOrient";
+import {BaseUnits} from "../../ProtoType Mechanics/unitClasses/soldier";
 
 
 type TypeOfBox = 'AddUnitOrTerrain'| 'ConfirmAttack' |'ConfirmMove' |'StartMoveOrAttack' | 'ConfirmOrient' | ''
@@ -61,6 +69,7 @@ function HexagonBoard({}:props) {
     const [boxClickedHexId, setBoxClickedHexId] = useState('');
     const clickedHex = useAppSelector(state=>selectHex(state,HexUtility.hexFromId(boxClickedHexId? boxClickedHexId: 'q0r0')))
     const player = useAppSelector(selectPrimaryPlayer);
+    let paintSettings = useAppSelector(selectPaintSettings);
     const dispatch = useAppDispatch();
 
     const [left, setLeft] = useState(0)
@@ -86,6 +95,20 @@ function HexagonBoard({}:props) {
         setStartedMove(false);
         setStartOrient(false);
     }
+    const addUnitToSelected = (hex:HexStruct)=>{
+        let dispatchedUnit = dispatch(addUnit(paintSettings.painterModeBrushUnit))
+        dispatch(setUnit({
+            unit: dispatchedUnit.payload,
+            hex
+        }))
+    }
+    const handleSetTerrain = (hex:HexStruct)=>{
+        dispatch(setTerrain({
+            hex,
+            terrain: paintSettings.painterModeBrushTerrain
+        }))
+    }
+
 
     let movableToShow = allowedToMove ? movableArr : [];
     let attackableToShow = allowedToMove ? attackableAfterMove : attackRngHexes;
@@ -105,7 +128,6 @@ function HexagonBoard({}:props) {
         movableToShow = [];
         attackableToShow = [];
     }
-
 
     const drawGrid = (context:CanvasRenderingContext2D , frameCount:number, canvas:HTMLCanvasElement)=>{
         Grid({
@@ -136,6 +158,7 @@ function HexagonBoard({}:props) {
         setBoxClickedHexId(HexUtility.hexIdFromHex(hex));
         setShowBox(true);
     }
+
     const handleCanvasClick  = (
       {nativeEvent} :React.MouseEvent,
       canvasRef:RefObject<HTMLCanvasElement>
@@ -156,6 +179,13 @@ function HexagonBoard({}:props) {
         //set action to take
         // probably need some long switch statement to really get the context of this click
         let actionToTake = undefined;
+
+
+
+
+
+
+
         //should start units turn
 
         //condtional should be seomthing like
@@ -175,8 +205,17 @@ function HexagonBoard({}:props) {
         //add terrain or unit
         // actionToTake;
         //should selectHex
+
+
+        //painter mode takes priority over any of these other options
+        actionToTake= paintSettings.painterMode  ? 'paintBrushModeUnit' : actionToTake;
+        actionToTake= paintSettings.painterMode && paintSettings.painterModeIsTerrain ? 'paintBrushModeTerrain' : actionToTake;
+
         //last case
         actionToTake = actionToTake ? actionToTake : 'selectHex';
+
+
+
         console.log('action to take ' + actionToTake)
         //take action
         switch (actionToTake) {
@@ -200,6 +239,15 @@ function HexagonBoard({}:props) {
             case 'makeTerrain':
                 setTypeOfBoxToShow('AddUnitOrTerrain')
                 makeFloatyBox(nativeEvent, hex);
+                break;
+            case 'paintBrushModeTerrain':
+                handleSetTerrain(hex);
+                console.log('paint now')
+                console.log(hex)
+                console.log(paintSettings)
+                break;
+            case 'paintBrushModeUnit':
+                addUnitToSelected(hex);
                 break;
             case 'selectHex':
                 clearBoxState();

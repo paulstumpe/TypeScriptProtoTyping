@@ -3,10 +3,12 @@ import {RootState} from "../store";
 
 interface GameState {
   turn:number,
+  attackInProgress:boolean,
 }
 
 const initialState: GameState = {
   turn:1,
+  attackInProgress:false,
 }
 
 export const gameSlice = createSlice({
@@ -15,6 +17,9 @@ export const gameSlice = createSlice({
   reducers: {
     endTurn: (state) =>{
       state.turn ++;
+    },
+    beginAttack:(state)=>{
+      state.attackInProgress=true;
     }
   }
 })

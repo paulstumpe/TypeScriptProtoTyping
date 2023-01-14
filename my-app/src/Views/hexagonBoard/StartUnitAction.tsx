@@ -1,6 +1,7 @@
 import React, {CSSProperties} from "react";
 import {setSelectedHex} from "../../store/slices/uiSlice";
 import {useDispatch} from "react-redux";
+import {useAppDispatch} from "../../store/reduxCustomHooks";
 
 export interface props {
   style : CSSProperties
@@ -25,7 +26,7 @@ function StartUnitAction({
                            allowedToOrient,
                            setStartOrient,
                          }:props) {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const handleStartAttack = ()=>{
     clearBoxState(false);
     setStartAttack(true);

@@ -3,7 +3,7 @@ import React from "react";
 import {useAppSelector, useAppDispatch } from "../../store/reduxCustomHooks";
 import {addUnit, selectAllUnitIds} from "../../store/slices/unitsSlice";
 import {increment} from "../../store/slices/counterSlice";
-import {shallowEqual, useDispatch} from "react-redux";
+import {shallowEqual} from "react-redux";
 import UnitViewThing from "./UnitViewThing";
 import SelectedHex from "./SelectedHex";
 import {getSelectedHex, selectPaintSettings, setPaintBrush, setPaintMode} from "../../store/slices/uiSlice";
@@ -24,7 +24,7 @@ function BottomBar() {
     // @ts-ignore
     basesArr.push(basesDict[basesArrKey].name);
   }
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const handleEndTurn = ()=>{
     dispatch(endTurn());
   }
@@ -37,7 +37,7 @@ function BottomBar() {
   }
 
   const handleTogglePainterMode = ()=>{
-    setPaintMode(!paintSettings.painterMode)
+    dispatch(setPaintMode(!painterMode));
   }
 
 

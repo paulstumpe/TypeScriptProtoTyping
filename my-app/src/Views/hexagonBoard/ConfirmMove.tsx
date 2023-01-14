@@ -3,7 +3,7 @@ import {useDispatch} from "react-redux";
 import {moveUnit} from "../../store/slices/hexSlice";
 import {HydratedUnit, selectUnit, setTurnMoved} from "../../store/slices/unitsSlice";
 import HexUtility from "../../utilities/HexGridClasses/HexClass";
-import {useAppSelector} from "../../store/reduxCustomHooks";
+import {useAppDispatch, useAppSelector} from "../../store/reduxCustomHooks";
 import {selectTurn} from "../../store/slices/gameSlice";
 import {setSelectedHex} from "../../store/slices/uiSlice";
 
@@ -16,7 +16,7 @@ export interface props {
 
 function ConfirmMove({style, clickedHex, clearBoxState, unit}:props) {
   const turn = useAppSelector(selectTurn)
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const handleMove = ()=>{
   //should dispatch a move command
     dispatch(moveUnit({
