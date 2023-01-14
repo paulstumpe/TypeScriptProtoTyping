@@ -27,7 +27,6 @@ import StartUnitAction from "./StartUnitAction";
 import {selectTurn} from "../../store/slices/gameSlice";
 import {selectPrimaryPlayer} from "../../store/slices/playersSlice";
 import ConfirmOrient from "./ConfirmOrient";
-import {feAttackFull, knightPlusMissing} from "../../ProtoType Mechanics/feAttack";
 
 
 type TypeOfBox = 'AddUnitOrTerrain'| 'ConfirmAttack' |'ConfirmMove' |'StartMoveOrAttack' | 'ConfirmOrient' | ''

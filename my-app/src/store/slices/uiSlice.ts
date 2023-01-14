@@ -34,7 +34,7 @@ export const uiSlice = createSlice({
       state.mousedHex = action.payload.hexId;
     },
     setPaintMode:(state, action:PayloadAction<boolean>)=>{
-      state.paintMode = action.payload
+      state.painterMode = action.payload
     },
     setPaintBrush:(state, action:PayloadAction<{
       terrain?:Terrains,
@@ -47,7 +47,7 @@ export const uiSlice = createSlice({
       }
       if(unit){
         state.painterModeIsTerrain = false;
-        state.painterModeBrushTerrain = unit;
+        state.painterModeBrushUnit = unit;
       }
     }
   }

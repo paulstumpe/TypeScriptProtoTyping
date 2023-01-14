@@ -159,11 +159,21 @@ export const terrains:TerrainsDict = {
 }
 
 export const terrainsArr:Terrains[] = [];
+// for (const terrainsKey in terrains as TerrainsDict) {
+//   let terrain:Terrains = terrains[terrainsKey].name;
+//   terrainsArr.push(terrain);
+// }
+
+// for (const terrainsKey in terrains) {
+//   let terrain:Terrains = terrains[terrainsKey as Terrains].name;
+//   terrainsArr.push(terrain);
+// }
+
 for (const terrainsKey in terrains) {
-  //@ts-ignore
-  let terrain:Terrains = terrains[terrainsKey].name;
+  let terrain:Terrains = terrains[terrainsKey as keyof TerrainsDict].name;
   terrainsArr.push(terrain);
 }
+
 
 //define a type for the slice state
 interface HexState {

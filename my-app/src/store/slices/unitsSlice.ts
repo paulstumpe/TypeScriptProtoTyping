@@ -7,12 +7,8 @@ import {getSelectedHex} from "./uiSlice";
 import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
 import {useDispatch} from "react-redux";
 import {store} from "../store";
-import {
-  analyzeFullAttackResults,
-  feAttackFull,
-  knightPlusMissing,
-} from "../../ProtoType Mechanics/feAttack";
 import {addOnMissing, basesDict, BaseUnits} from "../../ProtoType Mechanics/unitClasses/soldier";
+import Fe7Calculator from "../../ProtoType Mechanics/combatSystems/fe7Calculator";
 
 // Define a type for the slice state
 
@@ -173,9 +169,9 @@ export const unitsSlice = createSlice({
         //do attack
         let attackerBase = basesDict[attacker.unitToInherit];
         let targetBase = basesDict[target.unitToInherit];
-        let attackResults = feAttackFull(attackerBase,targetBase,false, rngArr);
+        let attackResults = Fe7Calculator.attackFull(attackerBase,targetBase,false, rngArr);
         console.log(attackResults);
-        let hpAfter = analyzeFullAttackResults(attackResults,attacker,target);
+        let hpAfter = Fe7Calculator.analyzeFullAttackResults(attackResults,attacker,target);
         attacker.hp = hpAfter.attackerHp;
         target.hp = hpAfter.targetHp;
         if(attacker.hp <= 0){
