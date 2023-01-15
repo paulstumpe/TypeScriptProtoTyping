@@ -9,6 +9,7 @@ import {useDispatch} from "react-redux";
 import {store} from "../store";
 import {addOnMissing, basesDict, BaseUnits} from "../../ProtoType Mechanics/unitClasses/soldier";
 import Fe7Calculator from "../../ProtoType Mechanics/combatSystems/fe7Calculator";
+import {attackAction} from "../MultiSliceActions";
 
 // Define a type for the slice state
 
@@ -115,26 +116,17 @@ export const unitsSlice = createSlice({
         unit.orientation=direction;
       }
     },
-    attack: (state, action:PayloadAction<{
-      attackerId:string,
-      targetId:string,
-      attackerDirection:Orientation,
-      turnAttacked:number,
-      attackerHp:number,
-      targetHp:number,
-      rngArr:number[],
-    }>)=>{
-      const {attackerId, targetId, attackerDirection,turnAttacked,attackerHp,targetHp}=action.payload;
-      let attacker = state.find(unit=>unit.id===attackerId);
-      let target = state.find(unit=>unit.id===targetId);
-      if(!attacker || !target){
-        throw new Error('attacker or target provided had no match in state')
-      }
-      attacker.orientation = attackerDirection;
-      attacker.turnAttacked = turnAttacked;
-      attacker.hp = attackerHp;
-      target.hp = targetHp;
-    },
+    // attack: (state, action:PayloadAction<{
+    //   attackerId:string,
+    //   targetId:string,
+    //   attackerDirection:Orientation,
+    //   turnAttacked:number,
+    //   attackerHp:number,
+    //   targetHp:number,
+    //   rngArr:number[],
+    // }>)=>{
+    //
+    // },
     addUnit : {
       reducer(
         state,
@@ -160,13 +152,27 @@ export const unitsSlice = createSlice({
           payload : newPayload,
         }
       },
-
     }
-
+  },
+  extraReducers: (builder)=>{
+    builder
+      .addCase(attackAction, (state, action) => {
+        const {attackerId, targetId, attackerDirection,turnAttacked,attackerHp,targetHp}=action.payload;
+        let attacker = state.find(unit=>unit.id===attackerId);
+        let target = state.find(unit=>unit.id===targetId);
+        if(!attacker || !target){
+          throw new Error('attacker or target provided had no match in state')
+        }
+        attacker.orientation = attackerDirection;
+        attacker.turnAttacked = turnAttacked;
+        attacker.hp = attackerHp;
+        target.hp = targetHp;
+      })
+      .addDefaultCase((state, action) => {})
   },
 })
 
-export const { nameUnit, addUnit, setMovement, setHp, setRange, setTurnAttacked, setTurnMoved, setUnitsPlayer, attack, setUnitsOrientation, setUnitsOrientationUsingFacingHex } = unitsSlice.actions
+export const { nameUnit, addUnit, setMovement, setHp, setRange, setTurnAttacked, setTurnMoved, setUnitsPlayer, setUnitsOrientation, setUnitsOrientationUsingFacingHex } = unitsSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectUnit = (state: RootState, unitID: string = ''):UnitState|undefined => {

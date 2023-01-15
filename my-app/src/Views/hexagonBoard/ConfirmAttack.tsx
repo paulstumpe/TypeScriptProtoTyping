@@ -2,10 +2,11 @@ import React, {CSSProperties} from "react";
 import {useAppDispatch, useAppSelector} from "../../store/reduxCustomHooks";
 import {selectHex} from "../../store/slices/hexSlice";
 import HexUtility, {Orientation} from "../../utilities/HexGridClasses/HexClass";
-import {attack, HydratedUnit, selectUnit} from "../../store/slices/unitsSlice";
+import {HydratedUnit, selectUnit} from "../../store/slices/unitsSlice";
 import {selectTurn} from "../../store/slices/gameSlice";
 import {getSelectedHex, setSelectedHex} from "../../store/slices/uiSlice";
 import {generateAttackResults} from "../../ProtoType Mechanics/validateAttack";
+import {attackAction} from "../../store/MultiSliceActions";
 
 export interface props {
   style : CSSProperties
@@ -18,10 +19,10 @@ function ConfirmAttack({style, clickedHexId, clearBoxState, unit}:props) {
   const targetHex = useAppSelector((state)=>selectHex(state,HexUtility.hexFromId(clickedHexId)))
   const attackerHex = useAppSelector(getSelectedHex);
   const currentTurn = useAppSelector(selectTurn)
-  let attacker = useAppSelector(state=>selectUnit(state,attackerId));
-  let target = useAppSelector(state=>selectUnit(state,targetId));
   const targetId = targetHex.unit?.id;
   const attackerId = unit.id
+  let attacker = useAppSelector(state=>selectUnit(state,attackerId));
+  let target = useAppSelector(state=>selectUnit(state,targetId));
   const dispatch = useAppDispatch();
 
   const handleAttack = ()=>{
@@ -37,7 +38,7 @@ function ConfirmAttack({style, clickedHexId, clearBoxState, unit}:props) {
       targetHp,
       rngArr,
     } = attackResult;
-    dispatch(attack({
+    dispatch(attackAction({
       attackerId,
       targetId,
       targetHp,
