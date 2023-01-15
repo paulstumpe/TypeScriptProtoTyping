@@ -28,8 +28,29 @@ export const combatLogSlice = createSlice({
       .addCase(attackAction, (state, action) => {
 
         // action is inferred correctly here if using TS
-        const {attackerHp, targetHp, } = action.payload
-        state.logs.push(`attacked and target was left with ${targetHp}.`);
+        const {fullAttackResults, targetId} = action.payload
+
+        fullAttackResults.forEach(attack=>{
+          const {attacker, target, hit, isCritical, damage} = attack;
+
+
+          if(attacker.id === targetId){
+            state.logs.push(`${attack.attacker.name} counter attacks ${attack.target.name}.`);
+
+          } else {
+            state.logs.push(`${attack.attacker.name} attacks ${attack.target.name}.`);
+          }
+          if(!hit){
+            state.logs.push('they missed!');
+          }
+          if(hit && isCritical){
+            state.logs.push(`its a crital hit!`)
+          }
+          if(hit){
+            state.logs.push(`${attack.target.name} took ${damage}`)
+          }
+        })
+
       })
     //   // You can chain calls, or have separate `builder.addCase()` lines each time
     //   .addCase(decrement, (state, action) => {})

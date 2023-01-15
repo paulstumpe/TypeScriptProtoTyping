@@ -4,7 +4,7 @@ import React from 'react';
 import {useAppSelector} from "../store/reduxCustomHooks";
 import {HydratedUnit, selectUnit} from "../store/slices/unitsSlice";
 import {basesDict} from "./unitClasses/soldier";
-import Fe7Calculator from "./combatSystems/fe7Calculator";
+import Fe7Calculator, {FullAttackResults} from "./combatSystems/fe7Calculator";
 import {HydratedHex} from "../store/slices/hexSlice";
 
 
@@ -19,8 +19,7 @@ interface Props {
 interface Payload {
   attackerDirection: Orientation
   turnAttacked: number
-  attackerHp: number,
-  targetHp: number,
+  fullAttackResults :FullAttackResults
   rngArr:number[],
 }
 
@@ -43,12 +42,19 @@ export const generateAttackResults = (props:Props):Payload=>{
 
   let attackerBase = basesDict[attacker.unitToInherit];
   let targetBase = basesDict[target.unitToInherit];
-  let attackResults = Fe7Calculator.attackFull(attackerBase,targetBase,false, rngArr);
-  console.log(attackResults);
-  let {attackerHp,targetHp} = Fe7Calculator.analyzeFullAttackResults(attackResults,attacker,target);
+  let attackerWithStats = {
+    ...attacker,
+    statsForAttack:attackerBase
+  }
+  let targetWithStats = {
+    ...target,
+    statsForAttack:targetBase
+  }
+  let fullAttackResults = Fe7Calculator.attackFull(attackerWithStats,targetWithStats,false, rngArr);
+  console.log(fullAttackResults);
+  // let {attackerHp,targetHp} = Fe7Calculator.analyzeFullAttackResults(attackResults,attacker,target);
   return {
-    attackerHp,
-    targetHp,
+    fullAttackResults,
     attackerDirection,
     turnAttacked,
     rngArr

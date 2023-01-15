@@ -34,19 +34,19 @@ function ConfirmAttack({style, clickedHexId, clearBoxState, unit}:props) {
     let attackResult = generateAttackResults({attacker , target, currentTurn, targetHex, attackerHex});
     const {attackerDirection,
       turnAttacked,
-      attackerHp,
-      targetHp,
+      fullAttackResults,
       rngArr,
     } = attackResult;
+
     dispatch(attackAction({
       attackerId,
       targetId,
-      targetHp,
-      attackerHp,
+      fullAttackResults,
       attackerDirection,
       turnAttacked,
       rngArr,
     }));
+
     //todo remove from board if killed by making extra reducer for hexes and attack.
 
     //clear box selection

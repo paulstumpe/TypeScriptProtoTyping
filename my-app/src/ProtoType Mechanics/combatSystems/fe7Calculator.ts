@@ -10,19 +10,25 @@ export type Region = 'english' | 'japan'
 
 
 interface AttackResults {
+  attacker:UnitPlusStatsForAttack
+  target:UnitPlusStatsForAttack
   isCritical:boolean,
   hit:boolean,
   damage:number,
 }
 
-interface FullAttackResults {
-  firstAttack:AttackResults,
-  secondAttack?:AttackResults,
-  counterAttack?:AttackResults,
-  secondCounterAttack?:AttackResults,
-}
+export type FullAttackResults = AttackResults[];
+// interface FullAttackResults {
+//   firstAttack:AttackResults,
+//   secondAttack?:AttackResults,
+//   counterAttack?:AttackResults,
+//   secondCounterAttack?:AttackResults,
+// }
 
 export type WeaponAdvantage =   'goodAgainst' | 'weakAgainst' | 'neutral'
+export interface UnitPlusStatsForAttack extends HydratedUnit{
+  statsForAttack:StatsForAttack
+}
 
 //https://github.com/microsoft/TypeScript/issues/14600#issuecomment-333416173
 //https://github.com/microsoft/TypeScript/issues/14600#issuecomment-484476715
@@ -37,7 +43,6 @@ export default class Fe7Calculator extends CombatCalculator{
   // attackFull(attacker: StatsForAttack, target: StatsForAttack, counterStrikeInRange: boolean, rngArr: number[]): FullAttackResults {
   //     throw new Error("Method not implemented.");
   // }
-
   /**
    * a pretty sussy function. the way it goes about ordering stuff and triggering stuff obviously is specific to fe combat,
    * so it needs to live within an fe calculator. yet, theres a lot of breaking points through this where I would like to be triggering stuff
@@ -51,29 +56,32 @@ export default class Fe7Calculator extends CombatCalculator{
    * @param counterStrikeInRange
    * @param rngArr
    */
-  public static attackFull (attacker:StatsForAttack, target:StatsForAttack, counterStrikeInRange:boolean, rngArr:number[]):FullAttackResults{
-    let attackSpeedAttacker = this.getAttackSpeed(attacker);
-    let attackSpeedTarget = this.getAttackSpeed(target);
+  public static attackFull (attacker:UnitPlusStatsForAttack, target:UnitPlusStatsForAttack, counterStrikeInRange:boolean, rngArr:number[]):FullAttackResults{
+    let attackerStatsForAttack = attacker.statsForAttack;
+    let targetStatsForAttack = target.statsForAttack
+
+    let attackSpeedAttacker = this.getAttackSpeed(attackerStatsForAttack);
+    let attackSpeedTarget = this.getAttackSpeed(targetStatsForAttack);
     let attackerIsDoubleAttack = this.doubleAttackIf(attackSpeedAttacker,attackSpeedTarget);
     let targetIsDoubleAttack = this.doubleAttackIf(attackSpeedTarget, attackSpeedAttacker);
     //first attack
     let firstAttack = this.AttackStrike(attacker,target, rngArr.pop(), rngArr.pop());
-    let fullAttackResults:FullAttackResults = {
-      firstAttack
-    }
+    let fullAttackResults:FullAttackResults = [firstAttack];
     //counterStrike
     if(counterStrikeInRange){
       let counterAttack = this.AttackStrike(target,attacker, rngArr.pop(), rngArr.pop());
-      fullAttackResults.counterAttack = counterAttack;
+      fullAttackResults.push(counterAttack);
       //second attack
       if(targetIsDoubleAttack){
-        fullAttackResults.secondCounterAttack = this.AttackStrike(target,attacker, rngArr.pop(), rngArr.pop());
+        let secondCounterAttack = this.AttackStrike(target,attacker, rngArr.pop(), rngArr.pop());
+        fullAttackResults.push(secondCounterAttack);
       }
     }
 
     //second attack
     if(attackerIsDoubleAttack){
-      fullAttackResults.secondAttack = this.AttackStrike(attacker,target, rngArr.pop(), rngArr.pop());
+      let secondAttack = this.AttackStrike(attacker,target, rngArr.pop(), rngArr.pop());
+      fullAttackResults.push(secondAttack);
     }
 
     return fullAttackResults
@@ -81,18 +89,20 @@ export default class Fe7Calculator extends CombatCalculator{
 
 
 
-  private static AttackStrike (attacker:StatsForAttack, target:StatsForAttack, hitRng:number|undefined, critRng:number|undefined):AttackResults{
+  private static AttackStrike (attacker:UnitPlusStatsForAttack, target:UnitPlusStatsForAttack, hitRng:number|undefined, critRng:number|undefined):AttackResults{
+    let attackerStats = attacker.statsForAttack;
+    let targetStats = target.statsForAttack;
     if(hitRng===undefined || critRng===undefined){
       throw Error('rng was not a number somehow')
     }
 
-    let attackerBattleCritRate = this.getBattleCritRate(attacker,target);
+    let attackerBattleCritRate = this.getBattleCritRate(attackerStats,targetStats);
     let isCritical = attackerBattleCritRate > critRng;
-    let attackerBattleAcc = this.getBattleAcc(attacker,target);
+    let attackerBattleAcc = this.getBattleAcc(attackerStats,targetStats);
     let hit = attackerBattleAcc > hitRng;
     let damage = 0;
     if(hit){
-      damage = this.getDamage(attacker,target, isCritical);
+      damage = this.getDamage(attackerStats,targetStats, isCritical);
     }
     if(damage<0){
       damage=0;
@@ -101,6 +111,8 @@ export default class Fe7Calculator extends CombatCalculator{
       hit,
       isCritical,
       damage,
+      attacker,
+      target,
     }
   }
 
@@ -331,62 +343,26 @@ export default class Fe7Calculator extends CombatCalculator{
     return effectiveCoefficient;
   }
 
-  public static analyzeFullAttackResults  (attackResults:FullAttackResults, attacker:HydratedUnit, target:HydratedUnit){
-    const {firstAttack,secondAttack,counterAttack,secondCounterAttack} = attackResults
-    let attackerHp =attacker.hp;
-    let targetHp = target.hp;
+  public static hpAfterAllAttacks  (attackResults:FullAttackResults, attacker:HydratedUnit, target:HydratedUnit){
+    const toReturn =  {
+      attackerHp:attacker.hp,
+      targetHp:target.hp
+    }
 
-    targetHp = this.analyzeAttackResult(targetHp,firstAttack)
-    if(targetHp <=0){
-      targetHp=0;
-      return {
-        attackerHp,
-        targetHp
+    for (const attackResult of attackResults) {
+
+      //if target or attacker at 0, return;
+      let attack = attackResult;
+      if (attack.attacker.id === attacker.id) {
+        toReturn.targetHp = toReturn.targetHp - attack.damage
+      } else if (attack.target.id === target.id) {
+        toReturn.attackerHp = toReturn.attackerHp - attack.damage;
+      } else  {
+        throw new Error('somehow attack results target nor attacker lined up with the ids')
       }
+
     }
-
-    if(counterAttack){
-      attackerHp = this.analyzeAttackResult(attackerHp,counterAttack)
-      if(attackerHp <=0){
-        attackerHp = 0;
-        return {
-          attackerHp,
-          targetHp
-        }
-      }
-    }
-
-    if(secondCounterAttack){
-      attackerHp = this.analyzeAttackResult(attackerHp,secondCounterAttack)
-      if(attackerHp <=0){
-        attackerHp = 0;
-        return {
-          attackerHp,
-          targetHp
-        }
-      }
-    }
-
-    if(secondAttack){
-      targetHp = this.analyzeAttackResult(targetHp,secondAttack)
-      if(targetHp <=0){
-        targetHp=0;
-        return {
-          attackerHp,
-          targetHp
-        }
-      }
-    }
-    return {
-      attackerHp,
-      targetHp
-    }
-
-
-  }
-
-  private static analyzeAttackResult  (targetHP:number, attackResults:AttackResults){
-    return targetHP-attackResults.damage;
+    return toReturn
   }
 
 }

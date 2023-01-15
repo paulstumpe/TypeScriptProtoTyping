@@ -157,7 +157,7 @@ export const unitsSlice = createSlice({
   extraReducers: (builder)=>{
     builder
       .addCase(attackAction, (state, action) => {
-        const {attackerId, targetId, attackerDirection,turnAttacked,attackerHp,targetHp}=action.payload;
+        const {attackerId, targetId, attackerDirection,turnAttacked, fullAttackResults}=action.payload;
         let attacker = state.find(unit=>unit.id===attackerId);
         let target = state.find(unit=>unit.id===targetId);
         if(!attacker || !target){
@@ -165,8 +165,9 @@ export const unitsSlice = createSlice({
         }
         attacker.orientation = attackerDirection;
         attacker.turnAttacked = turnAttacked;
-        attacker.hp = attackerHp;
-        target.hp = targetHp;
+        let hp = Fe7Calculator.hpAfterAllAttacks(fullAttackResults, attacker,target)
+        attacker.hp = hp.attackerHp;
+        target.hp = hp.targetHp;
       })
       .addDefaultCase((state, action) => {})
   },
