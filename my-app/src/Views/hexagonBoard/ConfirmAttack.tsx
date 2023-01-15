@@ -1,10 +1,11 @@
 import React, {CSSProperties} from "react";
 import {useAppDispatch, useAppSelector} from "../../store/reduxCustomHooks";
 import {selectHex} from "../../store/slices/hexSlice";
-import HexUtility from "../../utilities/HexGridClasses/HexClass";
-import {attack, HydratedUnit} from "../../store/slices/unitsSlice";
+import HexUtility, {Orientation} from "../../utilities/HexGridClasses/HexClass";
+import {attack, HydratedUnit, selectUnit} from "../../store/slices/unitsSlice";
 import {selectTurn} from "../../store/slices/gameSlice";
 import {getSelectedHex, setSelectedHex} from "../../store/slices/uiSlice";
+import {generateAttackResults} from "../../ProtoType Mechanics/validateAttack";
 
 export interface props {
   style : CSSProperties
@@ -14,25 +15,46 @@ export interface props {
 }
 
 function ConfirmAttack({style, clickedHexId, clearBoxState, unit}:props) {
-  const clickedHex = useAppSelector((state)=>selectHex(state,HexUtility.hexFromId(clickedHexId)))
-  const selectedHex = useAppSelector(getSelectedHex);
+  const targetHex = useAppSelector((state)=>selectHex(state,HexUtility.hexFromId(clickedHexId)))
+  const attackerHex = useAppSelector(getSelectedHex);
   const currentTurn = useAppSelector(selectTurn)
-  const targetUnit = clickedHex.unit;
+  let attacker = useAppSelector(state=>selectUnit(state,attackerId));
+  let target = useAppSelector(state=>selectUnit(state,targetId));
+  const targetId = targetHex.unit?.id;
+  const attackerId = unit.id
   const dispatch = useAppDispatch();
+
   const handleAttack = ()=>{
-    if(targetUnit?.id && selectedHex){
-
-      let attkresult = dispatch(attack({attackerId:unit.id,targetId:targetUnit.id, currentTurn,targetHex:clickedHex, attackerHex:selectedHex}))
-      // attkresult.payload.
-      //this needs to effect state in a way that the renderer will start rendering out the attack and therefore also continuing the attack
-
-
-    } else {
+    if(targetId ===undefined || attackerHex ===undefined || attacker===undefined || target===undefined){
+      console.log('required target or attacker or hex undefined')
       throw new DOMException('somehow in confirm attack targetunitid was not defined')
     }
+
+    let attackResult = generateAttackResults({attacker , target, currentTurn, targetHex, attackerHex});
+    const {attackerDirection,
+      turnAttacked,
+      attackerHp,
+      targetHp,
+      rngArr,
+    } = attackResult;
+    dispatch(attack({
+      attackerId,
+      targetId,
+      targetHp,
+      attackerHp,
+      attackerDirection,
+      turnAttacked,
+      rngArr,
+    }));
+    //todo remove from board if killed by making extra reducer for hexes and attack.
+
+    //clear box selection
     dispatch(setSelectedHex({}));
     clearBoxState(false);
   }
+
+
+
   const handleDismiss = ()=>{
     dispatch(setSelectedHex({}));
     clearBoxState(false);

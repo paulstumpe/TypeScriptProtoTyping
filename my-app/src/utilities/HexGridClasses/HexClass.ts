@@ -275,7 +275,40 @@ class HexUtility {
     return orientationArr[i+1]
   }
 
+  public static  getOrientationFacingTargetHex = (unitHex:HexStruct,targetHex:HexStruct):Orientation=>{
 
+    if(HexUtility.equalTo(unitHex,targetHex)){
+      throw new Error('equal hexes were provided to get orientationfacing targethex, impossible to get direction')
+    }
+    const arr = HexUtility.hexLineDraw(unitHex,targetHex);
+    if(HexUtility.equalTo(unitHex,targetHex)){
+      throw new Error('tried to set a hexes orientation using its own hex and no neightbors');
+    }
+    let neighbors = HexUtility.allNeighbors(unitHex);
+    let direction:undefined|Orientation;
+    if(arr.length){
+      neighbors.forEach((neighbor,i)=>{
+        arr.forEach(hexInLine=>{
+          let equal = HexUtility.equalTo(neighbor,hexInLine);
+          if (equal){
+            if (i===0||i===1||i===2 ||i===3 ||i===4 ||i===5){
+              direction = HexUtility.getNextOrientation(i)
+            }
+          }
+        });
+      })
+      if(direction ===undefined){
+        console.log(neighbors);
+        console.log(arr);
+        throw new Error('somehow no neighbor matched in confirm orient');
+      }
+    }
+    if(direction===undefined){
+      throw new Error('somehow direction undefined at the end of getorientation facing target hex')
+    }
+    return direction;
+
+  }
 
 }
 

@@ -109,103 +109,31 @@ export const unitsSlice = createSlice({
       if(HexUtility.equalTo(unitHex,targetHex)){
         throw new Error('tried to set a hexes orientation using its own hex and no neightbors');
       }
-      let neighbors = HexUtility.allNeighbors(unitHex);
-      let direction;
-      if(arr.length){
-        neighbors.forEach((neighbor,i)=>{
-          arr.forEach(hexInLine=>{
-            let equal = HexUtility.equalTo(neighbor,hexInLine);
-            if (equal){
-              if (i===0||i===1||i===2 ||i===3 ||i===4 ||i===5){
-                direction = HexUtility.getNextOrientation(i)
-              }
-            }
-          });
-        })
-        if(direction ===undefined){
-          console.log(neighbors);
-          console.log(arr);
-          throw new Error('somehow no neighbor matched in confirm orient');
-        }
-        let unit = state.find(unit=>unit.id===unitId)
-        if(unit){
-          unit.orientation=direction;
-        }
+      let direction = HexUtility.getOrientationFacingTargetHex(unitHex,targetHex)
+      let unit = state.find(unit=>unit.id===unitId)
+      if(unit){
+        unit.orientation=direction;
       }
-
-
     },
-    attack: {
-      // reducer:(state, action: PayloadAction<number>)=>{
-      reducer:(state, action:PayloadAction<{attackerId:string, targetId:string, rngArr:number[], currentTurn:number,attackerHex:HexStruct,targetHex:HexStruct}>)=>{
-        const {attackerId, targetId, rngArr, currentTurn, targetHex, attackerHex}=action.payload;
-        let attacker = state.find(unit=>unit.id===attackerId);
-        let target = state.find(unit=>unit.id===targetId);
-        //todo figure out how not to repeat this code
-        const arr = HexUtility.hexLineDraw(attackerHex,targetHex);
-        let neighbors = HexUtility.allNeighbors(attackerHex);
-        let direction;
-        if(arr.length){
-          neighbors.forEach((neighbor,i)=>{
-            arr.forEach(hexInLine=>{
-              let equal = HexUtility.equalTo(neighbor,hexInLine);
-              if (equal){
-                if (i===0||i===1||i===2 ||i===3 ||i===4 ||i===5){
-                  direction = HexUtility.getNextOrientation(i)
-                }
-              }
-            });
-          })
-          if(direction === undefined){
-            console.log(neighbors);
-            console.log(arr);
-            throw new Error('somehow no neighbor matched in confirm orient');
-          }
-          let unit = state.find(unit=>unit.id===attackerId)
-          if(unit){
-            unit.orientation=direction;
-          }
-        }
-
-        if(!attacker || !target){
-          throw new DOMException('attack reducer received an attacker or target unit id that can not be found in state')
-        }
-        attacker.turnAttacked = currentTurn;
-
-        // target.hp = target.hp - attacker.attack;
-        //do attack
-        let attackerBase = basesDict[attacker.unitToInherit];
-        let targetBase = basesDict[target.unitToInherit];
-        let attackResults = Fe7Calculator.attackFull(attackerBase,targetBase,false, rngArr);
-        console.log(attackResults);
-        let hpAfter = Fe7Calculator.analyzeFullAttackResults(attackResults,attacker,target);
-        attacker.hp = hpAfter.attackerHp;
-        target.hp = hpAfter.targetHp;
-        if(attacker.hp <= 0){
-          //todo remove from board if killed
-        }
-        if(target.hp <= 0){
-          //todo remove from board if killed
-        }
-
-      },
-      // prepare : (value: number) => ({ payload: value }),
-      prepare:({attackerId,targetId, currentTurn,attackerHex,targetHex}:{attackerId:string, targetId:string, currentTurn:number, attackerHex:HexStruct,targetHex:HexStruct})=>{
-        let rngArr = [];
-        for(let i=0; i<10; i++){
-          rngArr.push(Math.random()*100);
-        }
-        return {
-          payload:{
-            attackerId,
-            targetId,
-            currentTurn,
-            rngArr,
-            attackerHex,
-            targetHex
-          },
-        }
-      },
+    attack: (state, action:PayloadAction<{
+      attackerId:string,
+      targetId:string,
+      attackerDirection:Orientation,
+      turnAttacked:number,
+      attackerHp:number,
+      targetHp:number,
+      rngArr:number[],
+    }>)=>{
+      const {attackerId, targetId, attackerDirection,turnAttacked,attackerHp,targetHp}=action.payload;
+      let attacker = state.find(unit=>unit.id===attackerId);
+      let target = state.find(unit=>unit.id===targetId);
+      if(!attacker || !target){
+        throw new Error('attacker or target provided had no match in state')
+      }
+      attacker.orientation = attackerDirection;
+      attacker.turnAttacked = turnAttacked;
+      attacker.hp = attackerHp;
+      target.hp = targetHp;
     },
     addUnit : {
       reducer(

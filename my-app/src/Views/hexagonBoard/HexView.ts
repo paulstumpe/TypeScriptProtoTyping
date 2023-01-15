@@ -55,7 +55,7 @@ import {basesDict} from "../../ProtoType Mechanics/unitClasses/soldier";
    //set outline based on occupied and selected
    if(unit){
      unitText = unit.name;
-     hexVisuals.fillStyle = 'aquamarine'
+     hexVisuals.fillStyle = '#ADD8E6'
    }
    if (frontier){
      hexVisuals.fillStyle='pink'

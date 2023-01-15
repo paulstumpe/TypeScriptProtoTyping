@@ -6,14 +6,14 @@ type props = {
 }
 
 function CombatLog({}:props) {
-  // let combatLogArr = useAppSelector(selectCombatLogs);
+  let combatLogArr = useAppSelector(selectCombatLogs);
   return (
     <div>
-      {/*{combatLogArr.map(logEntry=>(*/}
-      {/*  <div>*/}
-      {/*    attack result: {logEntry}*/}
-      {/*  </div>*/}
-      {/*))}*/}
+      {combatLogArr.map(logEntry=>(
+        <div>
+          attack result: {logEntry}
+        </div>
+      ))}
     </div>
 
   );

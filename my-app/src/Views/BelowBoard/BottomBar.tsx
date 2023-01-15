@@ -11,7 +11,8 @@ import {endTurn, selectTurn} from "../../store/slices/gameSlice";
 import {setTerrain, setUnit, Terrains, terrainsArr} from "../../store/slices/hexSlice";
 import {basesDict, BaseUnits} from "../../ProtoType Mechanics/unitClasses/soldier";
 import HexUtility from "../../utilities/HexGridClasses/HexClass";
-import CombatLog from "./CombatLog";
+// import CombatLog from "./CombatLog";
+
 
 function BottomBar() {
   let turn = useAppSelector(selectTurn);
@@ -84,7 +85,7 @@ function BottomBar() {
             minWidth:'500px'
           }}>
             <div>
-              <CombatLog />
+              {/*<CombatLog />*/}
             </div>
           </div>
 
