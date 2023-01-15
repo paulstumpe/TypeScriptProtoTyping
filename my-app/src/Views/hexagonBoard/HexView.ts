@@ -1,7 +1,7 @@
 import LayoutClass, {LayoutStruct} from "../../utilities/HexGridClasses/LayoutClass";
 import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
 import HexLabel, {HexLabelProps, PartialLabelProps} from "./HexLabel";
-import {HydratedHex, selectHex, Terrains} from "../../store/slices/hexSlice";
+import {HydratedHex, selectHex, terrains, Terrains} from "../../store/slices/hexSlice";
 import HexUtility from "../../utilities/HexGridClasses/HexClass";
 import {store} from "../../store/store";
 import {getSelectedHex} from "../../store/slices/uiSlice";
@@ -39,15 +39,18 @@ import {basesDict} from "../../ProtoType Mechanics/unitClasses/soldier";
 
    let terrainText: string|undefined = ''
    let unitText: string|undefined = ''
-
+    if(hex.terrain){
    //set color of font and tile based on terrain
-   switch (terrain) {
-     case "grass" :
-       // labelVisuals.fillStyle="white";
-       hexVisuals.fillStyle="springgreen";
-       terrainText = terrain;
-       break;
-   }
+      let fullTerrain = terrains[hex.terrain];
+      terrainText = terrain;
+      if(fullTerrain.color){
+        hexVisuals.fillStyle=fullTerrain.color;
+      }
+    }
+
+
+
+
 
    //set outline based on occupied and selected
    if(unit){

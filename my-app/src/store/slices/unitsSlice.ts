@@ -106,6 +106,9 @@ export const unitsSlice = createSlice({
     setUnitsOrientationUsingFacingHex:(state, action:PayloadAction<{unitId:string, unitHex:HexStruct, targetHex:HexStruct}>)=>{
       const {unitId, unitHex, targetHex} = action.payload;
       const arr = HexUtility.hexLineDraw(unitHex,targetHex);
+      if(HexUtility.equalTo(unitHex,targetHex)){
+        throw new Error('tried to set a hexes orientation using its own hex and no neightbors');
+      }
       let neighbors = HexUtility.allNeighbors(unitHex);
       let direction;
       if(arr.length){
@@ -119,7 +122,9 @@ export const unitsSlice = createSlice({
             }
           });
         })
-        if(!direction){
+        if(direction ===undefined){
+          console.log(neighbors);
+          console.log(arr);
           throw new Error('somehow no neighbor matched in confirm orient');
         }
         let unit = state.find(unit=>unit.id===unitId)
@@ -152,6 +157,8 @@ export const unitsSlice = createSlice({
             });
           })
           if(direction === undefined){
+            console.log(neighbors);
+            console.log(arr);
             throw new Error('somehow no neighbor matched in confirm orient');
           }
           let unit = state.find(unit=>unit.id===attackerId)

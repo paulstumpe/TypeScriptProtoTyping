@@ -62,7 +62,7 @@ function UnitViewThing({unitID, highlight}:props) {
       ...blueBox,
       border
     }}>
-    <h3 style={{borderBottom:'solid black', textAlign:'center', marginLeft:'20px', marginRight:'20px'}}>{unit.name}</h3>
+    <h3 style={{borderBottom:'solid black', color:'red', textAlign:'center', marginLeft:'20px', marginRight:'20px'}}>{unit.name}</h3>
     <ul>
       <li>
         <form onSubmit={handleSubmit}>

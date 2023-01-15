@@ -22,8 +22,8 @@ function ConfirmAttack({style, clickedHexId, clearBoxState, unit}:props) {
   const handleAttack = ()=>{
     if(targetUnit?.id && selectedHex){
 
-      dispatch(attack({attackerId:unit.id,targetId:targetUnit.id, currentTurn,targetHex:clickedHex, attackerHex:selectedHex}))
-
+      let attkresult = dispatch(attack({attackerId:unit.id,targetId:targetUnit.id, currentTurn,targetHex:clickedHex, attackerHex:selectedHex}))
+      // attkresult.payload.
       //this needs to effect state in a way that the renderer will start rendering out the attack and therefore also continuing the attack
 
 

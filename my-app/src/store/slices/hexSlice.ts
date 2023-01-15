@@ -3,13 +3,18 @@ import type {RootState} from "../store";
 import {HydratedUnit, selectUnit} from "./unitsSlice";
 import HexUtility from "../../utilities/HexGridClasses/HexClass";
 import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
-import {useState} from "react";
+import {CSSProperties, useState} from "react";
 import selectedHex from "../../Views/BelowBoard/SelectedHex";
 import {getMousedHex, getSelectedHex} from "./uiSlice";
 import HexClass from "../../utilities/HexGridClasses/HexClass";
 import {WeaponType} from "../../ProtoType Mechanics/weapons";
 
 
+// type RGB = `rgb(${number}, ${number}, ${number})`;
+// type RGBA = `rgba(${number}, ${number}, ${number}, ${number})`;
+// type HEX = `#${string}`;
+
+// type Color = RGB | RGBA | HEX;
 export type Terrains =
     'grass' |
     'rock' |
@@ -28,6 +33,7 @@ export interface Terrain {
   evasion:number,
   name:Terrains,
   defense:number,
+  color?:CSSProperties['color'],
   movement:{
     mounted: number,
     notMounted:number,
@@ -43,6 +49,7 @@ export const terrains:TerrainsDict = {
     name:'grass',
     evasion: 0,
     defense:0,
+    color:'#80F0A0',
     movement:{
       mounted:0,
       notMounted:0
@@ -52,6 +59,7 @@ export const terrains:TerrainsDict = {
     name:'rock',
     evasion: 0,
     defense:0,
+    color: 'grey',
     movement:{
       mounted:0,
       notMounted:0
@@ -59,6 +67,7 @@ export const terrains:TerrainsDict = {
   },
   'plains': {
     name:'plains',
+    color: '#F8F8A8',
     evasion: 0,
     defense:0,
     movement:{
@@ -67,6 +76,7 @@ export const terrains:TerrainsDict = {
     }
   },
   'woods': {
+    color:'#A0A058',
     name:'woods',
     evasion: 20,
     defense:1,
@@ -77,6 +87,7 @@ export const terrains:TerrainsDict = {
   },
   'sand': {
     name:'sand',
+    color:'#E8D888',
     evasion: 5,
     defense:0,
     movement:{
@@ -86,6 +97,7 @@ export const terrains:TerrainsDict = {
   },
   'high mountains': {
     name:'high mountains',
+    color:'#B8A080',
     evasion: 40,
     defense:0,
     movement:{
@@ -95,6 +107,7 @@ export const terrains:TerrainsDict = {
   },
   'pillar': {
     name:'pillar',
+    color:'#90A098',
     evasion: 20,
     defense:1,
     movement:{
@@ -104,6 +117,7 @@ export const terrains:TerrainsDict = {
   },
   'throne': {
     name:'throne',
+    color:'#D82830',
     evasion: 30,
     defense:3,
     movement:{
@@ -113,6 +127,7 @@ export const terrains:TerrainsDict = {
   },
   'castle gate': {
     name:'castle gate',
+    color:'#D0D0D0',
     evasion: 30,
     defense:3,
     movement:{
@@ -122,6 +137,7 @@ export const terrains:TerrainsDict = {
   },
   'sea': {
     name:'sea',
+    color:'#00B2F8',
     evasion: 10,
     defense:0,
     movement:{
@@ -131,6 +147,7 @@ export const terrains:TerrainsDict = {
   },
   'river': {
     name:'river',
+    color: '#4098C8',
     evasion: 0,
     defense:0,
     movement:{
@@ -140,6 +157,7 @@ export const terrains:TerrainsDict = {
   },
   'mountains': {
     name:'mountains',
+    color:'#90B0C8',
     evasion: 30,
     defense:1,
     movement:{
@@ -149,6 +167,7 @@ export const terrains:TerrainsDict = {
   },
   'village':{
     name:'village',
+    color:'#E07848',
     evasion: 10,
     defense:0,
     movement:{
@@ -198,6 +217,9 @@ export interface HydratedHex{
   q: number
   r: number
   s: number
+}
+export interface HydratedHexWithUnit extends HydratedHex{
+  unit: HydratedUnit
 }
 
 export interface HexDictionary {

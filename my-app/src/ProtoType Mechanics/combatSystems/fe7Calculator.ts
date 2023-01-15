@@ -104,12 +104,12 @@ export default class Fe7Calculator extends CombatCalculator{
     }
   }
 
-  private static doubleAttackIf (attackerAtkSpeed:number, targetAtkSpeed:number):boolean{
+  public static doubleAttackIf (attackerAtkSpeed:number, targetAtkSpeed:number):boolean{
     let spdDif = attackerAtkSpeed-targetAtkSpeed;
     return spdDif >= 4;
   }
 
-  private static getAttackSpeed  (attacker:StatsForAttack){
+  public static getAttackSpeed  (attacker:StatsForAttack){
     let {weapon, con, speed} = attacker;
     let {weight} = weapon;
     let weaponCont = weight-con;
@@ -120,7 +120,7 @@ export default class Fe7Calculator extends CombatCalculator{
     return atkspeed;
   }
 
-  private static getDamage  (attacker:StatsForAttack, target:StatsForAttack, critical:boolean){
+  public static getDamage  (attacker:StatsForAttack, target:StatsForAttack, critical:boolean){
     let attackerAtk = this.getAtk(attacker, target);
     let targetDef = this.getDef(attacker, target);
     let criticalCooeficient = critical ? 3 : 1;
@@ -183,7 +183,7 @@ export default class Fe7Calculator extends CombatCalculator{
     return target.resistance + target.supBonus +target.terrainBonus
   }
 
-  private static getBattleAcc  (attacker:StatsForAttack, target:StatsForAttack){
+  public static getBattleAcc  (attacker:StatsForAttack, target:StatsForAttack){
     let unitAcc = this.getUnitAcc(attacker,target);
     let targetAvoid = this.getAvoid(attacker, target);
     return unitAcc-targetAvoid;
@@ -201,7 +201,7 @@ export default class Fe7Calculator extends CombatCalculator{
     return (targetAttackSpeed * 2) + target.luck + target.supBonus + target.tacticianBonus;
   }
 
-  private static getBattleCritRate  (attacker:StatsForAttack, target:StatsForAttack){
+  public static getBattleCritRate  (attacker:StatsForAttack, target:StatsForAttack){
     let critRate = this.getCritRate(attacker);
     let critEvade = this.getCritEvade(target);
     return critRate-critEvade

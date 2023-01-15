@@ -5,6 +5,7 @@ import {clickToCanvas, getCanvas} from "../Canvas/CanvasUtilities";
 import {canvasToGrid} from "./Grid";
 import {useAppSelector, useAppDispatch } from "../../store/reduxCustomHooks";
 import {
+    HydratedHexWithUnit,
     selectAllHexesWithState, selectHex,
     selectHorizontalHexes,
     selectVerticalHexes, setTerrain, setUnit, Terrains,
@@ -35,6 +36,7 @@ import {selectTurn} from "../../store/slices/gameSlice";
 import {selectPrimaryPlayer} from "../../store/slices/playersSlice";
 import ConfirmOrient from "./ConfirmOrient";
 import {BaseUnits} from "../../ProtoType Mechanics/unitClasses/soldier";
+import AttackPrediction from "./AttackPrediction";
 
 
 type TypeOfBox = 'AddUnitOrTerrain'| 'ConfirmAttack' |'ConfirmMove' |'StartMoveOrAttack' | 'ConfirmOrient' | ''
@@ -86,6 +88,17 @@ function HexagonBoard({}:props) {
         ...floatyBoxCSS,
         left: left + 'px',
         top: top +'px',
+    }
+
+    //show attack prediction IF unit is selected and mouse is hovering over enemy Unit and diff owners
+    const showAttackPrediction = selectedHex && selectedHex.unit &&
+      mousedHex && mousedHex.unit && mousedHex.unit.player !==selectedHex.unit.player;
+    if(selectedHex && mousedHex){
+
+    }
+    const attackPredictionCSS:CSSProperties={
+        left: (left+210) + 'px',
+        top: (top-50) +'px',
     }
 
     const clearBoxState=()=>{
@@ -196,7 +209,8 @@ function HexagonBoard({}:props) {
         //have clicked start move, and clickedhex is in movable
         actionToTake = unitIsSelected && validMove && startedMove ? 'makeMoveConfirm': actionToTake;
 
-        actionToTake = unitIsSelected && startedOrient ? 'makeOrientConfirm' : actionToTake;
+        //if clicked hex is the same as selected hex there will be no line to use to find wanted facing
+        actionToTake = unitIsSelected && startedOrient && selectedHex && !HexUtility.equalTo(hex,selectedHex) ? 'makeOrientConfirm' : actionToTake;
 
         //should make attack confirmation
         //have clicked start attack and clicked is a valid attack target
@@ -242,9 +256,6 @@ function HexagonBoard({}:props) {
                 break;
             case 'paintBrushModeTerrain':
                 handleSetTerrain(hex);
-                console.log('paint now')
-                console.log(hex)
-                console.log(paintSettings)
                 break;
             case 'paintBrushModeUnit':
                 addUnitToSelected(hex);
@@ -270,6 +281,8 @@ function HexagonBoard({}:props) {
 
     return (
       <div >
+
+
           <div style={oneHundredPercent}>
               <Canvas
                 draw={drawGrid}
@@ -277,6 +290,15 @@ function HexagonBoard({}:props) {
                 onMouseMove={handleOnMouseMove}
               />
           </div>
+
+          {selectedHex && selectedHex.unit &&
+            mousedHex && mousedHex.unit && mousedHex.unit.player !==selectedHex.unit.player &&
+            <AttackPrediction
+              selectedHex={(selectedHex as HydratedHexWithUnit)}
+              mousedHex={(mousedHex as HydratedHexWithUnit)}
+              style={attackPredictionCSS}
+              clearBoxState={clearBoxState}/>}
+
           {showBox && typeOfBoxToShow==='AddUnitOrTerrain' &&
             <AddUnitOrTerrain style={floatyBox} clickedHex={boxClickedHexId} clearBoxState={clearBoxState}/>}
           {showBox && typeOfBoxToShow==='ConfirmAttack' && selectedHex?.unit &&
@@ -297,6 +319,8 @@ function HexagonBoard({}:props) {
               setStartOrient={setStartOrient}
               allowedToOrient={allowedToOrient}
             />}
+
+
       </div>
 
     );

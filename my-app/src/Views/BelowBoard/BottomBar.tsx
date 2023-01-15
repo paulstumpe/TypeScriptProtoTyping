@@ -10,6 +10,8 @@ import {getSelectedHex, selectPaintSettings, setPaintBrush, setPaintMode} from "
 import {endTurn, selectTurn} from "../../store/slices/gameSlice";
 import {setTerrain, setUnit, Terrains, terrainsArr} from "../../store/slices/hexSlice";
 import {basesDict, BaseUnits} from "../../ProtoType Mechanics/unitClasses/soldier";
+import HexUtility from "../../utilities/HexGridClasses/HexClass";
+import CombatLog from "./CombatLog";
 
 function BottomBar() {
   let turn = useAppSelector(selectTurn);
@@ -42,9 +44,15 @@ function BottomBar() {
 
 
   return (
-        <div style={{display:"flex"}}>
+        <div style={{
+          display:"flex",
+          justifyContent:"space-between",
+          columnGap:"30px"
+        }}>
 
-            <div title={'left column'}>
+            <div title={'left column'} style={{
+              flex:'auto'
+            }}>
                   <div>
                       PainterMode: <button onClick={handleTogglePainterMode}>{painterMode ? 'turn off' : 'turn on'}</button>
                   </div>
@@ -71,17 +79,76 @@ function BottomBar() {
                 </>)}
             </div>
 
-            <div title={'right column'} style={{  marginLeft: 'auto'}}>
-            <h2 style={{textAlign:'center'}}>unit list</h2>
+          <div title={'center column'} style={{
+            flex:"auto",
+            minWidth:'500px'
+          }}>
             <div>
-              {unitIds.map(unitID=>
-                <UnitViewThing unitID={unitID}></UnitViewThing>
-              )}
+              <CombatLog />
             </div>
           </div>
+
+          <div title={'right column'} style={{
+            marginLeft: 'auto',
+            flex:'auto'
+          }}>
+          <h2 style={{textAlign:'center'}}>unit list</h2>
+          <div>
+            {unitIds.map(unitID=>
+              <UnitViewThing unitID={unitID}></UnitViewThing>
+            )}
+          </div>
+        </div>
         </div>
 
     );
 }
 
 export default BottomBar;
+
+let neighbors=[
+  {
+    "q": -3,
+    "r": 0,
+    "s": 3
+  },
+  {
+    "q": -3,
+    "r": -1,
+    "s": 4
+  },
+  {
+    "q": -4,
+    "r": -1,
+    "s": 5
+  },
+  {
+    "q": -5,
+    "r": 0,
+    "s": 5
+  },
+  {
+    "q": -5,
+    "r": 1,
+    "s": 4
+  },
+  {
+    "q": -4,
+    "r": 1,
+    "s": 3
+  }
+];
+let arr = [
+  {
+    "q": -4,
+    "r": 0,
+    "s": 4
+  },
+  {
+    "q": -4,
+    "r": 1,
+    "s": 3
+  }
+]
+let direction;
+

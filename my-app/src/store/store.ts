@@ -6,6 +6,7 @@ import uiReducer from "./slices/uiSlice"
 import layoutReducer from "./slices/layoutSlice"
 import gameReducer from "./slices/gameSlice"
 import playersReducer from "./slices/playersSlice"
+// import combatLogReducer from "./slices/combatLogSlice"
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     layout:layoutReducer,
     game:gameReducer,
     players:playersReducer,
+    // combatLog:combatLogReducer,
   },
 })
 
