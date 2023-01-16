@@ -55,7 +55,7 @@ const movementCategories = [
   'pirates',
   'default'
 ] as const ;
-type MovementCategory = typeof movementCategories[number];
+export type MovementCategory = typeof movementCategories[number];
 
 
 //look up index signature

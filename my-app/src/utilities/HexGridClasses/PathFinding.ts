@@ -4,10 +4,17 @@
 
 import {HexStruct} from "./Structs/Hex";
 import HexUtility from "./HexClass";
-import {HexDictionary, HydratedHex} from "../../store/slices/hexSlice";
 import {HexesWithState} from "../../Views/hexagonBoard/createsHexesForRender";
 import {HydratedUnit} from "../../store/slices/unitsSlice";
 import LayoutClass from "./LayoutClass";
+import {Terrain, terrainsDict} from "../../ProtoType Mechanics/fe7 stats/terrain and movement";
+import {basesDict, baseUnits} from "../../ProtoType Mechanics/unitClasses/soldier";
+
+type FloodSearchCB = (a: HexStruct) => {
+  hexLandable:boolean,
+  hexPassable:boolean,
+  costToMoveInto:number,
+}
 
 export default class PathFinding {
   /**
@@ -17,7 +24,7 @@ export default class PathFinding {
    * @param hexDictionary
    * @param allowed callback that takes a stateful hex from the dictionary, and should return true if that hex is an allowed space
    */
-  public static floodSearch(start:HexStruct, movement:number, allowed:(a: HexStruct) => boolean){
+  public static floodSearch(start:HexStruct, movement:number, allowed:FloodSearchCB){
 
 
 //so we have visited
@@ -32,6 +39,12 @@ export default class PathFinding {
     let frontier = [];
     //hexes I've already reached
     let reached:HexStruct[] = [];
+
+    //these hexes can go into frontier, but can never go into reached, as we are not allowed to land in them
+    //todo should we put starting hex in not landable?
+    let notLandable:HexStruct[] = [];
+
+
     frontier.push(start);
     //for each hex you can move
     for(let i=0; i<movement;i++){
@@ -41,7 +54,10 @@ export default class PathFinding {
       //proccesses the previous frontier to decide if any needed to be added to eached
       frontier.forEach(frontierHex=>{
         let hexInReached = HexUtility.hexIsInArray(frontierHex,reached)
-        if(!hexInReached){
+        //hex is not in "not landable array" so we are allowed to land in it"
+        let hexNotLandable = HexUtility.hexIsInArray(frontierHex, notLandable);
+        if(!hexInReached && !hexNotLandable){
+          //we haven't reached, and we're not forbidden
           reached.push(frontierHex);
         }
       })
@@ -63,8 +79,32 @@ export default class PathFinding {
             let notInNextFrontier = !HexUtility.hexIsInArray(neighbor,nextFrontier)
             if(notInNextFrontier){
               //make sure the hex is allowed based on provided filter
-              if(allowed(neighbor)){
+              //allowed was simplyseeing if we could occupy, need to do more and handle in more ways now
+              let {hexLandable, hexPassable, costToMoveInto} = allowed(neighbor);
+              if(costToMoveInto>1){
+                //todo need to figure out how to handle this type of situation
+              }
+              // if(!hexPassable && !hexLandable){
+              //   //do nothing, it cant be in frontier
+              // }
+              // if(!hexLandable && hexPassable) {
+              //   //hex cant be landed on but can be passed through
+              //   //add to own array type of passable but not landable?
+              //   notLandable.push(neighbor);
+              // }
+              if(hexLandable && hexPassable){
                 nextFrontier.push(neighbor)
+              } else if (hexLandable){
+                //its landable but not passable? weird, should note this
+                throw new Error('landable but not passable????')
+              } else if (hexPassable){
+                //not landable but we can pass through, add to frontier and to not landable arrays
+                nextFrontier.push(neighbor);
+                notLandable.push(neighbor);
+              } else if(!hexLandable && !hexPassable){
+                //should not be add to frontier, as we cant traverse  it.
+              } else {
+                throw new Error('reached siutation not accounted for');
               }
             }
           }
@@ -96,15 +136,46 @@ export default class PathFinding {
       }
     })
 
+    //todo right now this doesnt have a way to account for hexes you can move through but not end on
+    //it also doesn't have a way to account for hexes you can move into, but whose cost is higher than 1 move
+    // terrain:Terrain,OccupyingUnits:HydratedUnit, MovingUnit:HydratedUnit will probably want these later
     let allowedMove = (hex:HexStruct)=>{
+
+      const payload = {
+        hexLandable : true,
+        hexPassable : true,
+        costToMoveInto :1,
+      };
+
       let hydratedHex = allHexes[HexUtility.hexIdFromHex(hex)];
+      //this accounts for hexes that aren't within the bounds of the board
       if(!hydratedHex){
-        return false;
+        payload.hexLandable = false;
+        payload.hexPassable = false;
+        payload.costToMoveInto = 1;
+        return payload;
       }
-      if (hydratedHex.unit){
-        return false;
+
+
+      //this accounts for hexes already occupied by someone else
+      if(hydratedHex.unit){
+        payload.hexLandable = false;
+        //if allied unit we should be able to pass through otherwise impassable
+        payload.hexPassable = hydratedHex.unit.player === unit.player
       }
-      return true;
+
+      if(hydratedHex.terrain){
+        let base =basesDict[unit.unitToInherit];
+        let baseMovementType = base.movementType;
+        let terrain = terrainsDict[hydratedHex.terrain];
+        let costIfInTable = terrain.movement[baseMovementType];
+        if(costIfInTable!==undefined){
+          payload.costToMoveInto = costIfInTable;
+        }
+        payload.costToMoveInto = terrain.movement.defaultMoveCost;
+      }
+
+      return payload;
     }
 
     let movable:HexStruct[] = [];

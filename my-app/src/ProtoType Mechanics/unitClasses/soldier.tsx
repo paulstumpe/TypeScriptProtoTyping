@@ -1,4 +1,5 @@
 import {ironAxe, ironBow, ironLance, Weapon, WeaponType} from "../weapons";
+import {MovementCategory} from "../fe7 stats/terrain and movement";
 
 
 type WeaponRank = {
@@ -16,6 +17,7 @@ export type BaseUnits = typeof baseUnits[number];
 interface UnitBaseStats {
   level:number,
   class:string,
+  movementType: MovementCategory,
   hp:number,
   strength:number,
   magic:number,
@@ -67,6 +69,7 @@ export const oswin:StatsForAttack = {
   level: 9,
   name: 'Oswin',
   class:'knight',
+  movementType: 'armours',
   hp: 28,
   strength: 13,
   magic: 13,
@@ -89,6 +92,7 @@ const archerlvl1:StatsForAttack = {
   level: 1,
   name: 'archerlvl1',
   class:'archer',
+  movementType: 'foot',
   hp: 18,
   strength: 4,
   magic: 4,
@@ -111,6 +115,7 @@ const brigandlvl1:StatsForAttack = {
   level:2,
   name: 'brigandlvl1',
   class:'bandit',
+  movementType: 'bandits',
   hp:21,
   strength:6,
   magic:6,
