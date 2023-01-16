@@ -16,6 +16,12 @@ type FloodSearchCB = (a: HexStruct) => {
   costToMoveInto:number,
 }
 
+type HexesSeenButCostMoreThan1 = {
+  [index: string]: {
+    timesReach:number
+  }
+}
+
 export default class PathFinding {
   /**
    *
@@ -43,6 +49,8 @@ export default class PathFinding {
     //these hexes can go into frontier, but can never go into reached, as we are not allowed to land in them
     //todo should we put starting hex in not landable?
     let notLandable:HexStruct[] = [];
+
+    let hexesSeenButCostMoreThan1:HexesSeenButCostMoreThan1 = {}
 
 
     frontier.push(start);
@@ -81,30 +89,48 @@ export default class PathFinding {
               //make sure the hex is allowed based on provided filter
               //allowed was simplyseeing if we could occupy, need to do more and handle in more ways now
               let {hexLandable, hexPassable, costToMoveInto} = allowed(neighbor);
+              let costReached = false;
               if(costToMoveInto>1){
                 //todo need to figure out how to handle this type of situation
-              }
-              // if(!hexPassable && !hexLandable){
-              //   //do nothing, it cant be in frontier
-              // }
-              // if(!hexLandable && hexPassable) {
-              //   //hex cant be landed on but can be passed through
-              //   //add to own array type of passable but not landable?
-              //   notLandable.push(neighbor);
-              // }
-              if(hexLandable && hexPassable){
-                nextFrontier.push(neighbor)
-              } else if (hexLandable){
-                //its landable but not passable? weird, should note this
-                throw new Error('landable but not passable????')
-              } else if (hexPassable){
-                //not landable but we can pass through, add to frontier and to not landable arrays
-                nextFrontier.push(neighbor);
-                notLandable.push(neighbor);
-              } else if(!hexLandable && !hexPassable){
-                //should not be add to frontier, as we cant traverse  it.
+                // i need a way to keep count of how many times i reach a hex like this, and once its enough, it can
+                // be added to the next frontier and removed from us counting it
+                //look up in hexesseen
+                let neighborId= HexUtility.hexIdFromHex(neighbor);
+                let timesSeenObj = hexesSeenButCostMoreThan1[neighborId]
+                //haven't seen, so initialize
+                if(timesSeenObj ===undefined){
+                  timesSeenObj = {
+                    timesReach:0
+                  }
+                  hexesSeenButCostMoreThan1[neighborId] = timesSeenObj;
+                }
+                timesSeenObj.timesReach++;
+
+                if(timesSeenObj.timesReach >= costToMoveInto){
+                  costReached=true;
+                  delete hexesSeenButCostMoreThan1[neighborId];
+                }
+
               } else {
-                throw new Error('reached siutation not accounted for');
+                costReached=true;
+              }
+
+
+              if(costReached){
+                if(hexLandable && hexPassable){
+                  nextFrontier.push(neighbor)
+                } else if (hexLandable){
+                  //its landable but not passable? weird, should note this
+                  throw new Error('landable but not passable????')
+                } else if (hexPassable){
+                  //not landable but we can pass through, add to frontier and to not landable arrays
+                  nextFrontier.push(neighbor);
+                  notLandable.push(neighbor);
+                } else if(!hexLandable && !hexPassable){
+                  //should not be add to frontier, as we cant traverse  it.
+                } else {
+                  throw new Error('reached siutation not accounted for');
+                }
               }
             }
           }
@@ -171,8 +197,9 @@ export default class PathFinding {
         let costIfInTable = terrain.movement[baseMovementType];
         if(costIfInTable!==undefined){
           payload.costToMoveInto = costIfInTable;
+        } else {
+          payload.costToMoveInto = terrain.movement.defaultMoveCost;
         }
-        payload.costToMoveInto = terrain.movement.defaultMoveCost;
       }
 
       return payload;
