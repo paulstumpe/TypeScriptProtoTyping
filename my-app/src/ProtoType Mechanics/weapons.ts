@@ -1,5 +1,15 @@
+const weaponTypes = [
+  'sword',
+  'lance',
+  'axe',
+  'bow',
+  'stave',
+  'animaTome',
+  'darkTome',
+  'lightTome'
+] as const;
 
-export type WeaponType = 'sword'|'lance'|'axe'|'bow'|'stave'|'animaTome'|'darkTome'|'lightTome'
+export type WeaponType = typeof weaponTypes[number];
 
 export interface Weapon {
   name: string

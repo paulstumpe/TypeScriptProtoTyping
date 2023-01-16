@@ -7,7 +7,7 @@ import UnitViewThing from "./UnitViewThing";
 import SelectedHex from "./SelectedHex";
 import {getSelectedHex, selectPaintSettings, setPaintBrush, setPaintMode} from "../../store/slices/uiSlice";
 import {endTurn, selectTurn} from "../../store/slices/gameSlice";
-import {basesDict, BaseUnits} from "../../ProtoType Mechanics/unitClasses/soldier";
+import {BaseUnits, baseUnits} from "../../ProtoType Mechanics/unitClasses/soldier";
 import ActionsList from "./ActionsList";
 import {Terrains, terrains} from "../../ProtoType Mechanics/fe7 stats/terrain and movement";
 
@@ -19,12 +19,6 @@ function BottomBar() {
   let selectedHex = useAppSelector(getSelectedHex);
   let paintSettings = useAppSelector(selectPaintSettings)
   const painterMode = paintSettings.painterMode;
-  const basesArr:BaseUnits[] = [];
-  let obj = basesDict;
-  for (const basesArrKey in basesDict) {
-    // @ts-ignore
-    basesArr.push(basesDict[basesArrKey].name);
-  }
   const dispatch = useAppDispatch()
   const handleEndTurn = ()=>{
     dispatch(endTurn());
@@ -71,7 +65,7 @@ function BottomBar() {
                         </>))}
 
                     <div>Units</div>
-                    {basesArr.map(base=>(
+                    {baseUnits.map(base=>(
                         <div>
                             <button onClick={e=>handleSetUnitPaintBrush(base)} > add {base}</button>
                         </div>

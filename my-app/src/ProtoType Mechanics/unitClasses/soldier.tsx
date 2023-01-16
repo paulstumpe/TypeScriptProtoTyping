@@ -4,7 +4,15 @@ import {ironAxe, ironBow, ironLance, Weapon, WeaponType} from "../weapons";
 type WeaponRank = {
   [key in WeaponType]?: string;
 };
-export type BaseUnits = 'Oswin' | 'brigandlvl1' | 'archerlvl1'
+
+
+export const baseUnits = [
+  'Oswin',
+  'brigandlvl1',
+  'archerlvl1'
+] as const;
+export type BaseUnits = typeof baseUnits[number];
+
 interface UnitBaseStats {
   level:number,
   class:string,
@@ -32,15 +40,6 @@ interface MissingStats {
   effectiveCoefficient:number,
   criticalBonus:number,
 }
-export const addOnMissing:MissingStats = {
-  supBonus:0,
-  SRankBonus:0,
-  tacticianBonus:0,
-  terrainBonusDefense:0,
-  terrainBonusEvade:0,
-  effectiveCoefficient:0,
-  criticalBonus:0,
-}
 export interface StatsForAttack extends UnitBaseStats {
   supBonus:number,
   SRankBonus:number,
@@ -50,6 +49,19 @@ export interface StatsForAttack extends UnitBaseStats {
   effectiveCoefficient:number,
   criticalBonus:number,
 }
+
+
+
+export const addOnMissing:MissingStats = {
+  supBonus:0,
+  SRankBonus:0,
+  tacticianBonus:0,
+  terrainBonusDefense:0,
+  terrainBonusEvade:0,
+  effectiveCoefficient:0,
+  criticalBonus:0,
+}
+
 
 export const oswin:StatsForAttack = {
   level: 9,

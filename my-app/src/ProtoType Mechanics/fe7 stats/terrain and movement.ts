@@ -38,7 +38,7 @@ export const terrains = [
   'throne',
   'no name',
   'desert'
-  ]
+  ] as const;
 export type Terrains = typeof terrains[number];
 
 const movementCategories = [
