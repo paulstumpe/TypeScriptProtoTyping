@@ -6,6 +6,7 @@ import {basesDict, BaseUnits, StatsForAttack} from "../../ProtoType Mechanics/un
 import {nanoid} from "@reduxjs/toolkit";
 import Fe7Calculator from "../../ProtoType Mechanics/combatSystems/fe7Calculator";
 import useMousePosition from "../UseMousePosition";
+import {terrainsDict} from "../../ProtoType Mechanics/fe7 stats/terrain and movement";
 
 export interface props {
   style : CSSProperties
@@ -43,8 +44,19 @@ function AttackPrediction({style, selectedHex, mousedHex, clearBoxState}:props) 
     top: (top>0 ? top: 0) +'px',
     zIndex:10,
   }
-  let attackerBase = basesDict[selectedHex.unit.unitToInherit]
-  let targetBase = basesDict[mousedHex.unit.unitToInherit]
+
+  let attackerBase = {
+    ...basesDict[selectedHex.unit.unitToInherit],
+    terrainBonusDefense: selectedHex.terrain ? terrainsDict[selectedHex.terrain].defense : 0,
+    terrainBonusEvade : selectedHex.terrain ? terrainsDict[selectedHex.terrain].evasion : 0
+  }
+
+
+  let targetBase = {
+    ...basesDict[mousedHex.unit.unitToInherit],
+    terrainBonusDefense: mousedHex.terrain ? terrainsDict[mousedHex.terrain].defense : 0,
+    terrainBonusEvade : mousedHex.terrain ? terrainsDict[mousedHex.terrain].evasion : 0
+  }
   let attackerPreview = FE7StatsPreviewOneSide(attackerBase, targetBase);
   let targetPreview = FE7StatsPreviewOneSide(targetBase, attackerBase);
 

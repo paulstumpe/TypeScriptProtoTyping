@@ -1,7 +1,7 @@
 import LayoutClass, {LayoutStruct} from "../../utilities/HexGridClasses/LayoutClass";
 import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
 import HexLabel, {HexLabelProps, PartialLabelProps} from "./HexLabel";
-import {HydratedHex, selectHex, terrains, Terrains} from "../../store/slices/hexSlice";
+import {HydratedHex, selectHex, } from "../../store/slices/hexSlice";
 import HexUtility from "../../utilities/HexGridClasses/HexClass";
 import {store} from "../../store/store";
 import {getSelectedHex} from "../../store/slices/uiSlice";
@@ -10,7 +10,7 @@ import {HexesForRender} from "./createsHexesForRender";
 import {HydratedUnit} from "../../store/slices/unitsSlice";
 import {drawHP, drawUnitOrientationArrow} from "./Grid";
 import {basesDict} from "../../ProtoType Mechanics/unitClasses/soldier";
-
+import {terrainsDict} from "../../ProtoType Mechanics/fe7 stats/terrain and movement";
 
 /**
  * should make per hex render decisions and describe the render of a hex,
@@ -41,8 +41,8 @@ import {basesDict} from "../../ProtoType Mechanics/unitClasses/soldier";
    let unitText: string|undefined = ''
     if(hex.terrain){
    //set color of font and tile based on terrain
-      let fullTerrain = terrains[hex.terrain];
-      terrainText = terrain;
+      let fullTerrain = terrainsDict[hex.terrain];
+      // terrainText = terrain;
       if(fullTerrain.color){
         hexVisuals.fillStyle=fullTerrain.color;
       }
@@ -53,8 +53,8 @@ import {basesDict} from "../../ProtoType Mechanics/unitClasses/soldier";
 
 
    //set outline based on occupied and selected
-   if(unit){
-     unitText = unit.name;
+   if(unit && unit.name){
+     unitText = unit.name[0];
      hexVisuals.fillStyle = '#ADD8E6'
    }
    if (frontier){

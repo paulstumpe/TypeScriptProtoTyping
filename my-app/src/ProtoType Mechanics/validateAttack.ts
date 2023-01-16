@@ -44,10 +44,12 @@ export const generateAttackResults = (props:Props):Payload=>{
   let targetBase = basesDict[target.unitToInherit];
   let attackerWithStats = {
     ...attacker,
+    hex:attackerHex,
     statsForAttack:attackerBase
   }
   let targetWithStats = {
     ...target,
+    hex:targetHex,
     statsForAttack:targetBase
   }
   let fullAttackResults = Fe7Calculator.attackFull(attackerWithStats,targetWithStats,false, rngArr);

@@ -27,7 +27,8 @@ interface MissingStats {
   supBonus:number,
   SRankBonus:number,
   tacticianBonus:number,
-  terrainBonus:number,
+  terrainBonusDefense:number,
+  terrainBonusEvade:number,
   effectiveCoefficient:number,
   criticalBonus:number,
 }
@@ -35,7 +36,8 @@ export const addOnMissing:MissingStats = {
   supBonus:0,
   SRankBonus:0,
   tacticianBonus:0,
-  terrainBonus:0,
+  terrainBonusDefense:0,
+  terrainBonusEvade:0,
   effectiveCoefficient:0,
   criticalBonus:0,
 }
@@ -43,7 +45,8 @@ export interface StatsForAttack extends UnitBaseStats {
   supBonus:number,
   SRankBonus:number,
   tacticianBonus:number,
-  terrainBonus:number,
+  terrainBonusDefense:number,
+  terrainBonusEvade:number,
   effectiveCoefficient:number,
   criticalBonus:number,
 }

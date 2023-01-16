@@ -8,7 +8,7 @@ import {
     HydratedHexWithUnit,
     selectAllHexesWithState, selectHex,
     selectHorizontalHexes,
-    selectVerticalHexes, setTerrain, setUnit, Terrains,
+    selectVerticalHexes, setTerrain, setUnit
 } from "../../store/slices/hexSlice";
 import {
     getMousedHex,

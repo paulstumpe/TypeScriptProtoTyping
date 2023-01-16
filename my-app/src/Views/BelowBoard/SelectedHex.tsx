@@ -4,14 +4,12 @@ import {
   selectHex,
   setTerrain,
   setUnit,
-  Terrains,
-  terrains,
-  terrainsArr
 } from "../../store/slices/hexSlice";
 import {addUnit} from "../../store/slices/unitsSlice";
 import HexInfo from "./HexInfo";
 import {blueBox} from "./UnitViewThing";
 import {basesDict, BaseUnits} from "../../ProtoType Mechanics/unitClasses/soldier";
+import {Terrains, terrains} from "../../ProtoType Mechanics/fe7 stats/terrain and movement";
 
 
 type props = {
@@ -77,7 +75,7 @@ function SelectedHex({hex}:props) {
         <div>
           set terrain:
           <div>
-            {terrainsArr.map(terrain=>(
+            {terrains.map(terrain=>(
               <>
                 <div><button onClick={()=>{handleSetTerrain(terrain)}}>{terrain}</button></div>
               </>))}

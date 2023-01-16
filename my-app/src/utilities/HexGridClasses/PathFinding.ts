@@ -4,7 +4,7 @@
 
 import {HexStruct} from "./Structs/Hex";
 import HexUtility from "./HexClass";
-import {HexDictionary, HydratedHex, Terrains} from "../../store/slices/hexSlice";
+import {HexDictionary, HydratedHex} from "../../store/slices/hexSlice";
 import {HexesWithState} from "../../Views/hexagonBoard/createsHexesForRender";
 import {HydratedUnit} from "../../store/slices/unitsSlice";
 import LayoutClass from "./LayoutClass";

@@ -1,7 +1,8 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import type {RootState} from "../store";
-import {HydratedHex, selectHexById, Terrains} from "./hexSlice";
+import {HydratedHex, selectHexById, } from "./hexSlice";
 import {BaseUnits} from "../../ProtoType Mechanics/unitClasses/soldier";
+import {Terrains} from "../../ProtoType Mechanics/fe7 stats/terrain and movement";
 
 export interface UiState {
   selectedHex?: string,

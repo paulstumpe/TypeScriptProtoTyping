@@ -1,6 +1,8 @@
 import {StatsForAttack} from "../unitClasses/soldier";
 import {WeaponType} from "../weapons";
 import {HydratedUnit} from "../../store/slices/unitsSlice";
+import {HydratedHex} from "../../store/slices/hexSlice";
+import {terrainsDict} from "../fe7 stats/terrain and movement";
 
 
 let physical = ['sword', 'lance', 'axe', 'bow'];
@@ -28,6 +30,7 @@ export type FullAttackResults = AttackResults[];
 export type WeaponAdvantage =   'goodAgainst' | 'weakAgainst' | 'neutral'
 export interface UnitPlusStatsForAttack extends HydratedUnit{
   statsForAttack:StatsForAttack
+  hex:HydratedHex,
 }
 
 //https://github.com/microsoft/TypeScript/issues/14600#issuecomment-333416173
@@ -57,11 +60,20 @@ export default class Fe7Calculator extends CombatCalculator{
    * @param rngArr
    */
   public static attackFull (attacker:UnitPlusStatsForAttack, target:UnitPlusStatsForAttack, counterStrikeInRange:boolean, rngArr:number[]):FullAttackResults{
-    let attackerStatsForAttack = attacker.statsForAttack;
-    let targetStatsForAttack = target.statsForAttack
+    attacker.statsForAttack =
+      {
+       ...attacker.statsForAttack,
+        terrainBonusDefense: attacker.hex.terrain ? terrainsDict[attacker.hex.terrain].defense : 0,
+        terrainBonusEvade : attacker.hex.terrain ? terrainsDict[attacker.hex.terrain].evasion : 0
+      }
+    target.statsForAttack = {
+      ...target.statsForAttack,
+      terrainBonusDefense: target.hex.terrain ? terrainsDict[target.hex.terrain].defense : 0,
+      terrainBonusEvade : target.hex.terrain ? terrainsDict[target.hex.terrain].evasion : 0
+    }
 
-    let attackSpeedAttacker = this.getAttackSpeed(attackerStatsForAttack);
-    let attackSpeedTarget = this.getAttackSpeed(targetStatsForAttack);
+    let attackSpeedAttacker = this.getAttackSpeed(attacker.statsForAttack);
+    let attackSpeedTarget = this.getAttackSpeed(target.statsForAttack);
     let attackerIsDoubleAttack = this.doubleAttackIf(attackSpeedAttacker,attackSpeedTarget);
     let targetIsDoubleAttack = this.doubleAttackIf(attackSpeedTarget, attackSpeedAttacker);
     //first attack
@@ -188,11 +200,11 @@ export default class Fe7Calculator extends CombatCalculator{
   }
 
   private static getDefPhysical  (target:StatsForAttack){
-    return target.defense + target.supBonus + target.terrainBonus
+    return target.defense + target.supBonus + target.terrainBonusDefense
   }
 
   private static getDefMagical  (target:StatsForAttack){
-    return target.resistance + target.supBonus +target.terrainBonus
+    return target.resistance + target.supBonus +target.terrainBonusDefense
   }
 
   public static getBattleAcc  (attacker:StatsForAttack, target:StatsForAttack){
@@ -210,7 +222,7 @@ export default class Fe7Calculator extends CombatCalculator{
   }
   private static getAvoid  (attacker:StatsForAttack, target:StatsForAttack){
     let targetAttackSpeed = this.getAttackSpeed(target)
-    return (targetAttackSpeed * 2) + target.luck + target.supBonus + target.tacticianBonus;
+    return (targetAttackSpeed * 2) + target.luck + target.supBonus + target.tacticianBonus +target.terrainBonusEvade;
   }
 
   public static getBattleCritRate  (attacker:StatsForAttack, target:StatsForAttack){

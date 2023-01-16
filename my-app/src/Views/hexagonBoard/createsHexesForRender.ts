@@ -1,9 +1,9 @@
 import {HydratedUnit} from "../../store/slices/unitsSlice";
-import {HydratedHex, Terrains} from "../../store/slices/hexSlice";
+import {HydratedHex} from "../../store/slices/hexSlice";
 import LayoutClass from "../../utilities/HexGridClasses/LayoutClass";
 import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
 import HexUtility from "../../utilities/HexGridClasses/HexClass";
-import PathFinding from "../../utilities/HexGridClasses/PathFinding";
+import {Terrains} from "../../ProtoType Mechanics/fe7 stats/terrain and movement";
 
 export interface HexesForRender {
   selected:boolean

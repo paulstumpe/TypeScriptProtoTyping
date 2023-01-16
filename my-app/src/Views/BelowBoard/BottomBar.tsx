@@ -1,17 +1,15 @@
 import EndTurnButton from "./EndTurnButton";
 import React from "react";
 import {useAppSelector, useAppDispatch } from "../../store/reduxCustomHooks";
-import {addUnit, selectAllUnitIds} from "../../store/slices/unitsSlice";
-import {increment} from "../../store/slices/counterSlice";
+import {selectAllUnitIds} from "../../store/slices/unitsSlice";
 import {shallowEqual} from "react-redux";
 import UnitViewThing from "./UnitViewThing";
 import SelectedHex from "./SelectedHex";
 import {getSelectedHex, selectPaintSettings, setPaintBrush, setPaintMode} from "../../store/slices/uiSlice";
 import {endTurn, selectTurn} from "../../store/slices/gameSlice";
-import {setTerrain, setUnit, Terrains, terrainsArr} from "../../store/slices/hexSlice";
 import {basesDict, BaseUnits} from "../../ProtoType Mechanics/unitClasses/soldier";
-import HexUtility from "../../utilities/HexGridClasses/HexClass";
 import ActionsList from "./ActionsList";
+import {Terrains, terrains} from "../../ProtoType Mechanics/fe7 stats/terrain and movement";
 
 
 function BottomBar() {
@@ -54,6 +52,7 @@ function BottomBar() {
             <div title={'left column'} style={{
               flex:'auto'
             }}>
+              <h2>Command Menu</h2>
                   <div>
                       PainterMode: <button onClick={handleTogglePainterMode}>{painterMode ? 'turn off' : 'turn on'}</button>
                   </div>
@@ -66,7 +65,7 @@ function BottomBar() {
 
                 {painterMode && (<>
                     <div>Terrains</div>
-                    {terrainsArr.map(terrain=>(
+                    {terrains.map(terrain=>(
                         <>
                             <div><button onClick={()=>{handleSetTerrainPaintBrush(terrain)}}>{terrain}</button></div>
                         </>))}
