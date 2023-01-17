@@ -9,7 +9,7 @@ import {HydratedHexWithUnit, moveUnit, selectHex, selectHexWithUnit} from "../..
 import HexUtility, {Orientation} from "../../utilities/HexGridClasses/HexClass";
 import {endTurn, selectTurn} from "../../store/slices/gameSlice";
 import {attackAction} from "../../store/MultiSliceActions";
-import {FullAttackResults} from "../combatSystems/fe7Calculator";
+import {FullAttackStrikes} from "../combatSystems/fe7Calculator";
 import {generateAttackResults} from "../validateAttack";
 import {assertHexHasUnit, isHexWithUnit} from "../../store/slices/unitSliceTypePredicateFunctions";
 import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";

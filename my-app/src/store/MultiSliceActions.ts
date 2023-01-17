@@ -1,6 +1,6 @@
 import {createAction} from "@reduxjs/toolkit"
 import {Orientation} from "../utilities/HexGridClasses/HexClass";
-import {FullAttackResults} from "../ProtoType Mechanics/combatSystems/fe7Calculator";
+import {FullAttackPayload, FullAttackStrikes} from "../ProtoType Mechanics/combatSystems/fe7Calculator";
 // we are gonna dispatch this
 
 interface Payload {
@@ -8,7 +8,7 @@ interface Payload {
   targetId:string,
   attackerDirection:Orientation,
   turnAttacked:number,
-  fullAttackResults:FullAttackResults,
+  fullAttackResults:FullAttackPayload,
   rngArr:number[],
 }
 

@@ -151,7 +151,7 @@ export const unitsSlice = createSlice({
         }
         attacker.orientation = attackerDirection;
         attacker.turnAttacked = turnAttacked;
-        let hp = Fe7Calculator.hpAfterAllAttacks(fullAttackResults, attacker,target)
+        let hp = Fe7Calculator.hpAfterAllAttacks(fullAttackResults.fullAttackStrikes, attacker,target)
         attacker.hp = hp.attackerHp;
         target.hp = hp.targetHp;
       })

@@ -30,7 +30,7 @@ export const combatLogSlice = createSlice({
         // action is inferred correctly here if using TS
         const {fullAttackResults, targetId} = action.payload
 
-        fullAttackResults.forEach(attack=>{
+        fullAttackResults.fullAttackStrikes.forEach(attack=>{
           const {attacker, target, hit, isCritical, damage} = attack;
 
 

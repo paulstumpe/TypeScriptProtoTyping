@@ -4,7 +4,7 @@ import React from 'react';
 import {useAppSelector} from "../store/reduxCustomHooks";
 import {HydratedUnit, selectUnit} from "../store/slices/unitsSlice";
 import {basesDict} from "./unitClasses/soldier";
-import Fe7Calculator, {FullAttackResults} from "./combatSystems/fe7Calculator";
+import Fe7Calculator, {FullAttackPayload, FullAttackStrikes} from "./combatSystems/fe7Calculator";
 import {HydratedHex} from "../store/slices/hexSlice";
 
 
@@ -19,7 +19,7 @@ interface Props {
 interface Payload {
   attackerDirection: Orientation
   turnAttacked: number
-  fullAttackResults :FullAttackResults
+  fullAttackResults :FullAttackPayload
   rngArr:number[],
 }
 
@@ -59,7 +59,7 @@ export const generateAttackResults = (props:Props):Payload=>{
     fullAttackResults,
     attackerDirection,
     turnAttacked,
-    rngArr
+    rngArr,
   };
 
 }

@@ -9,6 +9,8 @@ import {getMousedHex, getSelectedHex} from "./uiSlice";
 import HexClass from "../../utilities/HexGridClasses/HexClass";
 import {WeaponType} from "../../ProtoType Mechanics/weapons";
 import {Terrains} from "../../ProtoType Mechanics/fe7 stats/terrain and movement";
+import {attackAction} from "../MultiSliceActions";
+import Fe7Calculator from "../../ProtoType Mechanics/combatSystems/fe7Calculator";
 
 
 
@@ -135,7 +137,22 @@ export const hexesSlice = createSlice({
     setHorizontalHexes:(state, action:PayloadAction<{horizontal:number}>)=>{
       state.horizontalHexes = action.payload.horizontal
     },
-  }
+  },
+  extraReducers: (builder)=>{
+    builder
+      .addCase(attackAction, (state, action) => {
+        const {fullAttackResults}=action.payload;
+        let hexes =fullAttackResults.effects.unitIdsRemovedFromMap.map(unitId=>internalSelectHexWithUnit(state,unitId)).filter((targetHex):targetHex is HexStruct=>targetHex!==undefined);
+        hexes.forEach(hex=>{
+          let hexState = state.byId[HexUtility.hexIdFromHex(hex)];
+          if(hexState){
+            delete hexState.unit;
+          }
+        })
+
+      })
+      .addDefaultCase((state, action) => {})
+  },
 })
 
 export const {setTerrain, setUnit, setVerticalHexes, setHorizontalHexes, moveUnit} = hexesSlice.actions;

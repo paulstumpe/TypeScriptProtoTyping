@@ -19,7 +19,13 @@ interface AttackResults {
   damage:number,
 }
 
-export type FullAttackResults = AttackResults[];
+export type FullAttackStrikes = AttackResults[];
+export type FullAttackPayload = {
+  fullAttackStrikes:FullAttackStrikes,
+  effects:{
+    unitIdsRemovedFromMap:string[]
+  }
+}
 // interface FullAttackResults {
 //   firstAttack:AttackResults,
 //   secondAttack?:AttackResults,
@@ -59,7 +65,7 @@ export default class Fe7Calculator extends CombatCalculator{
    * @param counterStrikeInRange
    * @param rngArr
    */
-  public static attackFull (attacker:UnitPlusStatsForAttack, target:UnitPlusStatsForAttack, counterStrikeInRange:boolean, rngArr:number[]):FullAttackResults{
+  public static attackFull (attacker:UnitPlusStatsForAttack, target:UnitPlusStatsForAttack, counterStrikeInRange:boolean, rngArr:number[]):FullAttackPayload{
     attacker.statsForAttack =
       {
        ...attacker.statsForAttack,
@@ -71,35 +77,59 @@ export default class Fe7Calculator extends CombatCalculator{
       terrainBonusDefense: target.hex.terrain ? terrainsDict[target.hex.terrain].defense : 0,
       terrainBonusEvade : target.hex.terrain ? terrainsDict[target.hex.terrain].evasion : 0
     }
-
     let attackSpeedAttacker = this.getAttackSpeed(attacker.statsForAttack);
     let attackSpeedTarget = this.getAttackSpeed(target.statsForAttack);
     let attackerIsDoubleAttack = this.doubleAttackIf(attackSpeedAttacker,attackSpeedTarget);
     let targetIsDoubleAttack = this.doubleAttackIf(attackSpeedTarget, attackSpeedAttacker);
+    //should also probably include hp results after each and stopping if one hits zero
+    //idk the cleanest way to do this
     //first attack
     let firstAttack = this.AttackStrike(attacker,target, rngArr.pop(), rngArr.pop());
-    let fullAttackResults:FullAttackResults = [firstAttack];
+    let fullAttackStrikes:FullAttackStrikes = [firstAttack];
     //counterStrike
-    if(counterStrikeInRange){
+    if(counterStrikeInRange && this.unitsKilled(fullAttackStrikes,attacker,target).length !== 0){
       let counterAttack = this.AttackStrike(target,attacker, rngArr.pop(), rngArr.pop());
-      fullAttackResults.push(counterAttack);
+      fullAttackStrikes.push(counterAttack);
       //second attack
-      if(targetIsDoubleAttack){
+      if(targetIsDoubleAttack && this.unitsKilled(fullAttackStrikes,attacker,target).length !== 0){
         let secondCounterAttack = this.AttackStrike(target,attacker, rngArr.pop(), rngArr.pop());
-        fullAttackResults.push(secondCounterAttack);
+        fullAttackStrikes.push(secondCounterAttack);
       }
     }
 
     //second attack
-    if(attackerIsDoubleAttack){
+    if(attackerIsDoubleAttack && this.unitsKilled(fullAttackStrikes,attacker,target).length !== 0){
       let secondAttack = this.AttackStrike(attacker,target, rngArr.pop(), rngArr.pop());
-      fullAttackResults.push(secondAttack);
+      fullAttackStrikes.push(secondAttack);
     }
-
-    return fullAttackResults
+    let unitIdsRemovedFromMap= this.unitsKilled(fullAttackStrikes,attacker,target)
+    return {
+      fullAttackStrikes,
+      effects:{
+        unitIdsRemovedFromMap
+      }
+    }
   }
 
-
+  public static unitsKilled = (attackStrikesSoFar:AttackResults[], attacker:UnitPlusStatsForAttack,target:UnitPlusStatsForAttack):string[]=>{
+    let attackerHp = attacker.hp
+    let targetHp = target.hp;
+    let result = [];
+    attackStrikesSoFar.forEach(attackStrike=>{
+      if(attackStrike.target.id === target.id) {
+        targetHp = targetHp - attackStrike.damage
+      } else {
+        attackerHp = attackerHp - attackStrike.damage
+      }
+    })
+    if(attackerHp<=0){
+      result.push(attacker.id)
+    }
+    if(targetHp<=0){
+      result.push(target.id)
+    }
+    return result;
+  }
 
   private static AttackStrike (attacker:UnitPlusStatsForAttack, target:UnitPlusStatsForAttack, hitRng:number|undefined, critRng:number|undefined):AttackResults{
     let attackerStats = attacker.statsForAttack;
@@ -355,7 +385,7 @@ export default class Fe7Calculator extends CombatCalculator{
     return effectiveCoefficient;
   }
 
-  public static hpAfterAllAttacks  (attackResults:FullAttackResults, attacker:HydratedUnit, target:HydratedUnit){
+  public static hpAfterAllAttacks  (attackResults:FullAttackStrikes, attacker:HydratedUnit, target:HydratedUnit){
     const toReturn =  {
       attackerHp:attacker.hp,
       targetHp:target.hp
