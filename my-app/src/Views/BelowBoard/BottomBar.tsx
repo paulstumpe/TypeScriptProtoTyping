@@ -6,7 +6,7 @@ import {shallowEqual} from "react-redux";
 import UnitViewThing from "./UnitViewThing";
 import SelectedHex from "./SelectedHex";
 import {getSelectedHex, selectPaintSettings, setPaintBrush, setPaintMode} from "../../store/slices/uiSlice";
-import {endTurn, selectTurn} from "../../store/slices/gameSlice";
+import {selectTurn} from "../../store/slices/gameSlice";
 import {BaseUnits, baseUnits} from "../../ProtoType Mechanics/unitClasses/soldier";
 import ActionsList from "./ActionsList";
 import {Terrains, terrains} from "../../ProtoType Mechanics/fe7 stats/terrain and movement";
@@ -20,9 +20,6 @@ function BottomBar() {
   let paintSettings = useAppSelector(selectPaintSettings)
   const painterMode = paintSettings.painterMode;
   const dispatch = useAppDispatch()
-  const handleEndTurn = ()=>{
-    dispatch(endTurn());
-  }
 
   const handleSetUnitPaintBrush = (base:BaseUnits)=>{
     dispatch(setPaintBrush({unit:base, terrain:undefined}))
@@ -53,7 +50,7 @@ function BottomBar() {
 
                 {!painterMode && (<>
                     <div>current turn:{turn}</div>
-                    <EndTurnButton  endTurn={handleEndTurn}/>
+                    <EndTurnButton />
                     {selectedHex && <SelectedHex hex={selectedHex}/>}
                 </>)}
 

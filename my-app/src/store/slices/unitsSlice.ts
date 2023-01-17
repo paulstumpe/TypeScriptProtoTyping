@@ -1,15 +1,13 @@
 import {createSlice, nanoid, PayloadAction} from '@reduxjs/toolkit'
 import type { RootState} from "../store";
 import HexUtility, {Orientation} from "../../utilities/HexGridClasses/HexClass";
-import {HydratedHex, selectAllHexesWithState, selectHex, selectHexWithUnit} from "./hexSlice";
+import { HydratedHexWithUnit, selectAllHexesWithState, selectHex, selectHexWithUnit} from "./hexSlice";
 import PathFinding from "../../utilities/HexGridClasses/PathFinding";
-import {getSelectedHex} from "./uiSlice";
 import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
-import {useDispatch} from "react-redux";
-import {store} from "../store";
-import {addOnMissing, basesDict, BaseUnits} from "../../ProtoType Mechanics/unitClasses/soldier";
+import {basesDict, BaseUnits} from "../../ProtoType Mechanics/unitClasses/soldier";
 import Fe7Calculator from "../../ProtoType Mechanics/combatSystems/fe7Calculator";
 import {attackAction} from "../MultiSliceActions";
+import {isHexWithUnit} from "./unitSliceTypePredicateFunctions";
 
 // Define a type for the slice state
 
@@ -106,7 +104,6 @@ export const unitsSlice = createSlice({
     },
     setUnitsOrientationUsingFacingHex:(state, action:PayloadAction<{unitId:string, unitHex:HexStruct, targetHex:HexStruct}>)=>{
       const {unitId, unitHex, targetHex} = action.payload;
-      const arr = HexUtility.hexLineDraw(unitHex,targetHex);
       if(HexUtility.equalTo(unitHex,targetHex)){
         throw new Error('tried to set a hexes orientation using its own hex and no neightbors');
       }
@@ -116,17 +113,6 @@ export const unitsSlice = createSlice({
         unit.orientation=direction;
       }
     },
-    // attack: (state, action:PayloadAction<{
-    //   attackerId:string,
-    //   targetId:string,
-    //   attackerDirection:Orientation,
-    //   turnAttacked:number,
-    //   attackerHp:number,
-    //   targetHp:number,
-    //   rngArr:number[],
-    // }>)=>{
-    //
-    // },
     addUnit : {
       reducer(
         state,
@@ -175,15 +161,24 @@ export const unitsSlice = createSlice({
 
 export const { nameUnit, addUnit, setMovement, setHp, setRange, setTurnAttacked, setTurnMoved, setUnitsPlayer, setUnitsOrientation, setUnitsOrientationUsingFacingHex } = unitsSlice.actions
 
+
+
+
+
+
 // Other code such as selectors can use the imported `RootState` type
 export const selectUnit = (state: RootState, unitID: string = ''):UnitState|undefined => {
   return state.units.find(unit => unitID === unit.id);
 }
-export const selectAllUnits = (state: RootState):UnitState[] => state.units;
+export const selectAllUnits = (state: RootState):UnitState[] => {
+  return state.units
+};
 export const selectAllUnitIds = (state: RootState) => state.units.map(unit=>unit.id);
 
-export const selectAllAttackableHexesWithUnits = (state:RootState, attacker:HydratedUnit|undefined):HydratedHex[]=>{
-  const attackableHexes:HydratedHex[] = [];
+
+
+export const selectAllAttackableHexesWithUnits = (state:RootState, attacker:HydratedUnit|undefined):HydratedHexWithUnit[]=>{
+  const attackableHexes:HydratedHexWithUnit[] = [];
   if (!attacker){
     return attackableHexes;
   }
@@ -202,8 +197,12 @@ export const selectAllAttackableHexesWithUnits = (state:RootState, attacker:Hydr
     let differentHexFromAttacker = hex && !HexUtility.equalTo(hex,attackerHex)
     let differentPlayerFromAttacker = attacker.player !== unit.player
     if(hex && HexUtility.hexIsInArray(hex,hexesInRange)){
-
-      differentHexFromAttacker && differentPlayerFromAttacker && attackableHexes.push(selectHex(state,hex));
+      const hydratedHex = selectHex(state,hex);
+      if (isHexWithUnit(hydratedHex)) {
+        differentHexFromAttacker && differentPlayerFromAttacker && attackableHexes.push(hydratedHex);
+      } else {
+        throw new Error('select all attackable hexes with units somehow tried to return a hex without a unit')
+      }
 
     }
   })

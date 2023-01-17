@@ -31,12 +31,11 @@ function ConfirmAttack({style, clickedHexId, clearBoxState, unit}:props) {
       throw new DOMException('somehow in confirm attack targetunitid was not defined')
     }
 
-    let attackResult = generateAttackResults({attacker , target, currentTurn, targetHex, attackerHex});
     const {attackerDirection,
       turnAttacked,
       fullAttackResults,
       rngArr,
-    } = attackResult;
+    }  = generateAttackResults({attacker , target, currentTurn, targetHex, attackerHex});
 
     dispatch(attackAction({
       attackerId,

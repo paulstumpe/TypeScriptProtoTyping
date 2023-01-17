@@ -1,12 +1,27 @@
-type endTurnProps = {
-    endTurn: () => void
-}
+import {enemyTurn} from "../../ProtoType Mechanics/Aritifical Intelligence/simplestAi";
+import {useDispatch} from "react-redux";
+import {endTurn} from "../../store/slices/gameSlice";
+import {useAppDispatch} from "../../store/reduxCustomHooks";
 
-function EndTurnButton({endTurn}:endTurnProps) {
+
+function EndTurnButton() {
+  const dispatch = useAppDispatch();
+
+
+
+
+
+  const handleEndTurn = ()=>{
+    enemyTurn();
+  }
+  const commenceToNextTurnWithoutEnemyTakingTurn = ()=>{
+    dispatch(endTurn());
+  }
 
   return (
         <div>
-          <button onClick={endTurn}>End Turn</button>
+          <button onClick={handleEndTurn}>End player Turn and commit enemy turn</button>
+          <button onClick={commenceToNextTurnWithoutEnemyTakingTurn}>End turn without enemy doing anything</button>
         </div>
 
   );
