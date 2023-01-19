@@ -10,6 +10,7 @@ import {selectTurn} from "../../store/slices/gameSlice";
 import {BaseUnits, baseUnits} from "../../ProtoType Mechanics/unitClasses/soldier";
 import ActionsList from "./ActionsList";
 import {Terrains, terrains} from "../../ProtoType Mechanics/fe7 stats/terrain and movement";
+import PaintOptions from "./PaintOptions";
 
 
 function BottomBar() {
@@ -45,7 +46,7 @@ function BottomBar() {
             }}>
               <h2>Command Menu</h2>
                   <div>
-                      PainterMode: <button onClick={handleTogglePainterMode}>{painterMode ? 'turn off' : 'turn on'}</button>
+                      Painter Mode: <button onClick={handleTogglePainterMode}>{painterMode ? 'turn off' : 'turn on'}</button>
                   </div>
 
                 {!painterMode && (<>
@@ -54,20 +55,7 @@ function BottomBar() {
                     {selectedHex && <SelectedHex hex={selectedHex}/>}
                 </>)}
 
-                {painterMode && (<>
-                    <div>Terrains</div>
-                    {terrains.map(terrain=>(
-                        <>
-                            <div><button onClick={()=>{handleSetTerrainPaintBrush(terrain)}}>{terrain}</button></div>
-                        </>))}
-
-                    <div>Units</div>
-                    {baseUnits.map(base=>(
-                        <div>
-                            <button onClick={e=>handleSetUnitPaintBrush(base)} > add {base}</button>
-                        </div>
-                    ))}
-                </>)}
+                {painterMode && <PaintOptions />}
             </div>
 
           <div title={'center column'} style={{

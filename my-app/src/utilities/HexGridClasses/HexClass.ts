@@ -318,6 +318,8 @@ class HexUtility {
 
   }
 
+  public static getHexesOnAxis(){}
+
 }
 
 

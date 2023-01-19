@@ -69,7 +69,6 @@ function HexagonBoard({}:props) {
     const attackRngHexes = useAppSelector((state)=>selectAttackableHexes(state,selectedHex?.unit))
     const attackableAfterMove = useAppSelector((state)=>selectHexesAttackableAfterMove(state, selectedHex?.unit))
     const [boxClickedHexId, setBoxClickedHexId] = useState('');
-    const clickedHex = useAppSelector(state=>selectHex(state,HexUtility.hexFromId(boxClickedHexId? boxClickedHexId: 'q0r0')))
     const player = useAppSelector(selectPrimaryPlayer);
     let paintSettings = useAppSelector(selectPaintSettings);
     const dispatch = useAppDispatch();
