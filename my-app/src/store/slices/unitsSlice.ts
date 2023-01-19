@@ -8,6 +8,7 @@ import {basesDict, BaseUnits} from "../../ProtoType Mechanics/unitClasses/soldie
 import Fe7Calculator from "../../ProtoType Mechanics/combatSystems/fe7Calculator";
 import {attackAction} from "../MultiSliceActions";
 import {isHexWithUnit} from "./unitSliceTypePredicateFunctions";
+import {enemyId} from "./playersSlice";
 
 // Define a type for the slice state
 
@@ -20,7 +21,7 @@ interface UnitState {
   range : number,
   turnMoved:number,
   turnAttacked:number,
-  player?:string,
+  player:string,
   // attack:number,
   orientation:Orientation,
   // maxHp:number;
@@ -42,6 +43,7 @@ const initialState: UnitState[] = [
     turnMoved:0,
     // attack:1,
     orientation:0,
+    player:enemyId,
     // maxHp:10,
     unitToInherit:basesDict.Oswin.name,
   }
@@ -120,7 +122,7 @@ export const unitsSlice = createSlice({
       ) {
         state.push(action.payload)
       },
-      prepare(base:BaseUnits) {
+      prepare({base, playerId}:{base:BaseUnits, playerId:string} ) {
         let newPayload:UnitState = {
           id: nanoid(),
           hp: basesDict[base].hp,
@@ -129,6 +131,7 @@ export const unitsSlice = createSlice({
           range: 1,
           turnMoved:0,
           turnAttacked:0,
+          player:playerId,
           // attack:1,
           orientation:0,
           // maxHp:10,

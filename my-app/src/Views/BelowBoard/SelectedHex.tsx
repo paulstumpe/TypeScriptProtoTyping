@@ -1,4 +1,4 @@
-import {useAppDispatch } from "../../store/reduxCustomHooks";
+import {useAppDispatch, useAppSelector} from "../../store/reduxCustomHooks";
 import {
   HydratedHex,
   selectHex,
@@ -10,6 +10,7 @@ import HexInfo from "./HexInfo";
 import {blueBox} from "./UnitViewThing";
 import {basesDict, BaseUnits} from "../../ProtoType Mechanics/unitClasses/soldier";
 import {Terrains, terrains} from "../../ProtoType Mechanics/fe7 stats/terrain and movement";
+import {selectCreatedUnitsPlayerId} from "../../store/slices/uiSlice";
 
 
 type props = {
@@ -18,6 +19,7 @@ type props = {
 
 
 function SelectedHex({hex}:props) {
+  let createdUnitsPlayerId = useAppSelector(selectCreatedUnitsPlayerId)
   let dispatch = useAppDispatch();
   const basesArr:BaseUnits[] = [];
   let obj = basesDict;
@@ -27,7 +29,10 @@ function SelectedHex({hex}:props) {
   }
 
   const addUnitToSelected = (base:BaseUnits)=>{
-    let dispatchedUnit = dispatch(addUnit(base))
+    let dispatchedUnit = dispatch(addUnit({
+      base,
+      playerId:createdUnitsPlayerId
+    }))
     dispatch(setUnit({
         unit: dispatchedUnit.payload,
         hex

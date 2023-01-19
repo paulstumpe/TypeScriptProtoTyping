@@ -18,7 +18,7 @@ export interface  PlayersState {
 }
 
 const startingId = nanoid();
-const enemyId = nanoid();
+export const enemyId = nanoid();
 const initialState: PlayersState = {
   byId:{
     [startingId]: {

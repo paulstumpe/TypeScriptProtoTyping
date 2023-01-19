@@ -5,12 +5,19 @@ import {selectAllUnitIds} from "../../store/slices/unitsSlice";
 import {shallowEqual} from "react-redux";
 import UnitViewThing from "./UnitViewThing";
 import SelectedHex from "./SelectedHex";
-import {getSelectedHex, selectPaintSettings, setPaintBrush, setPaintMode} from "../../store/slices/uiSlice";
+import {
+  getSelectedHex, selectCreatedUnitsPlayerId,
+  selectPaintSettings,
+  setCreatedUnitsPlayerId,
+  setPaintBrush,
+  setPaintMode
+} from "../../store/slices/uiSlice";
 import {selectTurn} from "../../store/slices/gameSlice";
 import {BaseUnits, baseUnits} from "../../ProtoType Mechanics/unitClasses/soldier";
 import ActionsList from "./ActionsList";
 import {Terrains, terrains} from "../../ProtoType Mechanics/fe7 stats/terrain and movement";
 import PaintOptions from "./PaintOptions";
+import {selectAllPlayers} from "../../store/slices/playersSlice";
 
 
 function BottomBar() {
@@ -19,14 +26,13 @@ function BottomBar() {
   let unitIds = useAppSelector(selectAllUnitIds, shallowEqual)
   let selectedHex = useAppSelector(getSelectedHex);
   let paintSettings = useAppSelector(selectPaintSettings)
+  let createdUnitsPlayerId = useAppSelector(selectCreatedUnitsPlayerId)
+  let players = useAppSelector(selectAllPlayers)
   const painterMode = paintSettings.painterMode;
   const dispatch = useAppDispatch()
 
-  const handleSetUnitPaintBrush = (base:BaseUnits)=>{
-    dispatch(setPaintBrush({unit:base, terrain:undefined}))
-  }
-  const handleSetTerrainPaintBrush = (terrain:Terrains)=>{
-    dispatch(setPaintBrush({terrain:terrain, unit:undefined}))
+  const handleSetPlayer = (playerId:string)=>{
+    dispatch(setCreatedUnitsPlayerId(playerId))
   }
 
   const handleTogglePainterMode = ()=>{
@@ -46,7 +52,19 @@ function BottomBar() {
             }}>
               <h2>Command Menu</h2>
                   <div>
+                    <div>
+                      Assign created Units to : {players.map(player=>(
+                        <button
+                          style={{border: player.id === createdUnitsPlayerId ? 'blue solid' : ''}}
+                          onClick={e=>handleSetPlayer(player.id)}
+                        >
+                          {player.name}
+                        </button>
+                    ))}
+                    </div>
+                    <div>
                       Painter Mode: <button onClick={handleTogglePainterMode}>{painterMode ? 'turn off' : 'turn on'}</button>
+                    </div>
                   </div>
 
                 {!painterMode && (<>

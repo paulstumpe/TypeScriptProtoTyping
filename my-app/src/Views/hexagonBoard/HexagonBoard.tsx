@@ -12,7 +12,7 @@ import {
 } from "../../store/slices/hexSlice";
 import {
     getMousedHex,
-    getSelectedHex,
+    getSelectedHex, selectCreatedUnitsPlayerId,
     selectPaintSettings,
     setMousedHex,
     setSelectedHex
@@ -71,6 +71,7 @@ function HexagonBoard({}:props) {
     const [boxClickedHexId, setBoxClickedHexId] = useState('');
     const player = useAppSelector(selectPrimaryPlayer);
     let paintSettings = useAppSelector(selectPaintSettings);
+    let createdUnitsPlayerId = useAppSelector(selectCreatedUnitsPlayerId)
     const dispatch = useAppDispatch();
 
     const [left, setLeft] = useState(0)
@@ -108,7 +109,10 @@ function HexagonBoard({}:props) {
         setStartOrient(false);
     }
     const addUnitToSelected = (hex:HexStruct)=>{
-        let dispatchedUnit = dispatch(addUnit(paintSettings.painterModeBrushUnit))
+        let dispatchedUnit = dispatch(addUnit({
+            base: paintSettings.painterModeBrushUnit,
+            playerId: createdUnitsPlayerId
+        }))
         dispatch(setUnit({
             unit: dispatchedUnit.payload,
             hex

@@ -3,6 +3,7 @@ import type {RootState} from "../store";
 import {HydratedHex, selectHexById, } from "./hexSlice";
 import {BaseUnits} from "../../ProtoType Mechanics/unitClasses/soldier";
 import {Terrains} from "../../ProtoType Mechanics/fe7 stats/terrain and movement";
+import {enemyId} from "./playersSlice";
 
 export interface UiState {
   selectedHex?: string,
@@ -11,6 +12,7 @@ export interface UiState {
   painterModeIsTerrain: boolean,
   painterModeBrushUnit: BaseUnits
   painterModeBrushTerrain: Terrains
+  createdUnitsPlayerId : string
 
 }
 const initialState: UiState = {
@@ -20,6 +22,7 @@ const initialState: UiState = {
   painterModeIsTerrain: false,
   painterModeBrushUnit: "brigandlvl1",
   painterModeBrushTerrain: "grass",
+  createdUnitsPlayerId: enemyId,
 }
 export const uiSlice = createSlice({
   name:'ui',
@@ -50,6 +53,9 @@ export const uiSlice = createSlice({
         state.painterModeIsTerrain = false;
         state.painterModeBrushUnit = unit;
       }
+    },
+    setCreatedUnitsPlayerId : (state, action:PayloadAction<string>)=>{
+      state.createdUnitsPlayerId = action.payload
     }
   }
 })
@@ -82,7 +88,10 @@ export const selectPaintSettings = (state:RootState)=>{
     painterModeBrushTerrain,
   }
 }
+export const selectCreatedUnitsPlayerId = (state:RootState)=>{
+  return state.ui.createdUnitsPlayerId
+}
 
-export const {setSelectedHex, setMousedHex, setPaintMode, setPaintBrush} = uiSlice.actions;
+export const {setSelectedHex, setMousedHex, setPaintMode, setPaintBrush, setCreatedUnitsPlayerId} = uiSlice.actions;
 
 export default uiSlice.reducer;
