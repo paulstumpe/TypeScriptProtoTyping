@@ -1,4 +1,4 @@
-import {StatsForAttack} from "../unitClasses/soldier";
+import {basesDict, StatsForAttack} from "../unitClasses/soldier";
 import {WeaponType} from "../weapons";
 import {HydratedUnit} from "../../store/slices/unitsSlice";
 import {HydratedHex} from "../../store/slices/hexSlice";
@@ -384,7 +384,15 @@ export default class Fe7Calculator extends CombatCalculator{
     }
     return effectiveCoefficient;
   }
-
+  public static combineStateWithStats = (unit:HydratedUnit, hex:HydratedHex)=>{
+    let unitBase = basesDict[unit.unitToInherit];
+    let unitWithStats = {
+      ...unit,
+      hex,
+      statsForAttack:unitBase
+    }
+    return unitWithStats
+  }
   public static hpAfterAllAttacks  (attackResults:FullAttackStrikes, attacker:HydratedUnit, target:HydratedUnit){
     const toReturn =  {
       attackerHp:attacker.hp,

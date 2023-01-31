@@ -38,23 +38,10 @@ export const generateAttackResults = (props:Props):Payload=>{
 
   //todo figure out how not to repeat this code
   let turnAttacked = currentTurn;
+  const attackerWithStats = Fe7Calculator.combineStateWithStats(attacker, targetHex)
+  let targetWithStats = Fe7Calculator.combineStateWithStats(target,targetHex);
 
-
-  let attackerBase = basesDict[attacker.unitToInherit];
-  let targetBase = basesDict[target.unitToInherit];
-  let attackerWithStats = {
-    ...attacker,
-    hex:attackerHex,
-    statsForAttack:attackerBase
-  }
-  let targetWithStats = {
-    ...target,
-    hex:targetHex,
-    statsForAttack:targetBase
-  }
   let fullAttackResults = Fe7Calculator.attackFull(attackerWithStats,targetWithStats,false, rngArr);
-  console.log(fullAttackResults);
-  // let {attackerHp,targetHp} = Fe7Calculator.analyzeFullAttackResults(attackResults,attacker,target);
   return {
     fullAttackResults,
     attackerDirection,
