@@ -157,8 +157,45 @@ export const hexesSlice = createSlice({
 
 export const {setTerrain, setUnit, setVerticalHexes, setHorizontalHexes, moveUnit} = hexesSlice.actions;
 
+
+
+
+
+
+
+
+
+
+
+/**                 SELECTORS                         **/
+export const selectHexWithUnit = (state:RootState, unitId:string):HexStruct | undefined =>{
+  return internalSelectHexWithUnit(state.hexes, unitId);
+}
+
+const internalSelectHexWithUnit = (state:RootState['hexes'], unitId:string):HexStruct|undefined=>{
+  let hexId;
+  for (let id in state.byId) {
+    let unit = state.byId[id]?.unit
+    if(unit===unitId){
+      hexId=id;
+    }
+  }
+  if(!hexId){
+    return undefined;
+  }
+  return HexUtility.hexFromId(hexId);
+}
 export const selectAllHexIds = (state:RootState) => state.hexes.allIds;
 
+
+
+
+
+
+
+
+
+// all below involve hydrated hexes
 export const selectAllHexesWithState = (state:RootState):HexDictionary =>{
   let dictionary:HexDictionary = {}
   for (const hexId in state.hexes.byId) {
@@ -186,7 +223,7 @@ export const selectAllHexesWithState = (state:RootState):HexDictionary =>{
 
 // export const selectHex = (state:RootState, id:string) => state.hexes.byId[id];
 
-export const selectHexById = (state:RootState, id:string)=>{
+export const selectHexById = (state:RootState, id:string):HydratedHex=>{
   let hex = HexUtility.hexFromId(id);
   return selectHex(state, hex);
 }
@@ -220,27 +257,15 @@ export const selectHex = (state:RootState, hex:HexStruct): HydratedHex => {
   return hydratedHex;
 }
 
-export const selectVerticalHexes = (state:RootState)=>state.hexes.verticalHexes;
-export const selectHorizontalHexes = (state:RootState)=>state.hexes.horizontalHexes;
-export const selectHexWithUnit = (state:RootState, unitId:string):HexStruct | undefined =>{
-  return internalSelectHexWithUnit(state.hexes, unitId);
-}
+export const selectVerticalHexes = (state:RootState):number=>state.hexes.verticalHexes;
+export const selectHorizontalHexes = (state:RootState):number=>state.hexes.horizontalHexes;
 
-const internalSelectHexWithUnit = (state:RootState['hexes'], unitId:string):HexStruct|undefined=>{
-  let hexId;
-  for (let id in state.byId) {
-    let unit = state.byId[id]?.unit
-    if(unit===unitId){
-      hexId=id;
-    }
-  }
-  if(!hexId){
-    return undefined;
-  }
-  return HexUtility.hexFromId(hexId);
-}
 
-export const selectOccupiedHexes = (state:RootState) => state.hexes.allIds.reduce<string[]>((prev,id)=>{
+/**
+ * @param state
+ * @return hex ids
+ */
+export const selectOccupiedHexes = (state:RootState):string[] => state.hexes.allIds.reduce<string[]>((prev,id)=>{
   let hex = selectHexById(state,id);
   if (hex && hex.unit){
     prev.push(id)
