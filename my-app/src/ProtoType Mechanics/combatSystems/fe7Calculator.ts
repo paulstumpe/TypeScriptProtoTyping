@@ -3,6 +3,8 @@ import {WeaponType} from "../weapons";
 import {HydratedUnit} from "../../store/slices/unitsSlice";
 import {HydratedHex} from "../../store/slices/hexSlice";
 import {terrainsDict} from "../fe7 stats/terrain and movement";
+import {isArray} from "util";
+import {RangeCalculator} from "../attackRanges";
 
 
 let physical = ['sword', 'lance', 'axe', 'bow'];
@@ -413,6 +415,16 @@ export default class Fe7Calculator extends CombatCalculator{
 
     }
     return toReturn
+  }
+  public static getHexesInAttackRange(attacker:UnitPlusStatsForAttack){
+    let rng = attacker.statsForAttack.weapon.rng
+    let hex = attacker.hex
+    //get rings for each one
+    if(Array.isArray(rng)){
+
+    } else {
+      let range = RangeCalculator.getCircleRange(hex,rng)
+    }
   }
 
 }

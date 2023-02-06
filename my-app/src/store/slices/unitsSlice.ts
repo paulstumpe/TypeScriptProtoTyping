@@ -220,8 +220,12 @@ export const selectAttackableHexes = (state:RootState, attacker:HydratedUnit|und
   }
   let hex = selectHexWithUnit(state,attacker.id)
   if(hex && attacker){
-    let range = attacker.range
-    attackableHexes = PathFinding.attackableFromHex(hex,range);
+    // let range = attacker.range
+    // attackableHexes = PathFinding.attackableFromHex(hex,range);
+    //need hex with terrain
+    let hydratedHex = selectHex(state,hex)
+    let statePlusStats = Fe7Calculator.combineStateWithStats(attacker,hydratedHex)
+    Fe7Calculator.getHexesInAttackRange(statePlusStats)
   }
 
   return attackableHexes
