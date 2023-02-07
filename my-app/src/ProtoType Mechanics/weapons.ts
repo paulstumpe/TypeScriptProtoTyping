@@ -19,7 +19,7 @@ export interface Weapon {
   critical:number
   type: WeaponType
   rank: string
-  rng: number
+  rng: number|number[]
   uses: number
   worth: number
   weaponExp:number
@@ -47,7 +47,7 @@ export const ironBow:Weapon = {
   critical:0,
   type: 'bow',
   rank: 'E',
-  rng: 2,
+  rng: [4,5],
   uses:45,
   worth: 350,
   weaponExp:1

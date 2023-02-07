@@ -232,13 +232,23 @@ export const selectAttackableHexes = (state:RootState, attacker:HydratedUnit|und
   return attackableHexes
 }
 
-export const selectHexesAttackableAfterMove = (state:RootState, unit:HydratedUnit|undefined):HexStruct[]=>{
-  if(!unit){
-    return [];
+export const selectHexesAttackableAfterMove = (state:RootState, attacker:HydratedUnit|undefined):HexStruct[]=>{
+  let attackableHexes:HexStruct[] = [];
+  if(!attacker){
+    return attackableHexes;
   }
   //todo bug when movement is zero, this shows no attackable hexes, but should still show base attackable hexes
-  let movableArr = selectMovable(state, unit);
-  return PathFinding.attackableFromArrayOfHexes(movableArr, unit.range);
+  let movableArr = selectMovable(state, attacker);
+  let hex = selectHexWithUnit(state,attacker.id)
+  if(hex && attacker){
+
+    let hydratedHex = selectHex(state,hex)
+    let statePlusStats = Fe7Calculator.combineStateWithStats(attacker,hydratedHex)
+    let hexesInRange = Fe7Calculator.attackableFromArrayOfHexes(movableArr,statePlusStats.statsForAttack.weapon.rng)
+    hexesInRange.forEach(hex=>attackableHexes.push(hex));
+  }
+  return attackableHexes
+
 }
 
 

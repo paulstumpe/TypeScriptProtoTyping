@@ -5,6 +5,7 @@ import {HydratedHex} from "../../store/slices/hexSlice";
 import {terrainsDict} from "../fe7 stats/terrain and movement";
 import {isArray} from "util";
 import {RangeCalculator} from "../attackRanges";
+import {HexStruct} from "../../utilities/HexGridClasses/Structs/Hex";
 
 
 let physical = ['sword', 'lance', 'axe', 'bow'];
@@ -28,12 +29,6 @@ export type FullAttackPayload = {
     unitIdsRemovedFromMap:string[]
   }
 }
-// interface FullAttackResults {
-//   firstAttack:AttackResults,
-//   secondAttack?:AttackResults,
-//   counterAttack?:AttackResults,
-//   secondCounterAttack?:AttackResults,
-// }
 
 export type WeaponAdvantage =   'goodAgainst' | 'weakAgainst' | 'neutral'
 export interface UnitPlusStatsForAttack extends HydratedUnit{
@@ -416,18 +411,25 @@ export default class Fe7Calculator extends CombatCalculator{
     }
     return toReturn
   }
-  public static getHexesInAttackRange(attacker:UnitPlusStatsForAttack){
+  public static getHexesInAttackRange(attacker:UnitPlusStatsForAttack):HexStruct[]{
     let rng = attacker.statsForAttack.weapon.rng
     let hex = attacker.hex
     //get rings for each one
     if(Array.isArray(rng)){
-      //todo
-      console.log('rng more than 1 ring is still in todo');
-      return [];
+      if(rng.length!==2){
+        throw new Error('rng needs to be a tuple of min range and max range. other array lengths are not allowed');
+      }
+      return RangeCalculator.getCircleRange(hex,rng[1],rng[0])
     } else {
       let range = RangeCalculator.getCircleRange(hex,rng)
       return range;
     }
+  }
+
+  public static attackableFromArrayOfHexes(hexes:HexStruct[],rng:number|number[]):HexStruct[]{
+    let attackableFrom = RangeCalculator.attackableFromArrayOfHexes(hexes,rng);
+
+    return attackableFrom;
   }
 
 }

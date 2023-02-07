@@ -220,29 +220,7 @@ export default class PathFinding {
   }
 
 
-  //todo update to actually use radius
-  public static attackableFromHex = (hex:HexStruct, attackRange:number):HexStruct[]=>{
-    return HexUtility.getRing(hex,attackRange);
-  }
 
-  //calculate move array first, then feed move array through this
-  public static attackableFromArrayOfHexes = (hexes:HexStruct[], attackRange:number):HexStruct[]=>{
-    //so this is basically, getting all movable hexes, and then running attack out from those hexes, and then making a unique array of those
-    //and returning that?
-    //my first idea is super inneficient...
-    //todo make more efficient algorithm answer
-    const attackable:HexStruct[] = []
-    hexes.forEach(hexA=>{
-      let attackableFromCurrentHex = PathFinding.attackableFromHex(hexA, attackRange);
-      attackableFromCurrentHex.forEach(hexB=>{
-        let inAttackable = HexUtility.hexIsInArray(hexB,attackable)
-        if(!inAttackable){
-          attackable.push(hexB);
-        }
-      })
-    })
-    return attackable
-  }
 
 
 }
