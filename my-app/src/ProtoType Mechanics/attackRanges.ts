@@ -30,9 +30,10 @@ export class RangeCalculator{
 
   public static getCircleRange(hex:HexStruct,maxDistance:number, minDistance:number=1){
     this.validateGetCircleRangeProps(hex,maxDistance,minDistance)
-    let inRange = [];
+    let inRange:HexStruct[] = [];
     for(let i = minDistance; i<=maxDistance;i++){
-      inRange.push(HexUtility.getRing(hex,i))
+      let ring = HexUtility.getRing(hex,i);
+      ring.forEach(ringHex=>inRange.push(ringHex))
     }
     return inRange;
   }

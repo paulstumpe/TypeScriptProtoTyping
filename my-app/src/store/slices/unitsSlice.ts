@@ -225,7 +225,8 @@ export const selectAttackableHexes = (state:RootState, attacker:HydratedUnit|und
     //need hex with terrain
     let hydratedHex = selectHex(state,hex)
     let statePlusStats = Fe7Calculator.combineStateWithStats(attacker,hydratedHex)
-    Fe7Calculator.getHexesInAttackRange(statePlusStats)
+    let hexesInRange = Fe7Calculator.getHexesInAttackRange(statePlusStats)
+    hexesInRange.forEach(hex=>attackableHexes.push(hex));
   }
 
   return attackableHexes

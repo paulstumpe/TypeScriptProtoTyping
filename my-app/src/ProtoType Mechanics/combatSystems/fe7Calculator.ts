@@ -421,9 +421,12 @@ export default class Fe7Calculator extends CombatCalculator{
     let hex = attacker.hex
     //get rings for each one
     if(Array.isArray(rng)){
-
+      //todo
+      console.log('rng more than 1 ring is still in todo');
+      return [];
     } else {
       let range = RangeCalculator.getCircleRange(hex,rng)
+      return range;
     }
   }
 
